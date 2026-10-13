@@ -11,9 +11,6 @@ import {
 
 import {
   "moonbitlang/core/ref",
-  "moonbitlang/core/encoding/utf8",
-  "moonbitlang/core/set",
-  "moonbitlang/core/string",
 } for "test"
 
 import {

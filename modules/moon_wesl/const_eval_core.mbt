@@ -61,27 +61,27 @@ priv enum ConstEvalToken {
 }
 
 ///|
-fn const_eval_is_whitespace(code : Int) -> Bool {
+fn const_eval_is_whitespace(code : Int32) -> Bool {
   code == 32 || code == 9 || code == 10 || code == 13
 }
 
 ///|
-fn const_eval_is_digit(code : Int) -> Bool {
+fn const_eval_is_digit(code : Int32) -> Bool {
   code >= 48 && code <= 57
 }
 
 ///|
-fn const_eval_is_identifier_start(code : Int) -> Bool {
+fn const_eval_is_identifier_start(code : Int32) -> Bool {
   (code >= 65 && code <= 90) || (code >= 97 && code <= 122) || code == 95
 }
 
 ///|
-fn const_eval_is_identifier_char(code : Int) -> Bool {
+fn const_eval_is_identifier_char(code : Int32) -> Bool {
   const_eval_is_identifier_start(code) || const_eval_is_digit(code)
 }
 
 ///|
-fn const_eval_is_number_char(code : Int) -> Bool {
+fn const_eval_is_number_char(code : Int32) -> Bool {
   const_eval_is_identifier_char(code) || code == 46
 }
 
@@ -334,9 +334,9 @@ priv enum ConstEvalType {
   I32
   U32
   F32
-  Vector(Int, ConstEvalType)
-  Matrix(Int, Int, ConstEvalType)
-  Array(ConstEvalType, Int?)
+  Vector(Int32, ConstEvalType)
+  Matrix(Int32, Int32, ConstEvalType)
+  Array(ConstEvalType, Int32?)
   Struct(String)
   FrexpAbstractResult
   FrexpF32Result
@@ -1606,9 +1606,9 @@ priv enum ConstEvalValue {
   I32(Int64)
   U32(Int64)
   F32(Float)
-  Vector(Int, ConstEvalType, Array[ConstEvalValue])
-  Matrix(Int, Int, ConstEvalType, Array[ConstEvalValue])
-  Array(ConstEvalType, Int?, Array[ConstEvalValue])
+  Vector(Int32, ConstEvalType, Array[ConstEvalValue])
+  Matrix(Int32, Int32, ConstEvalType, Array[ConstEvalValue])
+  Array(ConstEvalType, Int32?, Array[ConstEvalValue])
   Struct(String, Array[(String, ConstEvalValue)])
   FrexpAbstract(Double, Int64)
   FrexpF32(Float, Int64)
@@ -1722,14 +1722,14 @@ fn const_eval_remove_underscores(text : String) -> String {
 }
 
 ///|
-fn const_eval_is_hex_digit(code : Int) -> Bool {
+fn const_eval_is_hex_digit(code : Int32) -> Bool {
   const_eval_is_digit(code) ||
   (code >= 65 && code <= 70) ||
   (code >= 97 && code <= 102)
 }
 
 ///|
-fn const_eval_hex_digit_value(code : Int) -> Int raise WeslCompileError {
+fn const_eval_hex_digit_value(code : Int32) -> Int32 raise WeslCompileError {
   if const_eval_is_digit(code) {
     return code - 48
   }
@@ -1760,7 +1760,7 @@ fn const_eval_parse_integer_literal(
 }
 
 ///|
-fn const_eval_parse_array_count(text : String) -> Int raise WeslCompileError {
+fn const_eval_parse_array_count(text : String) -> Int32 raise WeslCompileError {
   let normalized = if text.has_suffix("u") || text.has_suffix("i") {
     text[:text.length() - 1].to_owned()
   } else {
@@ -1774,7 +1774,7 @@ fn const_eval_parse_array_count(text : String) -> Int raise WeslCompileError {
 }
 
 ///|
-fn const_eval_matrix_dimension(text : String) -> Int raise WeslCompileError {
+fn const_eval_matrix_dimension(text : String) -> Int32 raise WeslCompileError {
   let value = const_eval_parse_integer_literal(text)
   if value < 2L || value > 4L {
     raise Validation("invalid matrix dimension `\{text}`")
@@ -2359,7 +2359,7 @@ fn const_eval_bitwise_int(
 fn const_eval_shift_count(
   value : ConstEvalValue,
   context : String,
-) -> Int raise WeslCompileError {
+) -> Int32 raise WeslCompileError {
   let count = const_eval_require_u32(value, context)
   if count >= 64 {
     raise Validation("shift count out of range in \{context}")
@@ -2382,7 +2382,7 @@ fn const_eval_shift_int(
 }
 
 ///|
-fn const_eval_bool_order(value : Bool) -> Int {
+fn const_eval_bool_order(value : Bool) -> Int32 {
   if value {
     1
   } else {
@@ -2455,7 +2455,7 @@ fn const_eval_binary_type_error(
 }
 
 ///|
-fn const_eval_vector_width_of(value : ConstEvalValue) -> Int? {
+fn const_eval_vector_width_of(value : ConstEvalValue) -> Int32? {
   match value {
     Vector(width, _, _) => Some(width)
     _ => None
@@ -2465,7 +2465,7 @@ fn const_eval_vector_width_of(value : ConstEvalValue) -> Int? {
 ///|
 fn const_eval_vector_component(
   value : ConstEvalValue,
-  index : Int,
+  index : Int32,
 ) -> ConstEvalValue {
   match value {
     Vector(_, _, elements) => elements[index]
@@ -2474,7 +2474,7 @@ fn const_eval_vector_component(
 }
 
 ///|
-fn const_eval_swizzle_component(part : String) -> (Int, String)? {
+fn const_eval_swizzle_component(part : String) -> (Int32, String)? {
   match part {
     "x" => Some((0, "position"))
     "y" => Some((1, "position"))
@@ -2490,7 +2490,7 @@ fn const_eval_swizzle_component(part : String) -> (Int, String)? {
 
 ///|
 fn const_eval_vector_access(
-  width : Int,
+  width : Int32,
   element : ConstEvalType,
   elements : Array[ConstEvalValue],
   name : String,
@@ -2552,7 +2552,7 @@ fn const_eval_access(
 fn const_eval_index_to_int(
   value : ConstEvalValue,
   context : String,
-) -> Int raise WeslCompileError {
+) -> Int32 raise WeslCompileError {
   let index = match value {
     AbstractInt(number) => number
     I32(number) =>
@@ -2665,7 +2665,7 @@ fn const_eval_set_struct_field(
 
 ///|
 fn const_eval_set_vector_component(
-  width : Int,
+  width : Int32,
   element : ConstEvalType,
   elements : Array[ConstEvalValue],
   name : String,
@@ -2918,8 +2918,8 @@ fn const_eval_execute_update(
 fn const_eval_vector_width_for_values(
   values : Array[ConstEvalValue],
   context : String,
-) -> Int? raise WeslCompileError {
-  let mut width : Int? = None
+) -> Int32? raise WeslCompileError {
+  let mut width : Int32? = None
   for value in values {
     match const_eval_vector_width_of(value) {
       Some(value_width) =>
@@ -2938,7 +2938,7 @@ fn const_eval_vector_width_for_values(
 
 ///|
 fn const_eval_vector_from_elements(
-  width : Int,
+  width : Int32,
   elements : Array[ConstEvalValue],
   context : String,
 ) -> ConstEvalValue raise WeslCompileError {

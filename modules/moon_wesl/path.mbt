@@ -15,7 +15,7 @@
 ///|
 pub(all) enum PathOrigin {
   Absolute
-  Relative(Int)
+  Relative(Int32)
   Package(String)
 } derive(Eq, Hash, Debug)
 
@@ -96,8 +96,8 @@ fn module_path_split_non_empty(path : String, sep : String) -> Array[String] {
 ///|
 fn module_path_slice(
   parts : Array[String],
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
 ) -> Array[String] {
   let out : Array[String] = []
   for i in start..<end {

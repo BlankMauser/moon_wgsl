@@ -13,9 +13,9 @@ pub struct WgslIrTypeSpelling {
 
 ///|
 pub suberror WgslIrTypeSpellingError {
-  MissingType(Int)
-  MissingTypeName(Int)
-  MissingGlobalExpression(Int)
+  MissingType(Int32)
+  MissingTypeName(Int32)
+  MissingGlobalExpression(Int32)
   UnsupportedTypeSpelling(String)
 }
 

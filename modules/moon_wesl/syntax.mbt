@@ -14,8 +14,8 @@
 
 ///|
 pub(all) struct SyntaxSpan {
-  start_line : Int
-  end_line : Int
+  start_line : Int32
+  end_line : Int32
 } derive(Eq, Debug)
 
 ///|

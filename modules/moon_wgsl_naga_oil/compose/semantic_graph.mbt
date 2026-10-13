@@ -181,8 +181,8 @@ fn WgslComposeSemanticFacts::WgslComposeSemanticFacts(
 ///|
 fn wgsl_naga_oil_import_use_code_point_at(
   source : String,
-  index : Int,
-) -> (Int, Int) {
+  index : Int32,
+) -> (Int32, Int32) {
   match wgsl_code_point_at(source, index) {
     Some(point) => point
     None => (source.code_unit_at(index).to_int(), 1)
@@ -192,8 +192,8 @@ fn wgsl_naga_oil_import_use_code_point_at(
 ///|
 fn wgsl_naga_oil_import_use_skip_line_comment(
   source : String,
-  start : Int,
-) -> Int {
+  start : Int32,
+) -> Int32 {
   let mut index = start + 2
   while index < source.length() {
     let code = source.code_unit_at(index).to_int()
@@ -208,8 +208,8 @@ fn wgsl_naga_oil_import_use_skip_line_comment(
 ///|
 fn wgsl_naga_oil_import_use_skip_block_comment(
   source : String,
-  start : Int,
-) -> Int {
+  start : Int32,
+) -> Int32 {
   let mut depth = 1
   let mut index = start + 2
   while index < source.length() && depth > 0 {
@@ -234,7 +234,10 @@ fn wgsl_naga_oil_import_use_skip_block_comment(
 }
 
 ///|
-fn wgsl_naga_oil_import_use_skip_string(source : String, start : Int) -> Int {
+fn wgsl_naga_oil_import_use_skip_string(
+  source : String,
+  start : Int32,
+) -> Int32 {
   let mut index = start + 1
   while index < source.length() {
     let (code, width) = wgsl_naga_oil_import_use_code_point_at(source, index)
@@ -247,7 +250,10 @@ fn wgsl_naga_oil_import_use_skip_string(source : String, start : Int) -> Int {
 }
 
 ///|
-fn wgsl_naga_oil_import_use_identifier_end(source : String, start : Int) -> Int {
+fn wgsl_naga_oil_import_use_identifier_end(
+  source : String,
+  start : Int32,
+) -> Int32 {
   let mut index = start
   while index < source.length() {
     let (code, width) = wgsl_naga_oil_import_use_code_point_at(source, index)
@@ -560,9 +566,9 @@ fn wgsl_semantic_facts_use_alias(
 
 ///|
 fn wgsl_semantic_reference_nodes_first_start(
-  first_starts : Map[String, Int],
+  first_starts : Map[String, Int32],
   reference_path : String,
-) -> Int? {
+) -> Int32? {
   match wgsl_semantic_reference_path_from_identifier(reference_path) {
     Some(expected) => first_starts.get(expected.text())
     None => None
@@ -571,10 +577,10 @@ fn wgsl_semantic_reference_nodes_first_start(
 
 ///|
 fn wgsl_semantic_import_order_consider_path(
-  first_starts : Map[String, Int],
+  first_starts : Map[String, Int32],
   reference_path : String,
-  current_best : Int,
-) -> Int {
+  current_best : Int32,
+) -> Int32 {
   match
     wgsl_semantic_reference_nodes_first_start(first_starts, reference_path) {
     Some(start) if current_best < 0 || start < current_best => start
@@ -584,10 +590,10 @@ fn wgsl_semantic_import_order_consider_path(
 
 ///|
 fn wgsl_semantic_import_target_plan_order_key(
-  first_starts : Map[String, Int],
+  first_starts : Map[String, Int32],
   plan : WgslSemanticImportTargetPlan,
-  fallback : Int,
-) -> Int {
+  fallback : Int32,
+) -> Int32 {
   let mut best = -1
   if plan.requested_items.length() == 0 {
     if plan.module_alias != "" {
@@ -633,8 +639,8 @@ fn wgsl_semantic_import_target_plan_order_key(
 ///|
 fn collect_wgsl_semantic_reference_first_starts(
   nodes : Array[WgslIdent],
-) -> Map[String, Int] {
-  let first_starts : Map[String, Int] = Map([])
+) -> Map[String, Int32] {
+  let first_starts : Map[String, Int32] = Map([])
   for node in nodes {
     let text = node.name()
     if wgsl_naga_oil_import_use_reference_text_is_valid(text) &&
@@ -648,8 +654,8 @@ fn collect_wgsl_semantic_reference_first_starts(
 ///|
 fn collect_wgsl_semantic_reference_first_ranks(
   references : Array[WgslReferencePath],
-) -> Map[String, Int] {
-  let first_starts : Map[String, Int] = Map([])
+) -> Map[String, Int32] {
+  let first_starts : Map[String, Int32] = Map([])
   for i in 0..<references.length() {
     let text = references[i].text()
     if !first_starts.contains(text) {
@@ -675,7 +681,7 @@ fn WgslComposeSession::record_semantic_reference_first_ranks(
 fn WgslComposeSession::semantic_reference_first_starts_for_source(
   self : WgslComposeSession,
   source : String,
-) -> Map[String, Int] {
+) -> Map[String, Int32] {
   match self.semantic_reference_first_starts.get(source) {
     Some(first_starts) => first_starts
     None => {
@@ -696,7 +702,7 @@ fn wgsl_semantic_order_import_target_plans_by_reference(
 ) -> Array[WgslSemanticImportTargetPlan] {
   let first_starts = session.semantic_reference_first_starts_for_source(source)
   let ordered : Array[WgslSemanticImportTargetPlan] = []
-  let picked : @set.Set[Int] = Set([])
+  let picked : @set.Set[Int32] = Set([])
   let fallback_base = source.length() + 1
   while ordered.length() < plans.length() {
     let mut best_index = -1

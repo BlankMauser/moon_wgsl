@@ -45,7 +45,7 @@ pub fn WeslCompileError::message(self : WeslCompileError) -> String {
 ///|
 pub(all) suberror ValidateError {
   UndefinedSymbol(String)
-  ParamCount(String, Int, Int)
+  ParamCount(String, Int32, Int32)
   NotCallable(String)
   Duplicate(String)
   Cycle(String, String)
@@ -65,16 +65,16 @@ pub fn ValidateError::message(self : ValidateError) -> String {
 
 ///|
 pub(all) struct SourcePosition {
-  line : Int
-  column : Int
-  offset : Int
+  line : Int32
+  column : Int32
+  offset : Int32
 } derive(Eq, Debug)
 
 ///|
 pub fn SourcePosition::new(
-  line : Int,
-  column : Int,
-  offset : Int,
+  line : Int32,
+  column : Int32,
+  offset : Int32,
 ) -> SourcePosition {
   { line, column, offset, }
 }
@@ -94,12 +94,12 @@ pub fn SourceSpan::new(
 }
 
 ///|
-fn diagnostic_is_newline(code : Int) -> Bool {
+fn diagnostic_is_newline(code : Int32) -> Bool {
   code == 10 || code == 13
 }
 
 ///|
-fn diagnostic_line_start(source : String, line : Int) -> Int {
+fn diagnostic_line_start(source : String, line : Int32) -> Int32 {
   if line <= 1 {
     return 0
   }
@@ -131,7 +131,7 @@ fn diagnostic_line_start(source : String, line : Int) -> Int {
 }
 
 ///|
-fn diagnostic_line_end(source : String, line_start : Int) -> Int {
+fn diagnostic_line_end(source : String, line_start : Int32) -> Int32 {
   let mut index = line_start
   while index < source.length() {
     let code = source.code_unit_at(index).to_int()
@@ -144,7 +144,7 @@ fn diagnostic_line_end(source : String, line_start : Int) -> Int {
 }
 
 ///|
-fn diagnostic_repeat(ch : String, count : Int) -> String {
+fn diagnostic_repeat(ch : String, count : Int32) -> String {
   let parts : Array[String] = []
   let mut index = 0
   while index < count {
@@ -157,8 +157,8 @@ fn diagnostic_repeat(ch : String, count : Int) -> String {
 ///|
 pub fn SourceSpan::from_line_range(
   source : String,
-  start_line : Int,
-  end_line : Int,
+  start_line : Int32,
+  end_line : Int32,
 ) -> SourceSpan {
   let bounded_start_line = if start_line < 1 { 1 } else { start_line }
   let bounded_end_line = if end_line < bounded_start_line {
@@ -421,7 +421,7 @@ pub fn Diagnostic::unmangle_with_mangler(
 }
 
 ///|
-fn diagnostic_is_identifier_char(code : Int) -> Bool {
+fn diagnostic_is_identifier_char(code : Int32) -> Bool {
   (code >= 65 && code <= 90) ||
   (code >= 97 && code <= 122) ||
   (code >= 48 && code <= 57) ||
@@ -451,7 +451,7 @@ pub fn Diagnostic::display_short_origin(self : Diagnostic) -> String? {
 }
 
 ///|
-fn diagnostic_parse_decimal_at(text : String, start : Int) -> (Int, Int)? {
+fn diagnostic_parse_decimal_at(text : String, start : Int32) -> (Int32, Int32)? {
   let mut index = start
   let mut value = 0
   let mut saw_digit = false
@@ -472,7 +472,7 @@ fn diagnostic_parse_decimal_at(text : String, start : Int) -> (Int, Int)? {
 }
 
 ///|
-fn diagnostic_line_from_origin(message : String, origin : String) -> Int? {
+fn diagnostic_line_from_origin(message : String, origin : String) -> Int32? {
   match message.find(origin + ":") {
     Some(start) =>
       match diagnostic_parse_decimal_at(message, start + origin.length() + 1) {
@@ -488,7 +488,7 @@ pub fn Diagnostic::infer_span_from_message(self : Diagnostic) -> Diagnostic {
   match (self.detail.source, self.detail.span) {
     (Some(source), None) => {
       let message = self.message()
-      let mut inferred_line : Int? = None
+      let mut inferred_line : Int32? = None
       match self.detail.module_path {
         Some(path) =>
           inferred_line = diagnostic_line_from_origin(message, path.to_string())

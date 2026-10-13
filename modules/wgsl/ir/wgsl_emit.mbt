@@ -36,8 +36,8 @@ priv struct WgslIrEmitter {
   writer_module : WgslIrWriterModule
   names : WgslIrFinalNamePlan
   current_function_origin : WgslIrEmitFunctionOrigin?
-  emitted_function_named_expressions : @set.Set[Int]
-  emitted_function_materialized_expressions : @set.Set[Int]
+  emitted_function_named_expressions : @set.Set[Int32]
+  emitted_function_materialized_expressions : @set.Set[Int32]
 }
 
 ///|

@@ -28,8 +28,8 @@ pub fn WgslImmediateSpecializationError::message(
 
 ///|
 priv struct WgslImmediateDeclarationReplacement {
-  start : Int
-  end : Int
+  start : Int32
+  end : Int32
   source : String
 }
 

@@ -1,6 +1,6 @@
 ///|
 test "facade exposes preprocessing and composition runtime API" {
-  let preprocessor = Preprocessor::default()
+  let preprocessor = @moon_wgsl.Preprocessor::default()
   let conditional_source =
     #|#ifdef USE_COLOR
     #|const value: u32 = 2u;
@@ -8,13 +8,15 @@ test "facade exposes preprocessing and composition runtime API" {
     #|const value: u32 = 1u;
     #|#endif
     #|
-  let defs : Map[String, ShaderDefValue] = { "USE_COLOR": Bool(true) }
+  let defs : Map[String, @moon_wgsl.ShaderDefValue] = {
+    "USE_COLOR": Bool(true),
+  }
   let preprocessed = preprocessor.preprocess(conditional_source, defs) catch {
     _ => abort("expected facade preprocess success")
   }
   assert_true(preprocessed.preprocessed_source.contains("2u"))
 
-  let composer = Composer::default()
+  let composer = @moon_wgsl.Composer::default()
   let util_source =
     #|#define_import_path test::util
     #|
@@ -31,20 +33,26 @@ test "facade exposes preprocessing and composition runtime API" {
     #|}
     #|
   composer.register_source("root.wgsl", root_source)
-  let composed = composer.compose("root.wgsl", WgslComposeOptions::default()) catch {
+  let composed = composer.compose(
+    "root.wgsl",
+    @moon_wgsl.WgslComposeOptions::default(),
+  ) catch {
     err => abort("expected facade compose success: \{err.message()}")
   }
   assert_true(composed.contains("fn value"))
   assert_true(composed.contains("fn root"))
 
-  let prepared = composer.prepare("root.wgsl", WgslComposeOptions::default()) catch {
+  let prepared = composer.prepare(
+    "root.wgsl",
+    @moon_wgsl.WgslComposeOptions::default(),
+  ) catch {
     err => abort("expected facade prepare success: \{err.message()}")
   }
   assert_true(prepared.source().contains("fn root"))
 
   let exported = composer.export_wgsl(
     "root.wgsl",
-    WgslComposeOptions::default(),
+    @moon_wgsl.WgslComposeOptions::default(),
     { root_items: [], },
   ) catch {
     err => abort("expected facade export success: \{err.message()}")
@@ -55,10 +63,10 @@ test "facade exposes preprocessing and composition runtime API" {
 
 ///|
 test "facade maps lower-level failures without exposing implementation errors" {
-  let composer = Composer::default()
+  let composer = @moon_wgsl.Composer::default()
   let mut error_message = ""
   ignore(
-    composer.compose("missing.wgsl", WgslComposeOptions::default()) catch {
+    composer.compose("missing.wgsl", @moon_wgsl.WgslComposeOptions::default()) catch {
       error => {
         error_message = error.message()
         ""
@@ -70,7 +78,7 @@ test "facade maps lower-level failures without exposing implementation errors" {
 
 ///|
 test "facade compiles registered WESL modules through the shared source registry" {
-  let composer = Composer::default()
+  let composer = @moon_wgsl.Composer::default()
   let util_source =
     #|fn double(value: f32) -> f32 {
     #|  return value * 2.0;
@@ -89,7 +97,7 @@ test "facade compiles registered WESL modules through the shared source registry
 
   let output = composer.compile_wesl(
     "shaders/root.wesl",
-    CompileOptions::default(),
+    @moon_wgsl.CompileOptions::default(),
   ) catch {
     error => abort("expected facade WESL compile success: \{error.message()}")
   }
@@ -100,7 +108,7 @@ test "facade compiles registered WESL modules through the shared source registry
 
 ///|
 test "facade maps missing WESL imports to its workflow error" {
-  let composer = Composer::default()
+  let composer = @moon_wgsl.Composer::default()
   let root_source =
     #|import super::missing::value;
     #|
@@ -112,7 +120,10 @@ test "facade maps missing WESL imports to its workflow error" {
   composer.register_source("shaders/root.wesl", root_source)
   let mut message = ""
   ignore(
-    composer.compile_wesl("shaders/root.wesl", CompileOptions::default()) catch {
+    composer.compile_wesl(
+      "shaders/root.wesl",
+      @moon_wgsl.CompileOptions::default(),
+    ) catch {
       error => {
         message = error.message()
         ""
@@ -125,10 +136,10 @@ test "facade maps missing WESL imports to its workflow error" {
 
 ///|
 test "facade rejects an empty WESL root path without aborting" {
-  let composer = Composer::default()
+  let composer = @moon_wgsl.Composer::default()
   let mut message = ""
   ignore(
-    composer.compile_wesl("", CompileOptions::default()) catch {
+    composer.compile_wesl("", @moon_wgsl.CompileOptions::default()) catch {
       error => {
         message = error.message()
         ""
@@ -140,7 +151,7 @@ test "facade rejects an empty WESL root path without aborting" {
 
 ///|
 test "facade specializes immediate struct globals for runtime composition" {
-  let composer = Composer::default()
+  let composer = @moon_wgsl.Composer::default()
   let source =
     #|struct Constants {
     #|  max_mip_level: u32,
@@ -153,7 +164,7 @@ test "facade specializes immediate struct globals for runtime composition" {
     #|}
     #|
   composer.register_source("root.wgsl", source)
-  let options = WgslComposeOptions::default()
+  let options = @moon_wgsl.WgslComposeOptions::default()
   options.immediate_specializations.push(
     WgslImmediateSpecialization("root.wgsl", "constants", {
       "max_mip_level": UInt(12),
@@ -166,7 +177,7 @@ test "facade specializes immediate struct globals for runtime composition" {
   assert_true(composed.contains("const constants"))
   assert_true(composed.contains("Constants(12u)"))
 
-  let alternate_options = WgslComposeOptions::default()
+  let alternate_options = @moon_wgsl.WgslComposeOptions::default()
   alternate_options.immediate_specializations.push(
     WgslImmediateSpecialization("root.wgsl", "constants", {
       "max_mip_level": UInt(4),
@@ -182,7 +193,7 @@ test "facade specializes immediate struct globals for runtime composition" {
 
 ///|
 test "facade rejects incomplete immediate struct specialization" {
-  let composer = Composer::default()
+  let composer = @moon_wgsl.Composer::default()
   let source =
     #|struct Constants {
     #|  max_mip_level: u32,
@@ -192,7 +203,7 @@ test "facade rejects incomplete immediate struct specialization" {
     #|var<immediate> constants: Constants;
     #|
   composer.register_source("root.wgsl", source)
-  let options = WgslComposeOptions::default()
+  let options = @moon_wgsl.WgslComposeOptions::default()
   options.immediate_specializations.push(
     WgslImmediateSpecialization("root.wgsl", "constants", {
       "max_mip_level": UInt(12),

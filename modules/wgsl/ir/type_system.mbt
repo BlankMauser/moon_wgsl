@@ -99,7 +99,7 @@ pub(all) enum VectorSize {
 } derive(Eq, Debug)
 
 ///|
-pub fn VectorSize::width(self : VectorSize) -> Int {
+pub fn VectorSize::width(self : VectorSize) -> Int32 {
   match self {
     Bi => 2
     Tri => 3
@@ -133,17 +133,17 @@ pub(all) enum CooperativeRole {
 ///|
 pub(all) struct Scalar {
   kind : ScalarKind
-  width : Int
+  width : Int32
 } derive(Eq, Debug)
 
 ///|
-pub fn Scalar::Scalar(kind : ScalarKind, width : Int) -> Scalar {
+pub fn Scalar::Scalar(kind : ScalarKind, width : Int32) -> Scalar {
   { kind, width, }
 }
 
 ///|
 pub(all) enum ArraySize {
-  Constant(Int)
+  Constant(Int32)
   Pending(Handle)
   Dynamic
 } derive(Eq, Debug)
@@ -229,7 +229,7 @@ pub(all) enum ImageClass {
 ///|
 pub(all) enum Binding {
   BuiltIn(BuiltIn)
-  Location(Int, Interpolation?, Sampling?, Int?, Bool)
+  Location(Int32, Interpolation?, Sampling?, Int32?, Bool)
 } derive(Eq, Debug)
 
 ///|
@@ -237,9 +237,9 @@ pub(all) struct StructMember {
   name : String?
   ty : Handle
   binding : Binding?
-  offset : Int
-  size : Int?
-  align : Int?
+  offset : Int32
+  size : Int32?
+  align : Int32?
 } derive(Eq, Debug)
 
 ///|
@@ -257,9 +257,9 @@ pub(all) enum TypeInner {
   Atomic(Scalar)
   Pointer(Handle, AddressSpace)
   ValuePointer(VectorSize?, Scalar, AddressSpace)
-  Array(Handle, ArraySize, Int)
-  Struct(Array[StructMember], Int)
-  PredeclaredStruct(Array[StructMember], Int)
+  Array(Handle, ArraySize, Int32)
+  Struct(Array[StructMember], Int32)
+  PredeclaredStruct(Array[StructMember], Int32)
   Image(ImageDimension, Bool, ImageClass)
   Sampler(Bool)
   AccelerationStructure(Bool)

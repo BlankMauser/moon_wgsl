@@ -37,7 +37,7 @@ pub fn WgslSourceDirectiveItem::line(self : WgslSourceDirectiveItem) -> String {
 ///|
 fn metadata_has_ascii_keyword_at(
   text : String,
-  start : Int,
+  start : Int32,
   keyword : String,
 ) -> Bool {
   guard start >= 0 && start + keyword.length() <= text.length() else {

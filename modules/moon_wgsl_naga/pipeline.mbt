@@ -72,7 +72,7 @@ pub fn WgslNagaComposeContext::empty() -> WgslNagaComposeContext {
 pub fn WgslNagaComposeContext::from_import_graph(
   generated_import_provenance : Array[WgslNagaGeneratedImportProvenance],
   import_arena_events : Array[WgslNagaImportArenaEvent],
-  root_visible_rel_path? : String = "",
+  root_visible_rel_path~ : String = "",
 ) -> WgslNagaComposeContext {
   { generated_import_provenance, import_arena_events, root_visible_rel_path, }
 }
@@ -115,7 +115,7 @@ fn wgsl_ir_entry_point_root_items(module_ : Module) -> Array[String] {
 ///|
 pub fn roundtrip_wgsl_source(
   source : String,
-  options? : WgslNagaPipelineOptions = WgslNagaPipelineOptions::runtime(),
+  options~ : WgslNagaPipelineOptions = WgslNagaPipelineOptions::runtime(),
 ) -> String raise WgslNagaPipelineError {
   roundtrip_wgsl_source_with_compose_context(
     source,
@@ -128,7 +128,7 @@ pub fn roundtrip_wgsl_source(
 pub fn roundtrip_wgsl_compose_source(
   source : String,
   context : WgslNagaComposeContext,
-  options? : WgslNagaPipelineOptions = WgslNagaPipelineOptions::compat(),
+  options~ : WgslNagaPipelineOptions = WgslNagaPipelineOptions::compat(),
 ) -> String raise WgslNagaPipelineError {
   roundtrip_wgsl_source_with_compose_context(source, context, options)
 }
@@ -158,7 +158,7 @@ fn roundtrip_wgsl_source_via_ir(
 fn emit_wgsl_module_with_options(
   module_ : Module,
   options : WgslNagaPipelineOptions,
-  compatibility? : WgslNagaCompatibilityView = WgslNagaCompatibilityView::empty(),
+  compatibility~ : WgslNagaCompatibilityView = WgslNagaCompatibilityView::empty(),
 ) -> String raise WgslNagaPipelineError {
   let roots = if options.entry_roots {
     wgsl_ir_entry_point_root_items(module_)
@@ -218,7 +218,7 @@ fn roundtrip_compat_import_context(
   source : String,
   generated_import_provenance : Array[WgslNagaGeneratedImportProvenance],
   import_arena_events : Array[WgslNagaImportArenaEvent],
-  root_visible_rel_path? : String = "",
+  root_visible_rel_path~ : String = "",
 ) -> String raise WgslNagaPipelineError {
   roundtrip_wgsl_compose_source(
     source,

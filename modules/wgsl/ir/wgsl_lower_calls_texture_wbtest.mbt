@@ -214,7 +214,7 @@ test "WGSL AST lowerer applies recursive struct layout semantics" {
   let module_ = parse_wgsl_module_to_ir(source) catch {
     error => abort(error.message())
   }
-  let offsets : Array[Int] = []
+  let offsets : Array[Int32] = []
   let mut span = -1
   for ty in module_.types.items {
     if ty.name == Some("Layout") {

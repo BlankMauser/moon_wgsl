@@ -7,6 +7,6 @@ priv enum WgslRawTopLevelKind {
 ///|
 priv struct WgslRawTopLevelItem {
   kind : WgslRawTopLevelKind
-  start : Int
-  end : Int
+  start : Int32
+  end : Int32
 }

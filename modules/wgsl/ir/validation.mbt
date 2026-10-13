@@ -1,25 +1,25 @@
 ///|
 pub suberror WgslIrValidationError {
-  InvalidTypeHandle(Int)
-  InvalidConstantHandle(Int)
-  InvalidOverrideHandle(Int)
-  InvalidGlobalVariableHandle(Int)
-  InvalidGlobalExpressionHandle(Int)
-  InvalidFunctionHandle(Int)
-  InvalidLocalVariableHandle(Int)
-  InvalidFunctionExpressionHandle(Int)
-  InvalidHandleRange(Int, Int)
+  InvalidTypeHandle(Int32)
+  InvalidConstantHandle(Int32)
+  InvalidOverrideHandle(Int32)
+  InvalidGlobalVariableHandle(Int32)
+  InvalidGlobalExpressionHandle(Int32)
+  InvalidFunctionHandle(Int32)
+  InvalidLocalVariableHandle(Int32)
+  InvalidFunctionExpressionHandle(Int32)
+  InvalidHandleRange(Int32, Int32)
   InvalidEntryPoint(String)
-  MissingExpressionType(Int, String)
-  InvalidConditionType(String, Int, String, String)
-  InvalidStoreTarget(Int)
+  MissingExpressionType(Int32, String)
+  InvalidConditionType(String, Int32, String, String)
+  InvalidStoreTarget(Int32)
   InvalidReturnValue(String)
-  InvalidFunctionArgumentCount(String, Int, Int)
-  InvalidFunctionArgumentType(String, Int)
+  InvalidFunctionArgumentCount(String, Int32, Int32)
+  InvalidFunctionArgumentType(String, Int32)
   InvalidFunctionResult(String)
   InvalidType(String)
   InvalidGlobalVariable(String)
-  InvalidExpression(String, Int)
+  InvalidExpression(String, Int32)
   InvalidStatement(String)
 }
 
@@ -86,8 +86,8 @@ priv struct WgslIrValidator {
 
 ///|
 priv struct WgslIrValidationLayout {
-  align : Int
-  size : Int
+  align : Int32
+  size : Int32
 }
 
 ///|
@@ -158,7 +158,7 @@ fn WgslIrValidator::validate_entry_point(
 ///|
 fn WgslIrValidator::should_validate_type(
   self : WgslIrValidator,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   match self.filter {
     Some(filter) => filter.contains_type(index)
@@ -169,7 +169,7 @@ fn WgslIrValidator::should_validate_type(
 ///|
 fn WgslIrValidator::should_validate_constant(
   self : WgslIrValidator,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   match self.filter {
     Some(filter) => filter.contains_constant(index)
@@ -180,7 +180,7 @@ fn WgslIrValidator::should_validate_constant(
 ///|
 fn WgslIrValidator::should_validate_override(
   self : WgslIrValidator,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   match self.filter {
     Some(filter) => filter.contains_override(index)
@@ -191,7 +191,7 @@ fn WgslIrValidator::should_validate_override(
 ///|
 fn WgslIrValidator::should_validate_global_variable(
   self : WgslIrValidator,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   match self.filter {
     Some(filter) => filter.contains_global_variable(index)
@@ -202,7 +202,7 @@ fn WgslIrValidator::should_validate_global_variable(
 ///|
 fn WgslIrValidator::should_validate_global_expression(
   self : WgslIrValidator,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   ignore(index)
   match self.filter {
@@ -214,7 +214,7 @@ fn WgslIrValidator::should_validate_global_expression(
 ///|
 fn WgslIrValidator::should_validate_function(
   self : WgslIrValidator,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   match self.filter {
     Some(filter) => filter.contains_function(index)
@@ -225,7 +225,7 @@ fn WgslIrValidator::should_validate_function(
 ///|
 fn WgslIrValidator::should_validate_entry_point(
   self : WgslIrValidator,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   match self.filter {
     Some(filter) => filter.contains_entry_point(index)

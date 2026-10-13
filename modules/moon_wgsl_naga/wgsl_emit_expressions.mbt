@@ -282,7 +282,7 @@ fn WgslIrEmitter::as_expression(
   function : Function?,
   expr : Handle,
   kind : ScalarKind,
-  width : Int?,
+  width : Int32?,
 ) -> String raise WgslIrEmitError {
   let scalar = Scalar::Scalar(kind, width.unwrap_or(4))
   let result_ty = match
@@ -408,7 +408,7 @@ fn WgslIrEmitter::folded_float_vector_binary_expression(
 ///|
 fn WgslIrEmitter::float_vector_shape_from_lane_count(
   self : WgslIrEmitter,
-  lanes : Int,
+  lanes : Int32,
 ) -> (VectorSize, Scalar)? {
   ignore(self)
   let size = match lanes {
@@ -654,7 +654,7 @@ fn WgslIrEmitter::function_call_argument_expression(
   self : WgslIrEmitter,
   function : Function?,
   callee_function : Function?,
-  index : Int,
+  index : Int32,
   argument : Handle,
   scalar_context : Scalar?,
 ) -> String raise WgslIrEmitError {
@@ -1212,7 +1212,7 @@ fn WgslIrEmitter::emit_cooperative_store_statement(
   function : Function,
   target : Handle,
   data : CooperativeData,
-  indent : Int,
+  indent : Int32,
 ) -> Unit raise WgslIrEmitError {
   let suffix = if data.row_major { "T" } else { "" }
   out.write_string(
@@ -1458,7 +1458,7 @@ fn WgslIrEmitter::access_index_expression(
   self : WgslIrEmitter,
   function : Function?,
   base : Handle,
-  index : Int,
+  index : Int32,
 ) -> String raise WgslIrEmitError {
   match self.folded_static_constant_array_access(function, base, index) {
     Some(value) => return value
@@ -1598,7 +1598,7 @@ fn WgslIrEmitter::folded_static_constant_array_access(
   self : WgslIrEmitter,
   function : Function?,
   base : Handle,
-  index : Int,
+  index : Int32,
 ) -> String? raise WgslIrEmitError {
   guard self.options.fold_numeric_constant_expressions() else { return None }
   guard index >= 0 else { return None }
@@ -1619,7 +1619,7 @@ fn WgslIrEmitter::folded_static_constant_array_access(
 fn WgslIrEmitter::folded_static_constant_array_constructor_access(
   self : WgslIrEmitter,
   constant_handle : Handle,
-  index : Int,
+  index : Int32,
 ) -> String? raise WgslIrEmitError {
   guard self.shader_module.constants.items.get(constant_handle.index())
     is Some(constant) else {
@@ -1639,7 +1639,7 @@ fn WgslIrEmitter::folded_static_array_constructor_access(
   function : Function?,
   ty : Handle,
   components : Array[Handle],
-  index : Int,
+  index : Int32,
 ) -> String? raise WgslIrEmitError {
   guard self.shader_module.types.items.get(ty.index())
     is Some({ inner: Array(_, _, _), .. }) else {

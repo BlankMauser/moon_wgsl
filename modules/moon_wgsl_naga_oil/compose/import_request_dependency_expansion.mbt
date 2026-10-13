@@ -273,7 +273,7 @@ fn Composer::merge_wgsl_non_resource_dependency_requests(
   importer_defs : WgslActiveComposeDefs,
 ) -> Unit raise ComposerError {
   let ordered_requests : Array[WgslImportRequest] = []
-  let ordered_base_indexes : @set.Set[Int] = Set([])
+  let ordered_base_indexes : @set.Set[Int32] = Set([])
   for dependency_request in dependency_requests {
     if dependency_request.import_full_module {
       match

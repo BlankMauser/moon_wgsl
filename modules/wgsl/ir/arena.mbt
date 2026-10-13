@@ -201,7 +201,7 @@ pub fn ExpressionArena::origin(
 }
 
 ///|
-fn ExpressionArena::truncate(self : ExpressionArena, length : Int) -> Unit {
+fn ExpressionArena::truncate(self : ExpressionArena, length : Int32) -> Unit {
   while self.items.length() > length {
     ignore(self.items.pop())
   }

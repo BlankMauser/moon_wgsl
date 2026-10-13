@@ -19,5 +19,5 @@ description = "naga-oil compatible preprocessing and composition for MoonBit WGS
 
 rule(
   name: "moonyacc-array",
-  command: "moon runwasm moonbitlang/yacc@0.7.19 $input --input-mode array -o $output && moonfmt -w $output",
+  command: "moon runwasm moonbitlang/yacc@0.7.23 $input --input-mode array -o $output && sed 's/@list[.]empty()/List([])/g' $output > $output.tmp && mv $output.tmp $output && moonfmt -w $output",
 )

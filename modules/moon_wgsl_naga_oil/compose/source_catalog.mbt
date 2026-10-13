@@ -2,7 +2,7 @@
 fn compare_wgsl_source_catalog_entries(
   lhs : WgslSourceCatalogEntry,
   rhs : WgslSourceCatalogEntry,
-) -> Int {
+) -> Int32 {
   let rel_path_compare = String::compare(lhs.rel_path, rhs.rel_path)
   if rel_path_compare != 0 {
     return rel_path_compare
@@ -53,8 +53,8 @@ fn push_wgsl_source_origin(
   rel_path : String,
   source_symbol_name : String,
   kind : WgslSourceOriginKind,
-  source_start : Int,
-  source_end : Int,
+  source_start : Int32,
+  source_end : Int32,
 ) -> Unit {
   if generated_symbol_name == "" || rel_path == "" {
     return

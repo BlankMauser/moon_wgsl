@@ -74,14 +74,14 @@ fn try_get_preprocessor_metadata(
 ///|
 pub fn get_preprocessor_metadata(
   source : String,
-  allow_defines? : Bool = true,
-  collect_import_uses? : Bool = true,
+  allow_defines~ : Bool = true,
+  collect_import_uses~ : Bool = true,
 ) -> PreprocessorMetaData raise MetadataError {
   try_get_preprocessor_metadata(source, allow_defines, collect_import_uses)
 }
 
 ///|
-fn wgsl_metadata_skip_whitespace(line : String, start : Int) -> Int {
+fn wgsl_metadata_skip_whitespace(line : String, start : Int32) -> Int32 {
   let mut index = start
   while index < line.length() {
     let width = wgsl_regex_whitespace_width(line, index)
@@ -92,7 +92,11 @@ fn wgsl_metadata_skip_whitespace(line : String, start : Int) -> Int {
 }
 
 ///|
-fn wgsl_metadata_has_word_at(line : String, start : Int, word : String) -> Bool {
+fn wgsl_metadata_has_word_at(
+  line : String,
+  start : Int32,
+  word : String,
+) -> Bool {
   guard start + word.length() <= line.length() else { return false }
   for i in 0..<word.length() {
     if line.code_unit_at(start + i).to_int() != word.code_unit_at(i).to_int() {

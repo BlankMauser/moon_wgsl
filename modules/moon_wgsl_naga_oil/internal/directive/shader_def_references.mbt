@@ -1,16 +1,16 @@
 ///|
 pub struct WgslShaderDefReference {
   priv name : String
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
   priv delimited : Bool
 } derive(Debug)
 
 ///|
 fn WgslShaderDefReference::WgslShaderDefReference(
   name : String,
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
   delimited : Bool,
 ) -> WgslShaderDefReference {
   { name, start, end, delimited, }
@@ -22,12 +22,12 @@ pub fn WgslShaderDefReference::name(self : WgslShaderDefReference) -> String {
 }
 
 ///|
-pub fn WgslShaderDefReference::start(self : WgslShaderDefReference) -> Int {
+pub fn WgslShaderDefReference::start(self : WgslShaderDefReference) -> Int32 {
   self.start
 }
 
 ///|
-pub fn WgslShaderDefReference::end(self : WgslShaderDefReference) -> Int {
+pub fn WgslShaderDefReference::end(self : WgslShaderDefReference) -> Int32 {
   self.end
 }
 
@@ -41,7 +41,7 @@ pub fn WgslShaderDefReference::is_delimited(
 ///|
 fn parse_wgsl_shader_def_references_at(
   line : String,
-  source_start : Int,
+  source_start : Int32,
 ) -> Array[WgslShaderDefReference] {
   let references : Array[WgslShaderDefReference] = []
   let mut i = 0

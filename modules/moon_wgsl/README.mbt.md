@@ -33,7 +33,7 @@ global declaration before import linking and must provide every struct field:
 ///|
 test "configure an immediate specialization" {
   let options = {
-    ..WgslComposeOptions::default(),
+    ..@moon_wgsl.WgslComposeOptions::default(),
     immediate_specializations: [
       WgslImmediateSpecialization("root.wgsl", "constants", {
         "max_mip_level": UInt(12),
@@ -50,7 +50,7 @@ need to patch the emitted shader text.
 ```mbt check
 ///|
 test "compose a shader through the facade" {
-  let composer = Composer::default()
+  let composer = @moon_wgsl.Composer::default()
   let util_source =
     #|#define_import_path test::util
     #|
@@ -67,7 +67,10 @@ test "compose a shader through the facade" {
     #|}
     #|
   composer.register_source("root.wgsl", root_source)
-  let source = composer.compose("root.wgsl", WgslComposeOptions::default())
+  let source = composer.compose(
+    "root.wgsl",
+    @moon_wgsl.WgslComposeOptions::default(),
+  )
   assert_true(source.contains("fn root"))
 }
 ```
@@ -78,7 +81,7 @@ The same source registry can hold WESL and WGSL modules. Call
 ```mbt check
 ///|
 test "compile WESL through the facade" {
-  let composer = Composer::default()
+  let composer = @moon_wgsl.Composer::default()
   let util_source =
     #|fn double(value: f32) -> f32 {
     #|  return value * 2.0;
@@ -96,7 +99,7 @@ test "compile WESL through the facade" {
   composer.register_source("shaders/root.wesl", root_source)
   let source = composer.compile_wesl(
     "shaders/root.wesl",
-    CompileOptions::default(),
+    @moon_wgsl.CompileOptions::default(),
   )
   assert_true(source.contains("fn fragment"))
 }

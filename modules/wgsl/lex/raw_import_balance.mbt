@@ -13,7 +13,10 @@
 // limitations under the License.
 
 ///|
-pub fn raw_import_brace_balance_next(open_count : Int, line : String) -> Int {
+pub fn raw_import_brace_balance_next(
+  open_count : Int32,
+  line : String,
+) -> Int32 {
   let mut next = open_count
   for i in 0..<line.length() {
     let code = line.code_unit_at(i).to_int()

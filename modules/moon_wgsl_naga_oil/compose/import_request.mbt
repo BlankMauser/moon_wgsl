@@ -29,7 +29,7 @@ fn find_wgsl_import_request_index(
   module_path : String,
   rel_path : String,
   alias_name : String,
-) -> Int? {
+) -> Int32? {
   for i in 0..<requests.length() {
     let request = requests[i]
     if request.module_path == module_path &&

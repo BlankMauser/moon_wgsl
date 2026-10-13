@@ -1,7 +1,7 @@
 ///|
 fn wgsl_expr_identifier_has_access_prefix(
   tokens : Array[WgslToken],
-  index : Int,
+  index : Int32,
 ) -> Bool {
   if index == 0 {
     return false
@@ -10,12 +10,12 @@ fn wgsl_expr_identifier_has_access_prefix(
 }
 
 ///|
-fn wgsl_expr_ascii_digit(code : Int) -> Bool {
+fn wgsl_expr_ascii_digit(code : Int32) -> Bool {
   code >= 48 && code <= 57
 }
 
 ///|
-fn wgsl_expr_ascii_hex_digit_value(code : Int) -> Int? {
+fn wgsl_expr_ascii_hex_digit_value(code : Int32) -> Int32? {
   if code >= 48 && code <= 57 {
     return Some(code - 48)
   }
@@ -29,7 +29,7 @@ fn wgsl_expr_ascii_hex_digit_value(code : Int) -> Int? {
 }
 
 ///|
-fn wgsl_expr_ascii_identifier_code(code : Int) -> Bool {
+fn wgsl_expr_ascii_identifier_code(code : Int32) -> Bool {
   (code >= 65 && code <= 90) ||
   (code >= 97 && code <= 122) ||
   (code >= 48 && code <= 57) ||
@@ -45,7 +45,10 @@ fn wgsl_expr_token_starts_numeric_fraction(token : WgslToken) -> Bool {
 }
 
 ///|
-fn wgsl_expr_number_token_end(tokens : Array[WgslToken], start : Int) -> Int {
+fn wgsl_expr_number_token_end(
+  tokens : Array[WgslToken],
+  start : Int32,
+) -> Int32 {
   let mut end_index = start
   while end_index < tokens.length() {
     match tokens[end_index].punctuation_code() {
@@ -93,7 +96,7 @@ fn wgsl_expr_numeric_literal_suffix(
 }
 
 ///|
-fn wgsl_expr_integer_body_is_valid(text : String, end : Int) -> Bool {
+fn wgsl_expr_integer_body_is_valid(text : String, end : Int32) -> Bool {
   if end <= 0 {
     return false
   }
@@ -150,7 +153,7 @@ fn wgsl_expr_int_literal_token_is_valid(text : String) -> Bool {
 }
 
 ///|
-fn wgsl_expr_ascii_alpha(code : Int) -> Bool {
+fn wgsl_expr_ascii_alpha(code : Int32) -> Bool {
   (code >= 65 && code <= 90) || (code >= 97 && code <= 122)
 }
 
@@ -273,7 +276,7 @@ fn wgsl_expr_number_token_kind(text : String) -> WgslExprTokenKind {
 ///|
 fn collect_wgsl_expr_ref_tokens_and_identifiers(
   text : String,
-  base : Int,
+  base : Int32,
   expr_tokens : Array[WgslExprToken],
   identifiers : Array[WgslIdent],
 ) -> Unit {
@@ -286,8 +289,8 @@ fn collect_wgsl_expr_ref_tokens_and_identifiers(
 ///|
 fn collect_wgsl_expr_ref_tokens_and_identifiers_from_tokens(
   text : String,
-  base : Int,
-  token_base : Int,
+  base : Int32,
+  token_base : Int32,
   tokens : Array[WgslToken],
   expr_tokens : Array[WgslExprToken],
   identifiers : Array[WgslIdent],

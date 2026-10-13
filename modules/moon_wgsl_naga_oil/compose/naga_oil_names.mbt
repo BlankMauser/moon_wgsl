@@ -6,7 +6,7 @@ fn wgsl_naga_oil_base32_nopad(text : String) -> String {
   let mut bits = 0
   for ch in text {
     let code = ch.to_int()
-    let bytes : Array[Int] = if code <= 0x7F {
+    let bytes : Array[Int32] = if code <= 0x7F {
       [code]
     } else if code <= 0x7FF {
       [0xC0 | (code >> 6), 0x80 | (code & 0x3F)]

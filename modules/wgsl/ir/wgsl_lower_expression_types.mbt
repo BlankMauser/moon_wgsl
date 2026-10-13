@@ -80,7 +80,7 @@ fn WgslIrLowerer::indexed_expression_type(
   self : WgslIrLowerer,
   function : Function,
   base : Handle,
-  index : Int?,
+  index : Int32?,
 ) -> Handle? {
   guard self.function_expression_type(function, base) is Some(base_ty) else {
     return None
@@ -92,7 +92,7 @@ fn WgslIrLowerer::indexed_expression_type(
 fn WgslIrLowerer::indexed_type_from_type_handle(
   self : WgslIrLowerer,
   ty_handle : Handle,
-  index : Int?,
+  index : Int32?,
 ) -> Handle? {
   match self.shader_module.types.get(ty_handle) {
     Some(ty) =>
@@ -281,7 +281,7 @@ fn WgslIrLowerer::constructor_component_expected_type(
 fn WgslIrLowerer::constructor_argument_expected_type(
   self : WgslIrLowerer,
   ty_handle : Handle,
-  argument_count : Int,
+  argument_count : Int32,
 ) -> Handle? {
   match self.shader_module.types.get(ty_handle) {
     Some(ty) =>
@@ -346,7 +346,7 @@ fn WgslIrLowerer::scalar_type_handle(
 }
 
 ///|
-fn wgsl_ir_scalar_name(kind : ScalarKind, width : Int) -> String {
+fn wgsl_ir_scalar_name(kind : ScalarKind, width : Int32) -> String {
   match kind {
     Bool => "bool"
     Sint => if width == 8 { "i64" } else { "i32" }
@@ -445,7 +445,7 @@ fn wgsl_ir_expr_node_is_gather_component(node : @ast.WgslExprNode) -> Bool {
 fn wgsl_ir_struct_member_index(
   members : Array[StructMember],
   member_name : String,
-) -> Int? {
+) -> Int32? {
   for i in 0..<members.length() {
     if members[i].name == Some(member_name) {
       return Some(i)
@@ -455,7 +455,7 @@ fn wgsl_ir_struct_member_index(
 }
 
 ///|
-fn wgsl_ir_member_index(name : String) -> Int raise WgslIrLowerError {
+fn wgsl_ir_member_index(name : String) -> Int32 raise WgslIrLowerError {
   match name {
     "x" | "r" => 0
     "y" | "g" => 1
@@ -487,7 +487,7 @@ fn wgsl_ir_swizzle_components(name : String) -> Array[SwizzleComponent]? {
 }
 
 ///|
-fn wgsl_ir_vector_size_from_component_count(count : Int) -> VectorSize {
+fn wgsl_ir_vector_size_from_component_count(count : Int32) -> VectorSize {
   match count {
     2 => Bi
     3 => Tri

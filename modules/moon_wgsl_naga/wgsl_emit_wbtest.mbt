@@ -766,7 +766,7 @@ fn wgsl_emit_test_before(text : String, left : String, right : String) -> Bool {
 }
 
 ///|
-fn wgsl_emit_test_count_occurrences(text : String, pattern : String) -> Int {
+fn wgsl_emit_test_count_occurrences(text : String, pattern : String) -> Int32 {
   if pattern == "" {
     return 0
   }

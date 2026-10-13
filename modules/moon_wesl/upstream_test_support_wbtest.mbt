@@ -37,22 +37,22 @@ let upstream_pending_bevy_parse_case_paths : Array[String] = []
 let upstream_pending_wgpu_parse_case_paths : Array[String] = []
 
 ///|
-fn upstream_is_whitespace(code : Int) -> Bool {
+fn upstream_is_whitespace(code : Int32) -> Bool {
   code == 32 || code == 9 || code == 10 || code == 13
 }
 
 ///|
-fn upstream_is_digit(code : Int) -> Bool {
+fn upstream_is_digit(code : Int32) -> Bool {
   code >= 48 && code <= 57
 }
 
 ///|
-fn upstream_is_ascii_letter(code : Int) -> Bool {
+fn upstream_is_ascii_letter(code : Int32) -> Bool {
   (code >= 65 && code <= 90) || (code >= 97 && code <= 122)
 }
 
 ///|
-fn upstream_is_word_char(code : Int) -> Bool {
+fn upstream_is_word_char(code : Int32) -> Bool {
   upstream_is_ascii_letter(code) ||
   upstream_is_digit(code) ||
   code == 95 ||
@@ -62,7 +62,7 @@ fn upstream_is_word_char(code : Int) -> Bool {
 ///|
 fn upstream_normalize_text(text : String) -> String {
   let parts : Array[String] = []
-  let mut word_start : Int? = None
+  let mut word_start : Int32? = None
   for i = 0; i < text.length(); i = i + 1 {
     let code = text.code_unit_at(i).to_int()
     if upstream_is_whitespace(code) {

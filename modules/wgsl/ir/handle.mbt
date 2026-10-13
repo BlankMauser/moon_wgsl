@@ -17,16 +17,16 @@
 
 ///|
 pub(all) struct Handle {
-  index : Int
+  index : Int32
 } derive(Eq, Debug)
 
 ///|
-pub fn Handle::Handle(index : Int) -> Handle {
+pub fn Handle::Handle(index : Int32) -> Handle {
   { index, }
 }
 
 ///|
-pub fn Handle::index(self : Handle) -> Int {
+pub fn Handle::index(self : Handle) -> Int32 {
   self.index
 }
 
@@ -43,7 +43,7 @@ pub fn HandleRange::HandleRange(start : Handle, end : Handle) -> HandleRange {
 
 ///|
 pub(all) struct StorageAccess {
-  bits : Int
+  bits : Int32
 } derive(Eq, Debug)
 
 ///|
@@ -84,7 +84,7 @@ pub fn StorageAccess::contains(
 
 ///|
 pub(all) struct MemoryDecorations {
-  bits : Int
+  bits : Int32
 } derive(Eq, Debug)
 
 ///|
@@ -112,7 +112,7 @@ pub fn MemoryDecorations::union(
 
 ///|
 pub(all) struct Barrier {
-  bits : Int
+  bits : Int32
 } derive(Eq, Debug)
 
 ///|
@@ -147,7 +147,7 @@ pub fn Barrier::union(self : Barrier, other : Barrier) -> Barrier {
 
 ///|
 pub(all) struct RayFlag {
-  bits : Int
+  bits : Int32
 } derive(Eq, Debug)
 
 ///|

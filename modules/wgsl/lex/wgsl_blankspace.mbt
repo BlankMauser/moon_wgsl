@@ -1,5 +1,5 @@
 ///|
-pub fn wgsl_blankspace_code_point(code_point : Int) -> Bool {
+pub fn wgsl_blankspace_code_point(code_point : Int32) -> Bool {
   (code_point >= 0x09 && code_point <= 0x0D) ||
   code_point == 0x20 ||
   code_point == 0x85 ||
@@ -10,7 +10,7 @@ pub fn wgsl_blankspace_code_point(code_point : Int) -> Bool {
 }
 
 ///|
-pub fn wgsl_line_break_width(text : String, index : Int) -> Int {
+pub fn wgsl_line_break_width(text : String, index : Int32) -> Int32 {
   guard index >= 0 && index < text.length() else { return 0 }
   let code = text.code_unit_at(index).to_int()
   if code == 13 {
@@ -31,7 +31,7 @@ pub fn wgsl_line_break_width(text : String, index : Int) -> Int {
 }
 
 ///|
-pub fn wgsl_line_start(text : String, pos : Int) -> Int {
+pub fn wgsl_line_start(text : String, pos : Int32) -> Int32 {
   let limit = if pos < 0 {
     0
   } else if pos > text.length() {
@@ -54,7 +54,7 @@ pub fn wgsl_line_start(text : String, pos : Int) -> Int {
 }
 
 ///|
-pub fn wgsl_line_text_end(text : String, pos : Int) -> Int {
+pub fn wgsl_line_text_end(text : String, pos : Int32) -> Int32 {
   let mut index = if pos < 0 { 0 } else { pos }
   while index < text.length() {
     if wgsl_line_break_width(text, index) > 0 {
@@ -66,18 +66,18 @@ pub fn wgsl_line_text_end(text : String, pos : Int) -> Int {
 }
 
 ///|
-pub fn wgsl_line_end(text : String, pos : Int) -> Int {
+pub fn wgsl_line_end(text : String, pos : Int32) -> Int32 {
   let text_end = wgsl_line_text_end(text, pos)
   text_end + wgsl_line_break_width(text, text_end)
 }
 
 ///|
-pub fn wgsl_identifier_start_code_point(code_point : Int) -> Bool {
+pub fn wgsl_identifier_start_code_point(code_point : Int32) -> Bool {
   code_point == 95 || wgsl_xid_start_code_point(code_point)
 }
 
 ///|
-pub fn wgsl_identifier_continue_code_point(code_point : Int) -> Bool {
+pub fn wgsl_identifier_continue_code_point(code_point : Int32) -> Bool {
   code_point == 95 || wgsl_xid_continue_code_point(code_point)
 }
 
@@ -102,7 +102,7 @@ pub fn wgsl_identifier_text(text : String) -> Bool {
 }
 
 ///|
-fn wgsl_blankspace_width(text : String, index : Int) -> Int {
+fn wgsl_blankspace_width(text : String, index : Int32) -> Int32 {
   match wgsl_code_point_at(text, index) {
     Some((code_point, width)) if wgsl_blankspace_code_point(code_point) => width
     _ => 0
@@ -110,7 +110,7 @@ fn wgsl_blankspace_width(text : String, index : Int) -> Int {
 }
 
 ///|
-fn wgsl_skip_blankspace(text : String, start : Int) -> Int {
+fn wgsl_skip_blankspace(text : String, start : Int32) -> Int32 {
   let mut index = start
   while index < text.length() {
     let width = wgsl_blankspace_width(text, index)

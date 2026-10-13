@@ -1,16 +1,16 @@
 ///|
 priv struct WgslExprNodeParser {
   source_text : String
-  source_start : Int
+  source_start : Int32
   tokens : Array[WgslExprToken]
-  mut index : Int
+  mut index : Int32
   mut failed : Bool
 }
 
 ///|
 fn WgslExprNodeParser::WgslExprNodeParser(
   source_text : String,
-  source_start : Int,
+  source_start : Int32,
   tokens : Array[WgslExprToken],
 ) -> WgslExprNodeParser {
   { source_text, source_start, tokens, index: 0, failed: false, }
@@ -34,15 +34,15 @@ fn WgslExprNodeParser::peek(self : WgslExprNodeParser) -> WgslExprToken? {
 fn WgslExprNodeParser::make_node(
   self : WgslExprNodeParser,
   kind : WgslExprNodeKind,
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
 ) -> WgslExprNode {
   ignore(self)
   WgslExprNode(kind, start, end_)
 }
 
 ///|
-fn wgsl_expr_token_is_punct(token : WgslExprToken, code : Int) -> Bool {
+fn wgsl_expr_token_is_punct(token : WgslExprToken, code : Int32) -> Bool {
   match token.kind() {
     Punctuation(actual) => actual == code
     _ => false
@@ -52,7 +52,7 @@ fn wgsl_expr_token_is_punct(token : WgslExprToken, code : Int) -> Bool {
 ///|
 fn WgslExprNodeParser::consume_punct(
   self : WgslExprNodeParser,
-  code : Int,
+  code : Int32,
 ) -> Bool {
   match self.peek() {
     Some(token) if wgsl_expr_token_is_punct(token, code) => {
@@ -74,8 +74,8 @@ fn wgsl_expr_token_is_shift_right(token : WgslExprToken) -> Bool {
 ///|
 fn WgslExprNodeParser::template_argument_end(
   self : WgslExprNodeParser,
-  lt_index : Int,
-) -> (Int, Int)? {
+  lt_index : Int32,
+) -> (Int32, Int32)? {
   guard lt_index >= 0 && lt_index < self.tokens.length() else { return None }
   guard wgsl_expr_token_is_punct(self.tokens[lt_index], 60) else { return None }
   let mut depth = 0
@@ -110,8 +110,8 @@ fn WgslExprNodeParser::template_argument_end(
 ///|
 fn WgslExprNodeParser::template_arguments_at(
   self : WgslExprNodeParser,
-  lt_index : Int,
-) -> (Array[WgslTypeArgument], Int)? {
+  lt_index : Int32,
+) -> (Array[WgslTypeArgument], Int32)? {
   match self.template_argument_end(lt_index) {
     Some((gt_index, argument_end)) => {
       guard gt_index + 1 < self.tokens.length() &&
@@ -138,7 +138,7 @@ fn WgslExprNodeParser::template_arguments_at(
 ///|
 fn WgslExprNodeParser::binary_operator_at(
   self : WgslExprNodeParser,
-) -> (WgslExprOperator, Int)? {
+) -> (WgslExprOperator, Int32)? {
   guard self.index < self.tokens.length() else { return None }
   let first = self.tokens[self.index]
   match first.kind() {
@@ -160,7 +160,7 @@ fn WgslExprNodeParser::binary_operator_at(
 ///|
 fn WgslExprNodeParser::assignment_operator_at(
   self : WgslExprNodeParser,
-) -> (String, Int)? {
+) -> (String, Int32)? {
   guard self.index < self.tokens.length() else { return None }
   let first = self.tokens[self.index]
   match first.kind() {
@@ -418,7 +418,7 @@ fn WgslExprNodeParser::parse_postfix(
 ///|
 fn WgslExprNodeParser::parse_expression(
   self : WgslExprNodeParser,
-  min_precedence : Int,
+  min_precedence : Int32,
 ) -> WgslExprNode? {
   let prefix = match self.parse_prefix() {
     Some(value) => value
@@ -470,7 +470,7 @@ fn WgslExprNodeParser::parse_expression(
 ///|
 fn WgslExprNodeParser::parse_argument_until_any(
   self : WgslExprNodeParser,
-  stop_codes : Array[Int],
+  stop_codes : Array[Int32],
 ) -> WgslExprNode {
   match self.peek() {
     Some(token) if token.kind() is Punctuation(code) &&
@@ -490,7 +490,7 @@ fn WgslExprNodeParser::parse_argument_until_any(
 ///|
 fn WgslExprNodeParser::parse_sequence_until_any(
   self : WgslExprNodeParser,
-  stop_codes : Array[Int],
+  stop_codes : Array[Int32],
 ) -> WgslExprNode {
   let nodes : Array[WgslExprNode] = []
   while !self.at_end() {
@@ -529,7 +529,7 @@ fn WgslExprNodeParser::parse_sequence_until_any(
 ///|
 fn WgslExprNodeParser::parse_sequence_until(
   self : WgslExprNodeParser,
-  stop_code : Int,
+  stop_code : Int32,
 ) -> WgslExprNode {
   self.parse_sequence_until_any([stop_code])
 }
@@ -537,7 +537,7 @@ fn WgslExprNodeParser::parse_sequence_until(
 ///|
 fn parse_wgsl_expr_node(
   source_text : String,
-  base : Int,
+  base : Int32,
   tokens : Array[WgslExprToken],
 ) -> WgslExprNode? {
   if tokens.length() == 0 {
@@ -553,7 +553,7 @@ fn parse_wgsl_expr_node(
 }
 
 ///|
-fn parse_wgsl_expr_ref_text(text : String, base : Int) -> WgslExprRef? {
+fn parse_wgsl_expr_ref_text(text : String, base : Int32) -> WgslExprRef? {
   let (trimmed, local_start, local_end) = wgsl_trim_fragment_bounds(
     text,
     0,
@@ -598,10 +598,10 @@ fn parse_wgsl_expr_ref_text(text : String, base : Int) -> WgslExprRef? {
 ///|
 fn parse_wgsl_expr_ref_token_range(
   source_text : String,
-  source_start : Int,
+  source_start : Int32,
   tokens : Array[WgslToken],
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
 ) -> WgslExprRef? {
   guard start >= 0 && end_ > start && end_ <= tokens.length() else {
     return None

@@ -1,8 +1,13 @@
 ///|
 pub suberror ParseError {
-  UnexpectedToken(Token, (Int, Int), Array[TokenKind])
-  UnexpectedEndOfInput(Int, Array[TokenKind])
+  UnexpectedToken(Token, (Int32, Int32), Array[TokenKind])
+  UnexpectedEndOfInput(Int32, Array[TokenKind])
 } derive(Debug)
+
+///|
+#deprecated("Use Debug::to_repr instead")
+#doc(hidden)
+pub extend ParseError with Debug::{to_repr}
 
 ///|
 type YYObj = Error
@@ -39,14 +44,14 @@ priv suberror YYObj_String_ {
 type YYState = (YYSymbol) -> YYDecision
 
 ///|
-type YYAction = (Int, ArrayView[(YYObj, Int, Int)]) -> YYObj
+type YYAction = (Int32, ArrayView[(YYObj, Int32, Int32)]) -> YYObj
 
 ///|
 priv enum YYDecision {
   Accept
   Shift(YYState)
-  Reduce(Int, YYSymbol, YYAction)
-  ReduceNoLookahead(Int, YYSymbol, YYAction)
+  Reduce(Int32, YYSymbol, YYAction)
+  ReduceNoLookahead(Int32, YYSymbol, YYAction)
   Error
 }
 
@@ -73,9 +78,8 @@ priv enum YYSymbol {
   EOI
 }
 
-// Workaround for EOI unused warning
-
 ///|
+// Workaround for EOI unused warning
 fn init {
   match (EOI : YYSymbol) {
     EOI => ()
@@ -83,12 +87,14 @@ fn init {
   }
 }
 
+///|
 // file:///./parser.mbty
 // 28|    "alias" IDENT "=" TYPE_TEXT opt_semi
 // 29|                                  { { kind: Alias, name: Some($2), var_template: None, type_text: Some($4), initializer: None } }
-
-///|
-fn yy_action_0(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_0(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj_String(_dollar2)
   guard! _args[3].0 is YYObj_String(_dollar4)
   YYObj_BindingParseNode(
@@ -105,12 +111,14 @@ fn yy_action_0(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 30|    binding_kind IDENT opt_type opt_init opt_semi
 // 31|                                  { { kind: $1, name: Some($2), var_template: None, type_text: $3, initializer: $4 } }
-
-///|
-fn yy_action_1(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_1(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_BindingParseKind(_dollar1)
   guard! _args[1].0 is YYObj_String(_dollar2)
   guard! _args[2].0 is YYObj_String_(_dollar3)
@@ -129,12 +137,14 @@ fn yy_action_1(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 32|    "var" opt_var_template IDENT opt_type opt_init opt_semi
 // 33|                                  { { kind: Var, name: Some($3), var_template: $2, type_text: $4, initializer: $5 } }
-
-///|
-fn yy_action_2(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_2(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[2].0 is YYObj_String(_dollar3)
   guard! _args[1].0 is YYObj_String_(_dollar2)
   guard! _args[3].0 is YYObj_String_(_dollar4)
@@ -153,11 +163,13 @@ fn yy_action_2(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 59|    ";"                           { () }
-
-///|
-fn yy_action_3(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_3(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -166,11 +178,13 @@ fn yy_action_3(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 58|                                  { () }
-
-///|
-fn yy_action_4(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_4(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -179,11 +193,13 @@ fn yy_action_4(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 54|    "=" INIT_TEXT                 { Some($2) }
-
-///|
-fn yy_action_5(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_5(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj_String(_dollar2)
   YYObj_String_(
     {
@@ -193,11 +209,13 @@ fn yy_action_5(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 53|                                  { None }
-
-///|
-fn yy_action_6(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_6(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_String_(
     {
       ()
@@ -206,11 +224,13 @@ fn yy_action_6(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 49|    ":" TYPE_TEXT                 { Some($2) }
-
-///|
-fn yy_action_7(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_7(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj_String(_dollar2)
   YYObj_String_(
     {
@@ -220,11 +240,13 @@ fn yy_action_7(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 48|                                  { None }
-
-///|
-fn yy_action_8(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_8(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_String_(
     {
       ()
@@ -233,11 +255,13 @@ fn yy_action_8(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 44|    VAR_TEMPLATE                  { Some($1) }
-
-///|
-fn yy_action_9(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_9(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_String(_dollar1)
   YYObj_String_(
     {
@@ -247,11 +271,13 @@ fn yy_action_9(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 43|                                  { None }
-
-///|
-fn yy_action_10(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_10(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_String_(
     {
       ()
@@ -260,11 +286,13 @@ fn yy_action_10(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 37|    "const"                       { Const }
-
-///|
-fn yy_action_11(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_11(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_BindingParseKind(
     {
       ()
@@ -273,11 +301,13 @@ fn yy_action_11(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 38|    "override"                    { Override }
-
-///|
-fn yy_action_12(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_12(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_BindingParseKind(
     {
       ()
@@ -286,11 +316,13 @@ fn yy_action_12(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 39|    "let"                         { Let }
-
-///|
-fn yy_action_13(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_13(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_BindingParseKind(
     {
       ()
@@ -302,8 +334,8 @@ fn yy_action_13(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
 ///|
 fn yy_input(
   token : Token,
-  _start_pos : Int,
-  _end_pos : Int,
+  _start_pos : Int32,
+  _end_pos : Int32,
 ) -> (YYSymbol, YYObj) {
   match token {
     IDENT(data) => (T_IDENT, YYObj_String(data))
@@ -321,6 +353,7 @@ fn yy_input(
   }
 }
 
+///|
 // [0, parse_binding_decl → • ALIAS IDENT EQ TYPE_TEXT opt_semi, $]
 // [1, parse_binding_decl → • binding_kind IDENT opt_type opt_init opt_semi, $]
 // [2, parse_binding_decl → • VAR opt_var_template IDENT opt_type opt_init opt_semi, $]
@@ -328,8 +361,6 @@ fn yy_input(
 // [4, binding_kind → • OVERRIDE, IDENT]
 // [5, binding_kind → • LET, IDENT]
 // [14, parse_binding_decl_prime → • parse_binding_decl, $]
-
-///|
 fn yy_state_0(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_parse_binding_decl => Shift(yy_state_1)
@@ -343,39 +374,34 @@ fn yy_state_0(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [14, parse_binding_decl_prime → parse_binding_decl •, $]
-
 ///|
+// [14, parse_binding_decl_prime → parse_binding_decl •, $]
 fn yy_state_1(_lookahead : YYSymbol) -> YYDecision {
   Accept
 }
 
-// [5, binding_kind → LET •, IDENT]
-
 ///|
+// [5, binding_kind → LET •, IDENT]
 fn yy_state_2(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_binding_kind, yy_action_13)
 }
 
-// [4, binding_kind → OVERRIDE •, IDENT]
-
 ///|
+// [4, binding_kind → OVERRIDE •, IDENT]
 fn yy_state_3(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_binding_kind, yy_action_12)
 }
 
-// [3, binding_kind → CONST •, IDENT]
-
 ///|
+// [3, binding_kind → CONST •, IDENT]
 fn yy_state_4(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_binding_kind, yy_action_11)
 }
 
+///|
 // [2, parse_binding_decl → VAR • opt_var_template IDENT opt_type opt_init opt_semi, $]
 // [6, opt_var_template → •, IDENT]
 // [7, opt_var_template → • VAR_TEMPLATE, IDENT]
-
-///|
 fn yy_state_5(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_VAR_TEMPLATE => Shift(yy_state_6)
@@ -385,16 +411,14 @@ fn yy_state_5(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [7, opt_var_template → VAR_TEMPLATE •, IDENT]
-
 ///|
+// [7, opt_var_template → VAR_TEMPLATE •, IDENT]
 fn yy_state_6(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_opt_var_template, yy_action_9)
 }
 
-// [2, parse_binding_decl → VAR opt_var_template • IDENT opt_type opt_init opt_semi, $]
-
 ///|
+// [2, parse_binding_decl → VAR opt_var_template • IDENT opt_type opt_init opt_semi, $]
 fn yy_state_7(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_IDENT => Shift(yy_state_8)
@@ -402,11 +426,10 @@ fn yy_state_7(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [2, parse_binding_decl → VAR opt_var_template IDENT • opt_type opt_init opt_semi, $]
 // [8, opt_type → •, $ / EQ / SEMI]
 // [9, opt_type → • COLON TYPE_TEXT, $ / EQ / SEMI]
-
-///|
 fn yy_state_8(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_COLON => Shift(yy_state_9)
@@ -416,9 +439,8 @@ fn yy_state_8(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [9, opt_type → COLON • TYPE_TEXT, $ / EQ / SEMI]
-
 ///|
+// [9, opt_type → COLON • TYPE_TEXT, $ / EQ / SEMI]
 fn yy_state_9(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_TYPE_TEXT => Shift(yy_state_10)
@@ -426,18 +448,16 @@ fn yy_state_9(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [9, opt_type → COLON TYPE_TEXT •, $ / EQ / SEMI]
-
 ///|
+// [9, opt_type → COLON TYPE_TEXT •, $ / EQ / SEMI]
 fn yy_state_10(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_opt_type, yy_action_7)
 }
 
+///|
 // [2, parse_binding_decl → VAR opt_var_template IDENT opt_type • opt_init opt_semi, $]
 // [10, opt_init → •, $ / SEMI]
 // [11, opt_init → • EQ INIT_TEXT, $ / SEMI]
-
-///|
 fn yy_state_11(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EQ => Shift(yy_state_12)
@@ -447,9 +467,8 @@ fn yy_state_11(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [11, opt_init → EQ • INIT_TEXT, $ / SEMI]
-
 ///|
+// [11, opt_init → EQ • INIT_TEXT, $ / SEMI]
 fn yy_state_12(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_INIT_TEXT => Shift(yy_state_13)
@@ -457,18 +476,16 @@ fn yy_state_12(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [11, opt_init → EQ INIT_TEXT •, $ / SEMI]
-
 ///|
+// [11, opt_init → EQ INIT_TEXT •, $ / SEMI]
 fn yy_state_13(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_opt_init, yy_action_5)
 }
 
+///|
 // [2, parse_binding_decl → VAR opt_var_template IDENT opt_type opt_init • opt_semi, $]
 // [12, opt_semi → •, $]
 // [13, opt_semi → • SEMI, $]
-
-///|
 fn yy_state_14(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_SEMI => Shift(yy_state_15)
@@ -478,23 +495,20 @@ fn yy_state_14(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [13, opt_semi → SEMI •, $]
-
 ///|
+// [13, opt_semi → SEMI •, $]
 fn yy_state_15(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_opt_semi, yy_action_3)
 }
 
-// [2, parse_binding_decl → VAR opt_var_template IDENT opt_type opt_init opt_semi •, $]
-
 ///|
+// [2, parse_binding_decl → VAR opt_var_template IDENT opt_type opt_init opt_semi •, $]
 fn yy_state_16(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(6, NT_parse_binding_decl, yy_action_2)
 }
 
-// [1, parse_binding_decl → binding_kind • IDENT opt_type opt_init opt_semi, $]
-
 ///|
+// [1, parse_binding_decl → binding_kind • IDENT opt_type opt_init opt_semi, $]
 fn yy_state_17(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_IDENT => Shift(yy_state_18)
@@ -502,11 +516,10 @@ fn yy_state_17(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [1, parse_binding_decl → binding_kind IDENT • opt_type opt_init opt_semi, $]
 // [8, opt_type → •, $ / EQ / SEMI]
 // [9, opt_type → • COLON TYPE_TEXT, $ / EQ / SEMI]
-
-///|
 fn yy_state_18(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_COLON => Shift(yy_state_9)
@@ -516,11 +529,10 @@ fn yy_state_18(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [1, parse_binding_decl → binding_kind IDENT opt_type • opt_init opt_semi, $]
 // [10, opt_init → •, $ / SEMI]
 // [11, opt_init → • EQ INIT_TEXT, $ / SEMI]
-
-///|
 fn yy_state_19(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EQ => Shift(yy_state_12)
@@ -530,11 +542,10 @@ fn yy_state_19(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [1, parse_binding_decl → binding_kind IDENT opt_type opt_init • opt_semi, $]
 // [12, opt_semi → •, $]
 // [13, opt_semi → • SEMI, $]
-
-///|
 fn yy_state_20(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_SEMI => Shift(yy_state_15)
@@ -544,16 +555,14 @@ fn yy_state_20(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [1, parse_binding_decl → binding_kind IDENT opt_type opt_init opt_semi •, $]
-
 ///|
+// [1, parse_binding_decl → binding_kind IDENT opt_type opt_init opt_semi •, $]
 fn yy_state_21(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(5, NT_parse_binding_decl, yy_action_1)
 }
 
-// [0, parse_binding_decl → ALIAS • IDENT EQ TYPE_TEXT opt_semi, $]
-
 ///|
+// [0, parse_binding_decl → ALIAS • IDENT EQ TYPE_TEXT opt_semi, $]
 fn yy_state_22(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_IDENT => Shift(yy_state_23)
@@ -561,9 +570,8 @@ fn yy_state_22(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [0, parse_binding_decl → ALIAS IDENT • EQ TYPE_TEXT opt_semi, $]
-
 ///|
+// [0, parse_binding_decl → ALIAS IDENT • EQ TYPE_TEXT opt_semi, $]
 fn yy_state_23(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EQ => Shift(yy_state_24)
@@ -571,9 +579,8 @@ fn yy_state_23(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [0, parse_binding_decl → ALIAS IDENT EQ • TYPE_TEXT opt_semi, $]
-
 ///|
+// [0, parse_binding_decl → ALIAS IDENT EQ • TYPE_TEXT opt_semi, $]
 fn yy_state_24(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_TYPE_TEXT => Shift(yy_state_25)
@@ -581,11 +588,10 @@ fn yy_state_24(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [0, parse_binding_decl → ALIAS IDENT EQ TYPE_TEXT • opt_semi, $]
 // [12, opt_semi → •, $]
 // [13, opt_semi → • SEMI, $]
-
-///|
 fn yy_state_25(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_SEMI => Shift(yy_state_15)
@@ -595,26 +601,25 @@ fn yy_state_25(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [0, parse_binding_decl → ALIAS IDENT EQ TYPE_TEXT opt_semi •, $]
-
 ///|
+// [0, parse_binding_decl → ALIAS IDENT EQ TYPE_TEXT opt_semi •, $]
 fn yy_state_26(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(5, NT_parse_binding_decl, yy_action_0)
 }
 
 ///|
 fn[T] yy_parse(
-  tokens : Array[(Token, Int, Int)],
+  tokens : Array[(Token, Int32, Int32)],
   start : YYState,
   return_ : (YYObj) -> T,
-  initial_pos? : Int,
+  initial_pos? : Int32,
 ) -> T raise ParseError {
   let mut cursor = 0
-  let mut state_stack : @list.List[YYState] = @list.cons(start, @list.empty())
-  let data_stack : Array[(YYObj, Int, Int)] = []
-  let mut last_pos = initial_pos.unwrap_or(tokens[0].1)
+  let mut state_stack : @list.List[YYState] = @list.cons(start, List([]))
+  let data_stack : Array[(YYObj, Int32, Int32)] = []
+  let mut last_pos = initial_pos.unwrap_or_else(fn() { tokens[0].1 })
   let mut state = start
-  let mut lookahead : (YYSymbol, (YYObj, Int, Int), Token?)? = None
+  let mut lookahead : (YYSymbol, (YYObj, Int32, Int32), Token?)? = None
   let mut last_shifted_state_stack = state_stack
   while true {
     let decision = match state(EOI) {
@@ -690,7 +695,7 @@ fn[T] yy_parse(
 fn error(
   stack : @list.List[YYState],
   token : Token?,
-  loc : (Int, Int),
+  loc : (Int32, Int32),
 ) -> Unit raise ParseError {
   let expected = []
   fn try_add(symbol : YYSymbol, kind : TokenKind) {
@@ -746,8 +751,8 @@ fn error(
 
 ///|
 pub fn parse_binding_decl(
-  tokens : Array[(Token, Int, Int)],
-  initial_pos? : Int,
+  tokens : Array[(Token, Int32, Int32)],
+  initial_pos? : Int32,
 ) -> BindingParseNode raise ParseError {
   yy_parse(
     tokens,

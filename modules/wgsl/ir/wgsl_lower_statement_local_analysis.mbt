@@ -2,7 +2,7 @@
 fn wgsl_ir_local_constant_arena_placement_for_statement(
   statement : @ast.WgslStatement,
   statements : Array[@ast.WgslStatement],
-  statement_index : Int,
+  statement_index : Int32,
   scope : WgslIrFunctionScope,
 ) -> WgslIrLocalConstantArenaPlacement {
   match statement.payload() {
@@ -30,7 +30,7 @@ fn wgsl_ir_local_constant_arena_placement_for_statement(
 fn wgsl_ir_source_var_store_initializers_for_statement(
   locals : Array[@ast.WgslLocalDeclaration],
   statements : Array[@ast.WgslStatement],
-  statement_index : Int,
+  statement_index : Int32,
   lowerer : WgslIrLowerer,
   scope : WgslIrFunctionScope,
 ) -> Array[String] raise WgslIrLowerError {
@@ -49,7 +49,7 @@ fn wgsl_ir_source_var_store_initializers_for_statement(
 fn wgsl_ir_source_var_initializer_uses_store_before_next_for(
   local_decl : @ast.WgslLocalDeclaration,
   statements : Array[@ast.WgslStatement],
-  statement_index : Int,
+  statement_index : Int32,
   lowerer : WgslIrLowerer,
   scope : WgslIrFunctionScope,
 ) -> Bool raise WgslIrLowerError {
@@ -71,7 +71,7 @@ fn wgsl_ir_source_var_initializer_uses_store_before_next_for(
 fn wgsl_ir_local_const_initializer_uses_declaration_arena(
   local_decl : @ast.WgslLocalDeclaration,
   statements : Array[@ast.WgslStatement],
-  statement_index : Int,
+  statement_index : Int32,
   scope : WgslIrFunctionScope,
 ) -> Bool {
   if wgsl_ir_local_const_initializer_references_local_let(local_decl, scope) {
@@ -159,7 +159,7 @@ fn wgsl_ir_expr_node_is_bool_literal(node : @ast.WgslExprNode) -> Bool {
 fn wgsl_ir_next_assignment_rhs_mentions_identifier(
   name : String,
   statements : Array[@ast.WgslStatement],
-  statement_index : Int,
+  statement_index : Int32,
 ) -> Bool {
   let next_index = statement_index + 1
   if next_index >= statements.length() {
@@ -176,7 +176,7 @@ fn wgsl_ir_next_assignment_rhs_mentions_identifier(
 fn wgsl_ir_next_statement_mentions_identifier(
   name : String,
   statements : Array[@ast.WgslStatement],
-  statement_index : Int,
+  statement_index : Int32,
 ) -> Bool {
   let next_index = statement_index + 1
   if next_index >= statements.length() {
@@ -192,7 +192,7 @@ fn wgsl_ir_next_statement_mentions_identifier(
 fn wgsl_ir_local_name_has_same_block_use_before_nested_flow(
   name : String,
   statements : Array[@ast.WgslStatement],
-  statement_index : Int,
+  statement_index : Int32,
 ) -> Bool {
   for index in (statement_index + 1)..<statements.length() {
     let statement = statements[index]

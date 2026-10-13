@@ -35,7 +35,7 @@ pub fn EscapeMangler::default() -> EscapeMangler {
 }
 
 ///|
-fn escape_mangler_count_char(text : String, ch : Int) -> Int {
+fn escape_mangler_count_char(text : String, ch : Int32) -> Int32 {
   let mut count = 0
   for i in 0..<text.length() {
     if text.code_unit_at(i).to_int() == ch {
@@ -65,7 +65,7 @@ fn escape_mangler_component(comp : String) -> String {
 }
 
 ///|
-fn escape_mangler_parse_count(text : String) -> (Int, String)? {
+fn escape_mangler_parse_count(text : String) -> (Int32, String)? {
   let mut digits = 0
   while digits < text.length() {
     let code = text.code_unit_at(digits).to_int()
@@ -84,8 +84,8 @@ fn escape_mangler_parse_count(text : String) -> (Int, String)? {
 ///|
 fn escape_mangler_unescape_component(
   parts : Array[String],
-  cursor : Int,
-) -> (String, Int)? {
+  cursor : Int32,
+) -> (String, Int32)? {
   guard cursor < parts.length() else { return None }
   let part = parts[cursor]
   if part != "" {
@@ -207,7 +207,7 @@ pub fn EscapeMangler::mangle(
 }
 
 ///|
-fn hash_mangler_hash(path : ModulePath, item : String) -> UInt {
+fn hash_mangler_hash(path : ModulePath, item : String) -> UInt32 {
   let mut hash = 2166136261U
   let text = path.to_string() + "::" + item
   for index in 0..<text.length() {
@@ -241,7 +241,7 @@ fn unicode_mangler_uncomponent(text : String) -> String {
 }
 
 ///|
-fn unicode_mangler_last_separator(text : String) -> Int {
+fn unicode_mangler_last_separator(text : String) -> Int32 {
   let mut last = -1
   for index in 0..<text.length() {
     if text.code_unit_at(index).to_int() == 95 {

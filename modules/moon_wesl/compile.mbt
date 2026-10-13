@@ -495,8 +495,8 @@ priv struct ImportItem {
   namespace_path : ModulePath
   local_name : String
   public : Bool
-  start_line : Int
-  end_line : Int
+  start_line : Int32
+  end_line : Int32
 }
 
 ///|
@@ -523,7 +523,7 @@ priv enum ModuleItemKind {
 ///|
 enum ModuleItemRef {
   Local(String)
-  Import(String, Int)
+  Import(String, Int32)
   Qualified(String, ModulePath, String)
 } derive(Eq, Debug)
 
@@ -531,14 +531,14 @@ enum ModuleItemRef {
 priv struct ParsedModule {
   path : ModulePath
   imports : Array[ImportItem]
-  import_by_local : @hashmap.HashMap[String, Int]
+  import_by_local : @hashmap.HashMap[String, Int32]
   items : Array[ModuleItem]
-  named_items : @hashmap.HashMap[String, Int]
+  named_items : @hashmap.HashMap[String, Int32]
 }
 
 ///|
 priv enum ExportTarget {
-  Local(Int)
+  Local(Int32)
   ReExport(ImportItem)
   Private
   Missing
@@ -572,8 +572,8 @@ fn wesl_parse_loaded_translation_unit(
   let imports : Array[ImportItem] = []
   let import_conditional : Array[Bool] = []
   let parsed_items : Array[ModuleItem] = []
-  let named_items : @hashmap.HashMap[String, Int] = HashMap([])
-  let duplicate_names : @hashmap.HashMap[String, Int] = HashMap([])
+  let named_items : @hashmap.HashMap[String, Int32] = HashMap([])
+  let duplicate_names : @hashmap.HashMap[String, Int32] = HashMap([])
   for statement in translation_unit.imports {
     let conditional_import = wesl_has_conditional_compile_attr(
       statement.attributes,
@@ -626,7 +626,7 @@ fn wesl_parse_loaded_translation_unit(
       references: [],
     })
   }
-  let import_by_local : @hashmap.HashMap[String, Int] = HashMap([])
+  let import_by_local : @hashmap.HashMap[String, Int32] = HashMap([])
   for i in 0..<imports.length() {
     let import_item = imports[i]
     let skip_duplicate = skip_conditional_duplicates && import_conditional[i]
@@ -661,7 +661,7 @@ fn wesl_parse_loaded_translation_unit(
 }
 
 ///|
-fn wesl_is_identifier_char(code : Int) -> Bool {
+fn wesl_is_identifier_char(code : Int32) -> Bool {
   (code >= 48 && code <= 57) ||
   (code >= 65 && code <= 90) ||
   (code >= 97 && code <= 122) ||
@@ -669,12 +669,12 @@ fn wesl_is_identifier_char(code : Int) -> Bool {
 }
 
 ///|
-fn wesl_is_whitespace(code : Int) -> Bool {
+fn wesl_is_whitespace(code : Int32) -> Bool {
   code == 32 || code == 9 || code == 10 || code == 13
 }
 
 ///|
-fn wesl_skip_whitespace(source : String, start : Int) -> Int {
+fn wesl_skip_whitespace(source : String, start : Int32) -> Int32 {
   let mut i = start
   while i < source.length() &&
         wesl_is_whitespace(source.code_unit_at(i).to_int()) {
@@ -684,7 +684,7 @@ fn wesl_skip_whitespace(source : String, start : Int) -> Int {
 }
 
 ///|
-fn wesl_skip_layout(source : String, start : Int) -> Int {
+fn wesl_skip_layout(source : String, start : Int32) -> Int32 {
   let mut i = start
   while i < source.length() {
     i = wesl_skip_whitespace(source, i)
@@ -703,7 +703,7 @@ fn wesl_skip_layout(source : String, start : Int) -> Int {
 }
 
 ///|
-fn wesl_starts_with_at(source : String, index : Int, needle : String) -> Bool {
+fn wesl_starts_with_at(source : String, index : Int32, needle : String) -> Bool {
   if index < 0 || index + needle.length() > source.length() {
     return false
   }
@@ -713,10 +713,10 @@ fn wesl_starts_with_at(source : String, index : Int, needle : String) -> Bool {
 ///|
 fn wesl_find_matching_delim(
   source : String,
-  start : Int,
-  open_code : Int,
-  close_code : Int,
-) -> Int raise WeslCompileError {
+  start : Int32,
+  open_code : Int32,
+  close_code : Int32,
+) -> Int32 raise WeslCompileError {
   let mut depth = 0
   let mut i = start
   while i < source.length() {
@@ -789,8 +789,8 @@ fn wesl_parse_if_value(
 ///|
 fn wesl_find_condcomp_block(
   source : String,
-  start : Int,
-) -> (Int, Int) raise WeslCompileError {
+  start : Int32,
+) -> (Int32, Int32) raise WeslCompileError {
   let mut paren_depth = 0
   let mut bracket_depth = 0
   let mut index = start
@@ -825,8 +825,8 @@ fn wesl_find_condcomp_block(
 ///|
 fn wesl_find_condcomp_region(
   source : String,
-  start : Int,
-) -> (Int, Int) raise WeslCompileError {
+  start : Int32,
+) -> (Int32, Int32) raise WeslCompileError {
   let region_start = wesl_skip_layout(source, start)
   if region_start >= source.length() {
     raise Parse("missing declaration after conditional attribute")
@@ -1132,8 +1132,8 @@ fn wesl_filter_condcomp_attributes(
 ///|
 fn wesl_condcomp_attr_end(
   source : String,
-  at_index : Int,
-) -> Int raise WeslCompileError {
+  at_index : Int32,
+) -> Int32 raise WeslCompileError {
   let name_start = at_index + 1
   let mut name_end = name_start
   while name_end < source.length() &&
@@ -1425,7 +1425,7 @@ fn wesl_push_unique(items : Array[String], value : String) -> Unit {
 ///|
 fn wesl_scopes_contain(
   scopes : Array[Array[String]],
-  scope_depth : Int,
+  scope_depth : Int32,
   name : String,
 ) -> Bool {
   let mut depth = scope_depth
@@ -1443,7 +1443,7 @@ fn wesl_scopes_contain(
 ///|
 fn wesl_bind_scope(
   scopes : Array[Array[String]],
-  scope_depth : Int,
+  scope_depth : Int32,
   name : String,
 ) -> Unit {
   wesl_push_unique(scopes[scope_depth], name)
@@ -1481,8 +1481,8 @@ fn wesl_resolve_module_path(
 ///|
 fn wesl_slice_segments(
   segments : Array[String],
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
 ) -> Array[String] {
   let out : Array[String] = []
   for i = start; i < end_; i = i + 1 {
@@ -1525,7 +1525,7 @@ fn wesl_is_declaration_keyword(name : String) -> Bool {
 ///|
 fn wesl_binding_keyword_before(
   tokens : Array[ParserToken],
-  index : Int,
+  index : Int32,
 ) -> String? {
   if index <= 0 {
     return None
@@ -1566,7 +1566,7 @@ fn wesl_binding_keyword_before(
 fn wesl_is_bound_identifier(
   source : String,
   tokens : Array[ParserToken],
-  index : Int,
+  index : Int32,
 ) -> Bool {
   if wesl_binding_keyword_before(tokens, index) is Some(_) {
     return true
@@ -1585,8 +1585,8 @@ fn wesl_is_bound_identifier(
 fn wesl_collect_qualified_segments(
   source : String,
   tokens : Array[ParserToken],
-  start_index : Int,
-) -> (Array[String], String, Int) {
+  start_index : Int32,
+) -> (Array[String], String, Int32) {
   let segments : Array[String] = []
   let start_offset = tokens[start_index].start()
   let mut end_offset = tokens[start_index].end()
@@ -1653,8 +1653,8 @@ fn wesl_import_named_target(import_item : ImportItem) -> (ModulePath, String)? {
 fn wesl_collect_legacy_item_references(
   source : String,
   item_name : String?,
-  named_items : @hashmap.HashMap[String, Int],
-  import_by_local : @hashmap.HashMap[String, Int],
+  named_items : @hashmap.HashMap[String, Int32],
+  import_by_local : @hashmap.HashMap[String, Int32],
   imports : Array[ImportItem],
   current_path : ModulePath,
 ) -> Array[ModuleItemRef] {
@@ -1808,8 +1808,8 @@ fn wesl_ast_collect_type_reference(
   ty : TypeExpression,
   references : Array[ModuleItemRef],
   scopes : Array[Array[String]],
-  named_items : @hashmap.HashMap[String, Int],
-  import_by_local : @hashmap.HashMap[String, Int],
+  named_items : @hashmap.HashMap[String, Int32],
+  import_by_local : @hashmap.HashMap[String, Int32],
   imports : Array[ImportItem],
   current_path : ModulePath,
 ) -> Unit {
@@ -1878,8 +1878,8 @@ fn wesl_ast_collect_expression_references(
   expr : Expression,
   references : Array[ModuleItemRef],
   scopes : Array[Array[String]],
-  named_items : @hashmap.HashMap[String, Int],
-  import_by_local : @hashmap.HashMap[String, Int],
+  named_items : @hashmap.HashMap[String, Int32],
+  import_by_local : @hashmap.HashMap[String, Int32],
   imports : Array[ImportItem],
   current_path : ModulePath,
 ) -> Unit {
@@ -1941,8 +1941,8 @@ fn wesl_ast_collect_attribute_references(
   attribute : Attribute,
   references : Array[ModuleItemRef],
   scopes : Array[Array[String]],
-  named_items : @hashmap.HashMap[String, Int],
-  import_by_local : @hashmap.HashMap[String, Int],
+  named_items : @hashmap.HashMap[String, Int32],
+  import_by_local : @hashmap.HashMap[String, Int32],
   imports : Array[ImportItem],
   current_path : ModulePath,
 ) -> Unit {
@@ -1958,8 +1958,8 @@ fn wesl_ast_collect_attributes_references(
   attributes : Array[Attribute],
   references : Array[ModuleItemRef],
   scopes : Array[Array[String]],
-  named_items : @hashmap.HashMap[String, Int],
-  import_by_local : @hashmap.HashMap[String, Int],
+  named_items : @hashmap.HashMap[String, Int32],
+  import_by_local : @hashmap.HashMap[String, Int32],
   imports : Array[ImportItem],
   current_path : ModulePath,
 ) -> Unit {
@@ -1975,8 +1975,8 @@ fn wesl_ast_collect_declaration_references(
   declaration : StatementDeclaration,
   references : Array[ModuleItemRef],
   scopes : Array[Array[String]],
-  named_items : @hashmap.HashMap[String, Int],
-  import_by_local : @hashmap.HashMap[String, Int],
+  named_items : @hashmap.HashMap[String, Int32],
+  import_by_local : @hashmap.HashMap[String, Int32],
   imports : Array[ImportItem],
   current_path : ModulePath,
 ) -> Unit {
@@ -2005,8 +2005,8 @@ fn wesl_ast_collect_statement_references(
   statement : Statement,
   references : Array[ModuleItemRef],
   scopes : Array[Array[String]],
-  named_items : @hashmap.HashMap[String, Int],
-  import_by_local : @hashmap.HashMap[String, Int],
+  named_items : @hashmap.HashMap[String, Int32],
+  import_by_local : @hashmap.HashMap[String, Int32],
   imports : Array[ImportItem],
   current_path : ModulePath,
 ) -> Unit {
@@ -2077,8 +2077,8 @@ fn wesl_ast_collect_body_references(
   body : FunctionBody,
   references : Array[ModuleItemRef],
   scopes : Array[Array[String]],
-  named_items : @hashmap.HashMap[String, Int],
-  import_by_local : @hashmap.HashMap[String, Int],
+  named_items : @hashmap.HashMap[String, Int32],
+  import_by_local : @hashmap.HashMap[String, Int32],
   imports : Array[ImportItem],
   current_path : ModulePath,
 ) -> Unit {
@@ -2096,8 +2096,8 @@ fn wesl_ast_collect_control_references(
   control : ControlStatement,
   references : Array[ModuleItemRef],
   scopes : Array[Array[String]],
-  named_items : @hashmap.HashMap[String, Int],
-  import_by_local : @hashmap.HashMap[String, Int],
+  named_items : @hashmap.HashMap[String, Int32],
+  import_by_local : @hashmap.HashMap[String, Int32],
   imports : Array[ImportItem],
   current_path : ModulePath,
 ) -> Unit {
@@ -2303,8 +2303,8 @@ fn wesl_ast_collect_control_references(
 ///|
 fn wesl_collect_ast_item_references(
   header : GlobalDeclarationHeader,
-  named_items : @hashmap.HashMap[String, Int],
-  import_by_local : @hashmap.HashMap[String, Int],
+  named_items : @hashmap.HashMap[String, Int32],
+  import_by_local : @hashmap.HashMap[String, Int32],
   imports : Array[ImportItem],
   current_path : ModulePath,
 ) -> Array[ModuleItemRef] {
@@ -2475,8 +2475,8 @@ fn wesl_collect_ast_item_references(
 ///|
 fn wesl_collect_module_item_references(
   item : ModuleItem,
-  named_items : @hashmap.HashMap[String, Int],
-  import_by_local : @hashmap.HashMap[String, Int],
+  named_items : @hashmap.HashMap[String, Int32],
+  import_by_local : @hashmap.HashMap[String, Int32],
   imports : Array[ImportItem],
   current_path : ModulePath,
 ) -> Array[ModuleItemRef] {
@@ -3300,7 +3300,7 @@ fn wesl_validate_decl_cycle(
   path : ModulePath,
   name : String,
   modules : @hashmap.HashMap[ModulePath, ParsedModule],
-  states : @hashmap.HashMap[String, Int],
+  states : @hashmap.HashMap[String, Int32],
 ) -> Unit raise WeslCompileError {
   let key = wesl_decl_key(path, name)
   match states.get(key) {
@@ -3340,7 +3340,7 @@ fn wesl_validate_loaded_cycles(
   order : Array[ModulePath],
   modules : @hashmap.HashMap[ModulePath, ParsedModule],
 ) -> Unit raise WeslCompileError {
-  let states : @hashmap.HashMap[String, Int] = HashMap([])
+  let states : @hashmap.HashMap[String, Int32] = HashMap([])
   for path in order {
     guard modules.get(path) is Some(parsed_module) else { continue }
     for item in parsed_module.items {

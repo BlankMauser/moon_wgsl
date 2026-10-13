@@ -52,19 +52,19 @@ fn wgsl_ir_local_const_value_cell(
 ///|
 priv struct WgslIrPendingGlobalPointerExpressions {
   handles : Array[Handle]
-  mut index : Int
+  mut index : Int32
 }
 
 ///|
 priv struct WgslIrFunctionScope {
-  arguments : Map[String, Int]
+  arguments : Map[String, Int32]
   argument_expressions : Map[String, Handle]
   locals : Map[String, Handle]
   predeclared_source_locals : Map[String, Handle]
   source_local_const_initializer_expressions : Map[String, Handle]
   runtime_source_local_const_initializer_expressions : Map[String, Handle]
   local_constants : Map[String, WgslIrLocalValueCell]
-  materialized_expression_locals : Map[Int, Handle]
+  materialized_expression_locals : Map[Int32, Handle]
   local_pointer_expressions : Map[String, Handle]
   argument_pointer_expressions : Map[String, Handle]
   global_pointer_expressions : Map[String, Handle]
@@ -72,18 +72,18 @@ priv struct WgslIrFunctionScope {
     String,
     WgslIrPendingGlobalPointerExpressions,
   ]
-  mut source_let_initializer_preserve_depth : Int
-  mut compound_assignment_rhs_depth : Int
+  mut source_let_initializer_preserve_depth : Int32
+  mut compound_assignment_rhs_depth : Int32
   mut pending_compound_assignment_rhs_local_root : String?
   mut pending_store_pointer_argument_root : String?
-  block_depth : Int
-  loop_depth : Int
+  block_depth : Int32
+  loop_depth : Int32
 }
 
 ///|
 priv struct WgslIrExprTokenParser {
   tokens : Array[@ast.WgslExprToken]
-  mut index : Int
+  mut index : Int32
   mut failed : Bool
 }
 
@@ -112,8 +112,10 @@ fn WgslIrFunctionScope::WgslIrFunctionScope() -> WgslIrFunctionScope {
 }
 
 ///|
-fn wgsl_ir_copy_string_int_map(source : Map[String, Int]) -> Map[String, Int] {
-  let copied : Map[String, Int] = Map([])
+fn wgsl_ir_copy_string_int_map(
+  source : Map[String, Int32],
+) -> Map[String, Int32] {
+  let copied : Map[String, Int32] = Map([])
   for entry in source.iter() {
     let (key, value) = entry
     copied.set(key, value)
@@ -134,8 +136,10 @@ fn wgsl_ir_copy_string_handle_map(
 }
 
 ///|
-fn wgsl_ir_copy_int_handle_map(source : Map[Int, Handle]) -> Map[Int, Handle] {
-  let copied : Map[Int, Handle] = Map([])
+fn wgsl_ir_copy_int_handle_map(
+  source : Map[Int32, Handle],
+) -> Map[Int32, Handle] {
+  let copied : Map[Int32, Handle] = Map([])
   for entry in source.iter() {
     let (key, value) = entry
     copied.set(key, value)
@@ -202,7 +206,7 @@ fn wgsl_ir_restore_local_constant_values(
 ///|
 fn wgsl_ir_invalidate_local_constant_aliases_after_expression_rewind(
   source : Map[String, WgslIrLocalValueCell],
-  length : Int,
+  length : Int32,
 ) -> Unit {
   let removed_keys : Array[String] = []
   for entry in source.iter() {
@@ -265,7 +269,7 @@ fn WgslIrFunctionScope::loop_child(
 fn WgslIrFunctionScope::argument_expression(
   self : WgslIrFunctionScope,
   name : String,
-  index : Int,
+  index : Int32,
   function : Function,
 ) -> Handle {
   match self.argument_expressions.get(name) {
@@ -390,7 +394,7 @@ fn WgslIrFunctionScope::consume_pending_global_pointer_expression(
 fn WgslIrFunctionScope::argument_pointer_expression(
   self : WgslIrFunctionScope,
   name : String,
-  argument_index : Int,
+  argument_index : Int32,
   function : Function,
 ) -> Handle {
   match self.argument_pointer_expressions.get(name) {

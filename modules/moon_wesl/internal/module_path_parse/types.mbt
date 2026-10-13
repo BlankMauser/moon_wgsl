@@ -15,7 +15,7 @@
 ///|
 pub(all) enum ModulePathParseOrigin {
   Absolute
-  Relative(Int)
+  Relative(Int32)
   Package(String)
 } derive(Eq, Debug)
 
@@ -35,7 +35,7 @@ pub(all) enum ModulePathParseProblem {
 
 ///|
 pub(all) struct ModulePathParseDiagnostic {
-  offset : Int
+  offset : Int32
   problem : ModulePathParseProblem
 } derive(Eq, Debug)
 
@@ -47,7 +47,7 @@ pub(all) enum ModulePathParseResult {
 
 ///|
 priv enum ModulePathLexResult {
-  Lexed(Array[(Token, Int, Int)])
+  Lexed(Array[(Token, Int32, Int32)])
   LexFailed(ModulePathParseDiagnostic)
 }
 
@@ -89,7 +89,7 @@ fn module_path_parse_lex(source : String) -> ModulePathLexResult {
   if text.length() == 0 {
     return LexFailed({ offset: 0, problem: Empty, })
   }
-  let tokens : Array[(Token, Int, Int)] = []
+  let tokens : Array[(Token, Int32, Int32)] = []
   let mut index = 0
   let mut expect_segment = true
   while index < text.length() {

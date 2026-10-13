@@ -18,7 +18,7 @@ fn wgsl_naga_test_parse_with_import_graph(
   source : String,
   generated_import_provenance : Array[WgslNagaGeneratedImportProvenance],
   import_arena_events : Array[WgslNagaImportArenaEvent],
-  root_visible_rel_path? : String = "",
+  root_visible_rel_path~ : String = "",
 ) -> (Module, WgslNagaCompatibilityView) raise WgslIrLowerError {
   let context = WgslNagaComposeContext::from_import_graph(
     generated_import_provenance,

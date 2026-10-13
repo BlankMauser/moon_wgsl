@@ -156,7 +156,7 @@ test "naga_oil regression: Bevy lighting keeps tree-shaken alias const targets l
 }
 
 ///|
-fn issue10_alias_redirect_stress_module(declaration_count : Int) -> String {
+fn issue10_alias_redirect_stress_module(declaration_count : Int32) -> String {
   let mut source =
     #|#define_import_path stress::many
     #|
@@ -167,7 +167,7 @@ fn issue10_alias_redirect_stress_module(declaration_count : Int) -> String {
 }
 
 ///|
-fn issue10_alias_redirect_stress_root(import_count : Int) -> String {
+fn issue10_alias_redirect_stress_root(import_count : Int32) -> String {
   let mut source = ""
   for _ in 0..<import_count {
     source = source + "#import stress::many as many\n"

@@ -105,7 +105,7 @@ fn collect_source_files(
   normalized_extensions : Array[String],
   out : Array[@contract.WgslSourceFile],
 ) -> Unit raise @fs.IOError {
-  let entries = @fs.read_dir(fs_path)
+  let entries = @fs.read_dir(fs_path).to_owned()
   entries.sort()
   for entry_name in entries {
     let entry_rel_path = if rel_prefix == "" {

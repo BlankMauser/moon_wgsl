@@ -153,7 +153,7 @@ fn WgslIrLowerer::lower_function_constructor_arguments_with_later_local_root_aft
 fn WgslIrLowerer::first_global_static_member_root_end(
   self : WgslIrLowerer,
   node : @ast.WgslExprNode,
-) -> Int? {
+) -> Int32? {
   match node.kind() {
     Member(_, _) =>
       match wgsl_ir_static_member_access_chain(node) {
@@ -298,7 +298,7 @@ fn WgslIrLowerer::predeclare_global_identifier_root(
 fn WgslIrLowerer::expression_node_contains_mutable_local_root_after(
   self : WgslIrLowerer,
   node : @ast.WgslExprNode,
-  after_offset : Int,
+  after_offset : Int32,
   function : Function,
   scope : WgslIrFunctionScope,
 ) -> Bool {
@@ -362,7 +362,7 @@ fn WgslIrLowerer::expression_node_contains_mutable_local_root_after(
 fn WgslIrLowerer::predeclare_first_mutable_local_root_after(
   self : WgslIrLowerer,
   node : @ast.WgslExprNode,
-  after_offset : Int,
+  after_offset : Int32,
   function : Function,
   scope : WgslIrFunctionScope,
 ) -> Bool {

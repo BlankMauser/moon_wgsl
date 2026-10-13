@@ -219,7 +219,7 @@ fn WgslIrLowerer::lower_function_math_call_with_later_splat_constructors_before_
     [first_later.component],
     function,
   )
-  let deferred : Map[Int, WgslIrDeferredConstructorArgument] = Map([])
+  let deferred : Map[Int32, WgslIrDeferredConstructorArgument] = Map([])
   for index in 2..<arguments.length() {
     match
       self.prelower_math_splat_constructor_argument(
@@ -408,7 +408,7 @@ fn WgslIrLowerer::math_call_predeclares_later_function_arguments_after_first_con
   self : WgslIrLowerer,
   math_function : MathFunction,
   arguments : Array[@ast.WgslExprNode],
-  deferred_constructors : Map[Int, WgslIrDeferredConstructorArgument],
+  deferred_constructors : Map[Int32, WgslIrDeferredConstructorArgument],
   function : Function,
   scope : WgslIrFunctionScope,
 ) -> Bool {
@@ -582,9 +582,9 @@ fn WgslIrLowerer::predeclare_function_argument_values_in_source_order(
 ///|
 fn WgslIrLowerer::lower_function_math_argument_at(
   self : WgslIrLowerer,
-  index : Int,
+  index : Int32,
   arguments : Array[@ast.WgslExprNode],
-  deferred_constructors : Map[Int, WgslIrDeferredConstructorArgument],
+  deferred_constructors : Map[Int32, WgslIrDeferredConstructorArgument],
   function : Function,
   scope : WgslIrFunctionScope,
 ) -> Handle raise WgslIrLowerError {
@@ -604,9 +604,9 @@ fn WgslIrLowerer::lower_function_math_argument_at(
 ///|
 fn WgslIrLowerer::lower_function_foldable_const_math_argument_at(
   self : WgslIrLowerer,
-  index : Int,
+  index : Int32,
   arguments : Array[@ast.WgslExprNode],
-  deferred_constructors : Map[Int, WgslIrDeferredConstructorArgument],
+  deferred_constructors : Map[Int32, WgslIrDeferredConstructorArgument],
   function : Function,
   scope : WgslIrFunctionScope,
 ) -> Handle raise WgslIrLowerError {
@@ -790,8 +790,8 @@ fn WgslIrLowerer::prelower_homogeneous_math_constructor_arguments(
   arguments : Array[@ast.WgslExprNode],
   function : Function,
   scope : WgslIrFunctionScope,
-) -> Map[Int, WgslIrDeferredConstructorArgument] raise WgslIrLowerError {
-  let deferred : Map[Int, WgslIrDeferredConstructorArgument] = Map([])
+) -> Map[Int32, WgslIrDeferredConstructorArgument] raise WgslIrLowerError {
+  let deferred : Map[Int32, WgslIrDeferredConstructorArgument] = Map([])
   guard wgsl_ir_math_function_has_homogeneous_arguments(math_function) else {
     return deferred
   }

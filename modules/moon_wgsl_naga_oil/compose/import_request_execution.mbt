@@ -16,7 +16,7 @@ fn wgsl_source_origin_kind_to_compose_declaration_kind(
 fn wgsl_compare_import_arena_symbols_by_dependency_pull(
   lhs : WgslComposeImportArenaSymbol,
   rhs : WgslComposeImportArenaSymbol,
-) -> Int {
+) -> Int32 {
   let lhs_pull = lhs.source_order_rank()
   let rhs_pull = rhs.source_order_rank()
   if lhs_pull >= 0 && rhs_pull >= 0 && lhs_pull != rhs_pull {
@@ -345,7 +345,7 @@ fn Composer::compose_wgsl_import_requests(
     } else {
       wgsl_import_request_copy_items(emission_requested_items)
     }
-    let emitted_source_starts : @set.Set[Int] = Set([])
+    let emitted_source_starts : @set.Set[Int32] = Set([])
     for i in origin_start_index..<session.symbols.source_origins.length() {
       let origin = session.symbols.source_origins[i]
       if origin.rel_path == request.rel_path {

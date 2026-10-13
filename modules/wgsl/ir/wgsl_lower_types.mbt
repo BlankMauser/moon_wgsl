@@ -461,7 +461,7 @@ fn wgsl_ir_array_size_key(size : ArraySize) -> String {
 }
 
 ///|
-fn wgsl_ir_array_size_literal_from_type_name(name : String) -> Int? {
+fn wgsl_ir_array_size_literal_from_type_name(name : String) -> Int32? {
   let text = if name.length() > 0 {
     let suffix = name[name.length() - 1:]
     if suffix == "u" || suffix == "i" {
@@ -815,7 +815,7 @@ fn wgsl_ir_abstract_scalar_can_convert_to(
 fn WgslIrLowerer::intern_inferred_array_type(
   self : WgslIrLowerer,
   element_ty : Handle,
-  length : Int,
+  length : Int32,
 ) -> Handle raise WgslIrLowerError {
   let layout = self.type_layout(element_ty)
   let stride = wgsl_ir_align_to(layout.size, layout.align)
@@ -942,6 +942,6 @@ fn WgslIrLowerer::scalar_from_type_handle(
 
 ///|
 priv struct WgslIrLayout {
-  align : Int
-  size : Int
+  align : Int32
+  size : Int32
 }

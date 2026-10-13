@@ -8,6 +8,11 @@ pub(all) enum Token {
 } derive(Debug)
 
 ///|
+#deprecated("Use Debug::to_repr instead")
+#doc(hidden)
+pub extend Token with Debug::{to_repr}
+
+///|
 pub fn Token::kind(self : Token) -> TokenKind {
   match self {
     SEGMENT(_) => TK_SEGMENT
@@ -28,8 +33,14 @@ pub(all) enum TokenKind {
 }
 
 ///|
+#deprecated("Use Show::to_string or Show::output instead")
+#doc(hidden)
+pub extend TokenKind with Show::{output, to_string}
+
+///|
 pub impl Show for TokenKind with fn output(self, logger) {
-  logger.write_string(
+  Logger::write_string(
+    logger,
     match self {
       TK_SEGMENT => "SEGMENT"
       TK_PACKAGE => "\"package\""
@@ -39,6 +50,11 @@ pub impl Show for TokenKind with fn output(self, logger) {
     },
   )
 }
+
+///|
+#deprecated("Use Debug::to_repr instead")
+#doc(hidden)
+pub extend TokenKind with Debug::{to_repr}
 
 ///|
 pub impl Debug for TokenKind with fn to_repr(self) {

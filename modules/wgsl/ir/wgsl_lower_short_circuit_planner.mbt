@@ -298,7 +298,7 @@ fn ShortCircuitPlanner::materialize_binary_node(
 fn ShortCircuitPlanner::emit_condition_range(
   self : ShortCircuitPlanner,
   left_is_short_circuit : Bool,
-  condition_mark : Int,
+  condition_mark : Int32,
   guard_condition : Handle,
 ) -> Unit {
   if left_is_short_circuit {

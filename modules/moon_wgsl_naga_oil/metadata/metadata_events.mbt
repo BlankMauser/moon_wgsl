@@ -79,7 +79,7 @@ fn metadata_shader_def_comparison_def(expression : String) -> String? {
 }
 
 ///|
-fn metadata_source_line_text_end(text : String, line_start : Int) -> Int {
+fn metadata_source_line_text_end(text : String, line_start : Int32) -> Int32 {
   wgsl_line_text_end(text, line_start)
 }
 

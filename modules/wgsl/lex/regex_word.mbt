@@ -1,5 +1,5 @@
 ///|
-let wgsl_regex_word_ranges : Array[(Int, Int)] = [
+let wgsl_regex_word_ranges : Array[(Int32, Int32)] = [
   (48, 57),
   (65, 90),
   (95, 95),
@@ -800,7 +800,7 @@ let wgsl_regex_word_ranges : Array[(Int, Int)] = [
 ]
 
 ///|
-fn wgsl_regex_word_code_point(code_point : Int) -> Bool {
+fn wgsl_regex_word_code_point(code_point : Int32) -> Bool {
   let mut low = 0
   let mut high = wgsl_regex_word_ranges.length()
   while low < high {
@@ -818,7 +818,7 @@ fn wgsl_regex_word_code_point(code_point : Int) -> Bool {
 }
 
 ///|
-pub fn wgsl_code_point_at(text : String, index : Int) -> (Int, Int)? {
+pub fn wgsl_code_point_at(text : String, index : Int32) -> (Int32, Int32)? {
   guard index >= 0 && index < text.length() else { return None }
   let first = text.code_unit_at(index).to_int()
   if first >= 0xD800 && first <= 0xDBFF {
@@ -834,7 +834,7 @@ pub fn wgsl_code_point_at(text : String, index : Int) -> (Int, Int)? {
 }
 
 ///|
-pub fn wgsl_regex_word_width(text : String, index : Int) -> Int {
+pub fn wgsl_regex_word_width(text : String, index : Int32) -> Int32 {
   match wgsl_code_point_at(text, index) {
     Some((code_point, width)) if wgsl_regex_word_code_point(code_point) => width
     _ => 0

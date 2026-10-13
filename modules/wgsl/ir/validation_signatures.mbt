@@ -250,8 +250,8 @@ fn WgslIrValidator::require_composite_component_capacity(
   self : WgslIrValidator,
   function : Function,
   components : Array[Handle],
-  expected_lanes : Int,
-  expression_index : Int,
+  expected_lanes : Int32,
+  expression_index : Int32,
 ) -> Unit raise WgslIrValidationError {
   if components.length() == 0 {
     return
@@ -275,7 +275,7 @@ fn WgslIrValidator::function_expression_lane_count(
   self : WgslIrValidator,
   function : Function,
   handle : Handle,
-) -> Int? {
+) -> Int32? {
   match function.expressions.items.get(handle.index()) {
     Some(expression) =>
       match expression {
@@ -300,7 +300,7 @@ fn WgslIrValidator::function_expression_lane_count(
 fn WgslIrValidator::global_expression_lane_count(
   self : WgslIrValidator,
   handle : Handle,
-) -> Int? {
+) -> Int32? {
   match self.shader_module.global_expressions.items.get(handle.index()) {
     Some(expression) =>
       match expression {
@@ -325,8 +325,8 @@ fn WgslIrValidator::global_expression_lane_count(
 fn WgslIrValidator::require_global_composite_component_capacity(
   self : WgslIrValidator,
   components : Array[Handle],
-  expected_lanes : Int,
-  expression_index : Int,
+  expected_lanes : Int32,
+  expression_index : Int32,
 ) -> Unit raise WgslIrValidationError {
   if components.length() == 0 {
     return
@@ -407,7 +407,7 @@ fn WgslIrValidator::require_function_access_index_signature(
   self : WgslIrValidator,
   function : Function,
   base : Handle,
-  index : Int,
+  index : Int32,
 ) -> Unit raise WgslIrValidationError {
   guard self.function_expression_type(function, base) is Some(base_ty) else {
     raise self.missing_function_expression_type(function, base)
@@ -424,7 +424,7 @@ fn WgslIrValidator::require_function_access_index_signature(
 fn WgslIrValidator::require_global_access_index_signature(
   self : WgslIrValidator,
   base : Handle,
-  index : Int,
+  index : Int32,
 ) -> Unit raise WgslIrValidationError {
   guard self.global_expression_type(base) is Some(base_ty) else {
     raise self.missing_global_expression_type(base)
@@ -506,7 +506,7 @@ fn WgslIrValidator::require_global_address_of_signature(
 fn WgslIrValidator::require_as_width(
   self : WgslIrValidator,
   kind : ScalarKind,
-  width : Int?,
+  width : Int32?,
 ) -> Unit raise WgslIrValidationError {
   ignore(self)
   match width {

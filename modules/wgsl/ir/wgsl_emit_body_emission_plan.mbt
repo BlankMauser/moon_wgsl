@@ -14,7 +14,7 @@
 
 ///|
 priv struct BodyEmissionPlanner {
-  elided_local_alias_targets : Map[Int, Handle]
+  elided_local_alias_targets : Map[Int32, Handle]
 }
 
 ///|
@@ -26,7 +26,7 @@ priv struct WgslIrStatementWriterPlanItem {
 
 ///|
 fn BodyEmissionPlanner::from_function(
-  elided_local_alias_targets : Map[Int, Handle],
+  elided_local_alias_targets : Map[Int32, Handle],
 ) -> BodyEmissionPlanner {
   { elided_local_alias_targets, }
 }
@@ -135,7 +135,7 @@ fn wgsl_ir_body_statement_is_hoisted_local_var_initializer_emit(
 fn BodyEmissionPlanner::push_named_expression_emit_ranges(
   block : Block,
   function : Function,
-  expression_mark : Int,
+  expression_mark : Int32,
   init_handle : Handle,
 ) -> Unit {
   BodyEmissionPlanner::push_statement_emit_ranges(
@@ -147,7 +147,7 @@ fn BodyEmissionPlanner::push_named_expression_emit_ranges(
 fn BodyEmissionPlanner::push_statement_emit_ranges(
   block : Block,
   function : Function,
-  expression_mark : Int,
+  expression_mark : Int32,
   init_handle : Handle,
 ) -> Unit {
   BodyEmissionPlanner::push_statement_emit_ranges_skipping(
@@ -163,9 +163,9 @@ fn BodyEmissionPlanner::push_statement_emit_ranges(
 fn BodyEmissionPlanner::push_statement_emit_ranges_skipping(
   block : Block,
   function : Function,
-  expression_mark : Int,
+  expression_mark : Int32,
   init_handle : Handle,
-  suppressed : @set.Set[Int],
+  suppressed : @set.Set[Int32],
 ) -> Unit {
   let mut range_start : Handle? = None
   let mut range_end : Handle? = None
@@ -200,7 +200,7 @@ fn BodyEmissionPlanner::push_statement_emit_ranges_skipping(
 ///|
 fn wgsl_ir_function_expression_is_local_initializer_owned(
   function : Function,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   for local_var in function.local_variables.items {
     guard local_var.kind == Var && !local_var.generated_temporary else {

@@ -263,7 +263,7 @@ fn WgslIrLowerer::existing_materialized_function_expression(
 }
 
 ///|
-fn wgsl_ir_next_statement_emit_mark(block : Block) -> Int {
+fn wgsl_ir_next_statement_emit_mark(block : Block) -> Int32 {
   let mut next = 0
   for statement in block.statements {
     match wgsl_ir_statement_max_expression_index(statement) {
@@ -275,7 +275,7 @@ fn wgsl_ir_next_statement_emit_mark(block : Block) -> Int {
 }
 
 ///|
-fn wgsl_ir_statement_max_expression_index(statement : Statement) -> Int? {
+fn wgsl_ir_statement_max_expression_index(statement : Statement) -> Int32? {
   match statement {
     Declare(handle) => Some(handle.index())
     Emit(range) => Some(range.end.index())
@@ -315,7 +315,7 @@ fn wgsl_ir_statement_max_expression_index(statement : Statement) -> Int? {
       Some(index)
     }
     Loop(body, continuing, break_if) => {
-      let mut index : Int? = None
+      let mut index : Int32? = None
       match break_if {
         Some(handle) => index = Some(handle.index())
         None => ()
@@ -392,7 +392,7 @@ fn wgsl_ir_statement_max_expression_index(statement : Statement) -> Int? {
     WorkGroupUniformLoad(pointer, result) =>
       Some(wgsl_ir_max_expression_index(pointer, result))
     Call(_, arguments, result) => {
-      let mut index : Int? = None
+      let mut index : Int32? = None
       for argument in arguments {
         index = Some(
           match index {
@@ -437,8 +437,8 @@ fn wgsl_ir_statement_max_expression_index(statement : Statement) -> Int? {
 }
 
 ///|
-fn wgsl_ir_block_max_expression_index(block : Block) -> Int? {
-  let mut index : Int? = None
+fn wgsl_ir_block_max_expression_index(block : Block) -> Int32? {
+  let mut index : Int32? = None
   for statement in block.statements {
     match wgsl_ir_statement_max_expression_index(statement) {
       Some(statement_index) =>
@@ -459,7 +459,7 @@ fn wgsl_ir_block_max_expression_index(block : Block) -> Int? {
 }
 
 ///|
-fn wgsl_ir_max_expression_index(left : Handle, right : Handle) -> Int {
+fn wgsl_ir_max_expression_index(left : Handle, right : Handle) -> Int32 {
   if left.index() >= right.index() {
     left.index()
   } else {
@@ -1340,7 +1340,7 @@ fn WgslIrLowerer::materialize_nested_user_call_argument(
   scope : WgslIrFunctionScope,
   block : Block,
   callee : Handle,
-  index : Int,
+  index : Int32,
   argument : Handle,
 ) -> Handle raise WgslIrLowerError {
   match self.shader_module.functions.items.get(callee.index()) {

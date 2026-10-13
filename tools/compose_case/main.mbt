@@ -15,7 +15,7 @@ priv struct ComposeCaseArgs {
   mut shader_type : String?
   mut pre_ir : Bool
   mut runtime_valid : Bool
-  mut repeat : Int
+  mut repeat : Int32
   mut entry_only : Bool
   mut check_only : Bool
   mut file_path_prefix : String?
@@ -145,7 +145,7 @@ fn write_compose_case_output(path : String?, text : String) -> Unit {
 }
 
 ///|
-fn compose_case_parse_positive_decimal(text : String) -> Int {
+fn compose_case_parse_positive_decimal(text : String) -> Int32 {
   guard text.length() > 0 else { abort(compose_case_usage()) }
   let mut value = 0
   for i in 0..<text.length() {
@@ -158,7 +158,7 @@ fn compose_case_parse_positive_decimal(text : String) -> Int {
 }
 
 ///|
-fn compose_case_repeat(text : String, count : Int) -> String {
+fn compose_case_repeat(text : String, count : Int32) -> String {
   let out = StringBuilder()
   for _ in 0..<count {
     out.write_string(text)
@@ -167,7 +167,7 @@ fn compose_case_repeat(text : String, count : Int) -> String {
 }
 
 ///|
-fn compose_case_decimal_width(value : Int) -> Int {
+fn compose_case_decimal_width(value : Int32) -> Int32 {
   let mut width = 1
   let mut current = value
   while current >= 10 {
@@ -215,7 +215,7 @@ fn compose_case_source_lines(source : String) -> Array[String] {
 fn compose_case_find_line_containing(
   lines : Array[String],
   needle : String,
-) -> (Int, Int)? {
+) -> (Int32, Int32)? {
   for i in 0..<lines.length() {
     let line = lines[i]
     if line.contains(needle) {
@@ -233,7 +233,7 @@ fn compose_case_find_line_containing(
 fn compose_case_first_line_containing(
   lines : Array[String],
   needle : String,
-) -> Int? {
+) -> Int32? {
   for i in 0..<lines.length() {
     if lines[i].contains(needle) {
       return Some(i + 1)
@@ -246,8 +246,8 @@ fn compose_case_first_line_containing(
 fn compose_case_render_source_diagnostic(
   message : String,
   file_path : String,
-  line_number : Int,
-  column : Int,
+  line_number : Int32,
+  column : Int32,
   line_text : String,
   note : String?,
 ) -> String {
@@ -307,7 +307,7 @@ fn compose_case_source_error_file(
   fixture_root : String,
   entry : String,
   missing_name : String,
-) -> (String, Int, Int, String)? {
+) -> (String, Int32, Int32, String)? {
   let source = match compose_case_load_fixture_source(fixture_root, entry) {
     Some(value) => value
     None => return None
@@ -331,7 +331,7 @@ fn compose_case_source_error_file(
 fn compose_case_override_error_file(
   fixture_root : String,
   entry : String,
-) -> (String, Int, Int, String)? {
+) -> (String, Int32, Int32, String)? {
   let source = match compose_case_load_fixture_source(fixture_root, entry) {
     Some(value) => value
     None => return None
@@ -405,8 +405,8 @@ fn compose_case_error_output_text(
 ///|
 fn compose_case_render_unknown_identifier_diagnostic(
   file_path : String,
-  line_number : Int,
-  column : Int,
+  line_number : Int32,
+  column : Int32,
   line_text : String,
   name : String,
 ) -> String {
@@ -426,9 +426,9 @@ fn compose_case_render_unknown_identifier_diagnostic(
 ///|
 fn compose_case_render_return_type_validation_diagnostic(
   file_path : String,
-  function_index : Int,
+  function_index : Int32,
   function_name : String,
-  line_number : Int,
+  line_number : Int32,
   function_line : String,
   return_line : String,
   end_line : String,
@@ -802,12 +802,15 @@ fn compose_case_glsl_vec4_single_argument(expr : String) -> String? {
 }
 
 ///|
-fn compose_case_is_ascii_digit_code(code : Int) -> Bool {
+fn compose_case_is_ascii_digit_code(code : Int32) -> Bool {
   code >= 48 && code <= 57
 }
 
 ///|
-fn compose_case_previous_non_space_code(text : String, before : Int) -> Int? {
+fn compose_case_previous_non_space_code(
+  text : String,
+  before : Int32,
+) -> Int32? {
   let mut i = before - 1
   while i >= 0 {
     let code = text.code_unit_at(i).to_int()
@@ -820,7 +823,7 @@ fn compose_case_previous_non_space_code(text : String, before : Int) -> Int? {
 }
 
 ///|
-fn compose_case_next_non_space_code(text : String, from : Int) -> Int? {
+fn compose_case_next_non_space_code(text : String, from : Int32) -> Int32? {
   let mut i = from
   while i < text.length() {
     let code = text.code_unit_at(i).to_int()

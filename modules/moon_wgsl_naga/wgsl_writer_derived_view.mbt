@@ -14,29 +14,29 @@
 
 ///|
 priv struct WgslIrDerivedModuleView {
-  types : Array[Int]
-  constants : Array[Int]
-  overrides : Array[Int]
-  global_variables : Array[Int]
-  functions : Array[Int]
+  types : Array[Int32]
+  constants : Array[Int32]
+  overrides : Array[Int32]
+  global_variables : Array[Int32]
+  functions : Array[Int32]
 }
 
 ///|
 priv struct WgslIrDerivedModuleBuilder {
   planner : WgslIrWriterPlanner
   view : WgslIrDerivedModuleView
-  seen_types : @set.Set[Int]
-  seen_constants : @set.Set[Int]
-  seen_overrides : @set.Set[Int]
-  seen_globals : @set.Set[Int]
-  seen_functions : @set.Set[Int]
+  seen_types : @set.Set[Int32]
+  seen_constants : @set.Set[Int32]
+  seen_overrides : @set.Set[Int32]
+  seen_globals : @set.Set[Int32]
+  seen_functions : @set.Set[Int32]
 }
 
 ///|
 priv struct WgslNagaGeneratedTypeSourceOrderEntry {
-  index : Int
-  source_start : Int
-  source_end : Int
+  index : Int32
+  source_start : Int32
+  source_end : Int32
   name : String
 }
 
@@ -202,7 +202,7 @@ fn WgslIrDerivedModuleBuilder::import_event_symbols_by_kind(
 fn wgsl_ir_writer_compare_import_arena_symbols(
   lhs : WgslNagaImportArenaSymbol,
   rhs : WgslNagaImportArenaSymbol,
-) -> Int {
+) -> Int32 {
   let lhs_rank = lhs.source_order_rank()
   let rhs_rank = rhs.source_order_rank()
   if lhs_rank >= 0 && rhs_rank >= 0 && lhs_rank != rhs_rank {
@@ -383,7 +383,7 @@ fn WgslIrDerivedModuleBuilder::import_named_function_if_present(
 ///|
 fn WgslIrDerivedModuleBuilder::import_type(
   self : WgslIrDerivedModuleBuilder,
-  index : Int,
+  index : Int32,
 ) -> Unit {
   if self.seen_types.contains(index) || !self.should_emit_type(index) {
     return
@@ -448,7 +448,7 @@ fn WgslIrDerivedModuleBuilder::import_array_size(
 ///|
 fn WgslIrDerivedModuleBuilder::import_constant(
   self : WgslIrDerivedModuleBuilder,
-  index : Int,
+  index : Int32,
 ) -> Unit {
   if self.seen_constants.contains(index) || !self.should_emit_constant(index) {
     return
@@ -467,7 +467,7 @@ fn WgslIrDerivedModuleBuilder::import_constant(
 ///|
 fn WgslIrDerivedModuleBuilder::import_override(
   self : WgslIrDerivedModuleBuilder,
-  index : Int,
+  index : Int32,
 ) -> Unit {
   if self.seen_overrides.contains(index) || !self.should_emit_override(index) {
     return
@@ -489,7 +489,7 @@ fn WgslIrDerivedModuleBuilder::import_override(
 ///|
 fn WgslIrDerivedModuleBuilder::import_global(
   self : WgslIrDerivedModuleBuilder,
-  index : Int,
+  index : Int32,
 ) -> Unit {
   if self.seen_globals.contains(index) || !self.should_emit_global(index) {
     return
@@ -511,20 +511,20 @@ fn WgslIrDerivedModuleBuilder::import_global(
 ///|
 fn WgslIrDerivedModuleBuilder::import_function(
   self : WgslIrDerivedModuleBuilder,
-  index : Int,
+  index : Int32,
 ) -> Unit {
   if self.seen_functions.contains(index) ||
     !self.planner.function_order_should_include(index, self.view.functions) {
     return
   }
-  let visiting : Array[Int] = []
+  let visiting : Array[Int32] = []
   self.import_function_inner(index, visiting)
 }
 
 ///|
 fn WgslIrDerivedModuleBuilder::should_emit_type(
   self : WgslIrDerivedModuleBuilder,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   match self.planner.filter {
     Some(filter) => filter.contains_type(index)
@@ -535,7 +535,7 @@ fn WgslIrDerivedModuleBuilder::should_emit_type(
 ///|
 fn WgslIrDerivedModuleBuilder::should_emit_constant(
   self : WgslIrDerivedModuleBuilder,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   match self.planner.filter {
     Some(filter) => filter.contains_constant(index)
@@ -546,7 +546,7 @@ fn WgslIrDerivedModuleBuilder::should_emit_constant(
 ///|
 fn WgslIrDerivedModuleBuilder::should_emit_override(
   self : WgslIrDerivedModuleBuilder,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   match self.planner.filter {
     Some(filter) => filter.contains_override(index)
@@ -557,7 +557,7 @@ fn WgslIrDerivedModuleBuilder::should_emit_override(
 ///|
 fn WgslIrDerivedModuleBuilder::should_emit_global(
   self : WgslIrDerivedModuleBuilder,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   match self.planner.filter {
     Some(filter) => filter.contains_global_variable(index)
@@ -568,8 +568,8 @@ fn WgslIrDerivedModuleBuilder::should_emit_global(
 ///|
 fn WgslIrDerivedModuleBuilder::import_function_inner(
   self : WgslIrDerivedModuleBuilder,
-  index : Int,
-  visiting : Array[Int],
+  index : Int32,
+  visiting : Array[Int32],
 ) -> Unit {
   if self.seen_functions.contains(index) ||
     visiting.contains(index) ||
@@ -616,7 +616,7 @@ fn WgslIrDerivedModuleBuilder::import_entry_point(
   self : WgslIrDerivedModuleBuilder,
   entry_point : EntryPoint,
 ) -> Unit {
-  let visiting : Array[Int] = []
+  let visiting : Array[Int32] = []
   for argument in entry_point.function.arguments {
     self.import_type_handle(argument.ty)
   }
@@ -685,7 +685,7 @@ fn WgslIrDerivedModuleBuilder::import_function_expression(
   self : WgslIrDerivedModuleBuilder,
   function : Function,
   handle : Handle,
-  visiting_functions : Array[Int],
+  visiting_functions : Array[Int32],
 ) -> Unit {
   match function.expressions.items.get(handle.index()) {
     Some(expression) =>
@@ -699,7 +699,7 @@ fn WgslIrDerivedModuleBuilder::import_optional_function_expression(
   self : WgslIrDerivedModuleBuilder,
   function : Function,
   handle : Handle?,
-  visiting_functions : Array[Int],
+  visiting_functions : Array[Int32],
 ) -> Unit {
   match handle {
     Some(value) =>
@@ -713,7 +713,7 @@ fn WgslIrDerivedModuleBuilder::import_function_block(
   self : WgslIrDerivedModuleBuilder,
   function : Function,
   block : Block,
-  visiting_functions : Array[Int],
+  visiting_functions : Array[Int32],
 ) -> Unit {
   for statement in block.statements {
     self.import_statement(function, statement, visiting_functions)
@@ -725,7 +725,7 @@ fn WgslIrDerivedModuleBuilder::import_statement(
   self : WgslIrDerivedModuleBuilder,
   function : Function,
   statement : Statement,
-  visiting_functions : Array[Int],
+  visiting_functions : Array[Int32],
 ) -> Unit {
   match statement {
     Emit(range) => {
@@ -865,7 +865,7 @@ fn WgslIrDerivedModuleBuilder::import_local_variable_declaration(
   self : WgslIrDerivedModuleBuilder,
   function : Function,
   handle : Handle,
-  visiting_functions : Array[Int],
+  visiting_functions : Array[Int32],
 ) -> Unit {
   match function.local_variables.items.get(handle.index()) {
     Some(local_var) => {
@@ -885,7 +885,7 @@ fn WgslIrDerivedModuleBuilder::import_expression(
   self : WgslIrDerivedModuleBuilder,
   expression : Expression,
   function : Function?,
-  visiting_functions : Array[Int],
+  visiting_functions : Array[Int32],
 ) -> Unit {
   match expression {
     Constant(handle) => self.import_constant(handle.index())
@@ -1028,7 +1028,7 @@ fn WgslIrDerivedModuleBuilder::import_child_expression(
   self : WgslIrDerivedModuleBuilder,
   function : Function?,
   handle : Handle,
-  visiting_functions : Array[Int],
+  visiting_functions : Array[Int32],
 ) -> Unit {
   match function {
     Some(value) =>
@@ -1042,7 +1042,7 @@ fn WgslIrDerivedModuleBuilder::import_optional_child_expression(
   self : WgslIrDerivedModuleBuilder,
   function : Function?,
   handle : Handle?,
-  visiting_functions : Array[Int],
+  visiting_functions : Array[Int32],
 ) -> Unit {
   match handle {
     Some(value) =>
@@ -1056,7 +1056,7 @@ fn WgslIrDerivedModuleBuilder::import_sample_level(
   self : WgslIrDerivedModuleBuilder,
   function : Function?,
   level : SampleLevel,
-  visiting_functions : Array[Int],
+  visiting_functions : Array[Int32],
 ) -> Unit {
   match level {
     Exact(handle) | Bias(handle) =>
@@ -1074,7 +1074,7 @@ fn WgslIrDerivedModuleBuilder::import_cooperative_data(
   self : WgslIrDerivedModuleBuilder,
   function : Function,
   data : CooperativeData,
-  visiting_functions : Array[Int],
+  visiting_functions : Array[Int32],
 ) -> Unit {
   self.import_function_expression(function, data.pointer, visiting_functions)
   self.import_function_expression(function, data.stride, visiting_functions)
@@ -1085,7 +1085,7 @@ fn WgslIrDerivedModuleBuilder::import_cooperative_data_for_optional_function(
   self : WgslIrDerivedModuleBuilder,
   function : Function?,
   data : CooperativeData,
-  visiting_functions : Array[Int],
+  visiting_functions : Array[Int32],
 ) -> Unit {
   self.import_child_expression(function, data.pointer, visiting_functions)
   self.import_child_expression(function, data.stride, visiting_functions)

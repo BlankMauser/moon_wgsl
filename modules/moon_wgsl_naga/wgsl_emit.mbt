@@ -17,7 +17,7 @@ fn WgslIrEmitError::message(self : WgslIrEmitError) -> String {
 ///|
 fn emit_wgsl_module_from_ir(
   shader_module : Module,
-  compatibility? : WgslNagaCompatibilityView = WgslNagaCompatibilityView::empty(),
+  compatibility~ : WgslNagaCompatibilityView = WgslNagaCompatibilityView::empty(),
 ) -> String raise WgslIrEmitError {
   emit_wgsl_module_with_runtime_writer_backend(
     shader_module,
@@ -29,7 +29,7 @@ fn emit_wgsl_module_from_ir(
 ///|
 fn emit_wgsl_module_from_ir_compat_writer(
   shader_module : Module,
-  compatibility? : WgslNagaCompatibilityView = WgslNagaCompatibilityView::empty(),
+  compatibility~ : WgslNagaCompatibilityView = WgslNagaCompatibilityView::empty(),
 ) -> String raise WgslIrEmitError {
   emit_wgsl_module_with_compat_writer_backend(
     shader_module,
@@ -42,7 +42,7 @@ fn emit_wgsl_module_from_ir_compat_writer(
 fn emit_wgsl_module_from_ir_roots(
   shader_module : Module,
   root_items : Array[String],
-  compatibility? : WgslNagaCompatibilityView = WgslNagaCompatibilityView::empty(),
+  compatibility~ : WgslNagaCompatibilityView = WgslNagaCompatibilityView::empty(),
 ) -> String raise WgslIrEmitError {
   emit_wgsl_module_with_runtime_writer_backend(
     shader_module,
@@ -55,7 +55,7 @@ fn emit_wgsl_module_from_ir_roots(
 fn emit_wgsl_module_from_ir_compat_writer_roots(
   shader_module : Module,
   root_items : Array[String],
-  compatibility? : WgslNagaCompatibilityView = WgslNagaCompatibilityView::empty(),
+  compatibility~ : WgslNagaCompatibilityView = WgslNagaCompatibilityView::empty(),
 ) -> String raise WgslIrEmitError {
   emit_wgsl_module_with_compat_writer_backend(
     shader_module,
@@ -72,8 +72,8 @@ priv struct WgslIrEmitter {
   names : WgslIrFinalNamePlan
   current_function_origin : WgslIrEmitFunctionOrigin?
   mut compat_negative_zero_seen : Bool
-  emitted_function_named_expressions : @set.Set[Int]
-  emitted_function_materialized_expressions : @set.Set[Int]
+  emitted_function_named_expressions : @set.Set[Int32]
+  emitted_function_materialized_expressions : @set.Set[Int32]
 }
 
 ///|

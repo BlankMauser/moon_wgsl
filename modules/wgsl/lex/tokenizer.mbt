@@ -25,45 +25,45 @@ priv enum WgslTokenKind {
 pub struct WgslToken {
   priv kind : WgslTokenKind
   priv text : String
-  priv code : Int
-  priv pos : Int
-  priv end : Int
+  priv code : Int32
+  priv pos : Int32
+  priv end : Int32
 } derive(Eq, Debug)
 
 ///|
 fn WgslToken::new_text(
   kind : WgslTokenKind,
   text : String,
-  pos : Int,
+  pos : Int32,
 ) -> WgslToken {
   { kind, text, code: -1, pos, end: pos + text.length(), }
 }
 
 ///|
-fn WgslToken::new_identifier(text : String, pos : Int) -> WgslToken {
+fn WgslToken::new_identifier(text : String, pos : Int32) -> WgslToken {
   WgslToken::new_text(Identifier, text, pos)
 }
 
 ///|
-fn WgslToken::new_number(text : String, pos : Int) -> WgslToken {
+fn WgslToken::new_number(text : String, pos : Int32) -> WgslToken {
   WgslToken::new_text(Number, text, pos)
 }
 
 ///|
-fn WgslToken::new_operator(text : String, pos : Int) -> WgslToken {
+fn WgslToken::new_operator(text : String, pos : Int32) -> WgslToken {
   WgslToken::new_text(Operator, text, pos)
 }
 
 ///|
-fn WgslToken::new_whitespace(text : String, pos : Int) -> WgslToken {
+fn WgslToken::new_whitespace(text : String, pos : Int32) -> WgslToken {
   WgslToken::new_text(Whitespace, text, pos)
 }
 
 ///|
 fn WgslToken::new_punctuation(
   text : String,
-  code : Int,
-  pos : Int,
+  code : Int32,
+  pos : Int32,
 ) -> WgslToken {
   { kind: Punctuation, text, code, pos, end: pos + text.length(), }
 }
@@ -96,7 +96,7 @@ pub fn WgslToken::operator_text(self : WgslToken) -> String? {
 }
 
 ///|
-pub fn WgslToken::punctuation_code(self : WgslToken) -> Int? {
+pub fn WgslToken::punctuation_code(self : WgslToken) -> Int32? {
   if self.kind == Punctuation {
     Some(self.code)
   } else {
@@ -120,7 +120,7 @@ pub fn WgslToken::is_operator(self : WgslToken, text : String) -> Bool {
 }
 
 ///|
-pub fn WgslToken::is_punctuation(self : WgslToken, code : Int) -> Bool {
+pub fn WgslToken::is_punctuation(self : WgslToken, code : Int32) -> Bool {
   self.kind == Punctuation && self.code == code
 }
 
@@ -130,17 +130,17 @@ pub fn WgslToken::is_whitespace(self : WgslToken) -> Bool {
 }
 
 ///|
-pub fn WgslToken::pos(self : WgslToken) -> Int {
+pub fn WgslToken::pos(self : WgslToken) -> Int32 {
   self.pos
 }
 
 ///|
-pub fn WgslToken::end(self : WgslToken) -> Int {
+pub fn WgslToken::end(self : WgslToken) -> Int32 {
   self.end
 }
 
 ///|
-pub fn WgslToken::shift(self : WgslToken, offset : Int) -> WgslToken {
+pub fn WgslToken::shift(self : WgslToken, offset : Int32) -> WgslToken {
   {
     kind: self.kind,
     text: self.text,
@@ -151,7 +151,7 @@ pub fn WgslToken::shift(self : WgslToken, offset : Int) -> WgslToken {
 }
 
 ///|
-fn tokenizer_whitespace(code : Int, wgsl_blankspace : Bool) -> Bool {
+fn tokenizer_whitespace(code : Int32, wgsl_blankspace : Bool) -> Bool {
   if wgsl_blankspace {
     wgsl_blankspace_code_point(code)
   } else {
@@ -160,7 +160,7 @@ fn tokenizer_whitespace(code : Int, wgsl_blankspace : Bool) -> Bool {
 }
 
 ///|
-fn tokenizer_code_point_at(src : String, index : Int) -> (Int, Int) {
+fn tokenizer_code_point_at(src : String, index : Int32) -> (Int32, Int32) {
   match wgsl_code_point_at(src, index) {
     Some(point) => point
     None => (src.code_unit_at(index).to_int(), 1)
@@ -168,7 +168,7 @@ fn tokenizer_code_point_at(src : String, index : Int) -> (Int, Int) {
 }
 
 ///|
-fn tokenizer_operator_pair_text(lhs : Int, rhs : Int) -> String? {
+fn tokenizer_operator_pair_text(lhs : Int32, rhs : Int32) -> String? {
   match (lhs, rhs) {
     (45, 62) => Some("->")
     (61, 61) => Some("==")
@@ -194,7 +194,7 @@ fn tokenizer_operator_pair_text(lhs : Int, rhs : Int) -> String? {
 }
 
 ///|
-fn tokenizer_identifier_start(code : Int, wgsl_blankspace : Bool) -> Bool {
+fn tokenizer_identifier_start(code : Int32, wgsl_blankspace : Bool) -> Bool {
   if wgsl_blankspace {
     wgsl_identifier_start_code_point(code)
   } else {
@@ -203,7 +203,7 @@ fn tokenizer_identifier_start(code : Int, wgsl_blankspace : Bool) -> Bool {
 }
 
 ///|
-fn tokenizer_identifier_continue(code : Int, wgsl_blankspace : Bool) -> Bool {
+fn tokenizer_identifier_continue(code : Int32, wgsl_blankspace : Bool) -> Bool {
   if wgsl_blankspace {
     wgsl_identifier_continue_code_point(code)
   } else {
@@ -214,7 +214,7 @@ fn tokenizer_identifier_continue(code : Int, wgsl_blankspace : Bool) -> Bool {
 ///|
 fn tokenizer_number_continue(
   src : String,
-  index : Int,
+  index : Int32,
   wgsl_blankspace : Bool,
 ) -> Bool {
   let (code, _) = tokenizer_code_point_at(src, index)
@@ -237,8 +237,8 @@ fn tokenizer_number_continue(
 fn tokenizer_push_number_as_other(
   tokens : Array[WgslToken],
   src : String,
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
   wgsl_blankspace : Bool,
 ) -> Unit {
   if wgsl_blankspace {

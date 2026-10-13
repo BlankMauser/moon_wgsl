@@ -1,7 +1,7 @@
 ///|
 priv enum WgslIrEmitIntegerValue {
-  Signed(Int)
-  Unsigned(UInt)
+  Signed(Int32)
+  Unsigned(UInt32)
   Abstract(Int64)
 }
 
@@ -55,7 +55,7 @@ fn WgslIrEmitter::constant_type_integer_kind(
 fn WgslIrEmitter::constant_type_float_width(
   self : WgslIrEmitter,
   constant : Constant,
-) -> Int? {
+) -> Int32? {
   match self.shader_module.types.items.get(constant.ty.index()) {
     Some(ty) =>
       match ty.inner {
@@ -103,7 +103,7 @@ fn WgslIrEmitter::integer_value_literal_for_kind(
 fn WgslIrEmitter::float_value_literal_for_width(
   self : WgslIrEmitter,
   value : Double,
-  width : Int,
+  width : Int32,
 ) -> String? {
   let numeric_policy = self.options.numeric_literal_policy()
   match width {
@@ -116,7 +116,7 @@ fn WgslIrEmitter::float_value_literal_for_width(
 
 ///|
 fn wgsl_ir_emit_unsigned_literal(
-  value : UInt,
+  value : UInt32,
   policy : WgslIrNumericLiteralBytePolicy,
 ) -> String {
   match policy {
@@ -126,7 +126,7 @@ fn wgsl_ir_emit_unsigned_literal(
 
 ///|
 fn wgsl_ir_emit_signed_literal(
-  value : Int,
+  value : Int32,
   policy : WgslIrNumericLiteralBytePolicy,
 ) -> String {
   match policy {
@@ -138,7 +138,7 @@ fn wgsl_ir_emit_signed_literal(
 fn WgslIrEmitter::eval_global_float_expression_for_emit(
   self : WgslIrEmitter,
   handle : Handle,
-  visiting_constants : @set.Set[Int],
+  visiting_constants : @set.Set[Int32],
 ) -> Double? {
   match self.shader_module.global_expressions.items.get(handle.index()) {
     Some(expression) =>
@@ -153,7 +153,7 @@ fn WgslIrEmitter::eval_global_float_expression_for_emit(
 fn WgslIrEmitter::eval_global_float_expression_inner_for_emit(
   self : WgslIrEmitter,
   expression : Expression,
-  visiting_constants : @set.Set[Int],
+  visiting_constants : @set.Set[Int32],
 ) -> Double? {
   match expression {
     Literal(F32(value) | F32Exact(value)) => wgsl_ir_emit_f32_to_double(value)
@@ -191,7 +191,7 @@ fn WgslIrEmitter::eval_global_float_expression_inner_for_emit(
 fn WgslIrEmitter::eval_constant_float_expression_for_emit(
   self : WgslIrEmitter,
   handle : Handle,
-  visiting_constants : @set.Set[Int],
+  visiting_constants : @set.Set[Int32],
 ) -> Double? {
   let index = handle.index()
   if visiting_constants.contains(index) {
@@ -232,7 +232,7 @@ fn wgsl_ir_emit_f32_to_double(value : Float) -> Double? {
 fn WgslIrEmitter::eval_global_integer_expression_for_emit(
   self : WgslIrEmitter,
   handle : Handle,
-  visiting_constants : @set.Set[Int],
+  visiting_constants : @set.Set[Int32],
 ) -> WgslIrEmitIntegerValue? {
   match self.shader_module.global_expressions.items.get(handle.index()) {
     Some(expression) =>
@@ -247,7 +247,7 @@ fn WgslIrEmitter::eval_global_integer_expression_for_emit(
 fn WgslIrEmitter::eval_global_integer_expression_inner_for_emit(
   self : WgslIrEmitter,
   expression : Expression,
-  visiting_constants : @set.Set[Int],
+  visiting_constants : @set.Set[Int32],
 ) -> WgslIrEmitIntegerValue? {
   match expression {
     Literal(I32(value)) => Some(Signed(value))
@@ -344,7 +344,7 @@ fn WgslIrEmitter::eval_global_integer_expression_inner_for_emit(
 fn WgslIrEmitter::eval_constant_integer_expression_for_emit(
   self : WgslIrEmitter,
   handle : Handle,
-  visiting_constants : @set.Set[Int],
+  visiting_constants : @set.Set[Int32],
 ) -> WgslIrEmitIntegerValue? {
   if visiting_constants.contains(handle.index()) {
     return None
@@ -823,7 +823,9 @@ fn WgslIrEmitIntegerValue::is_unsigned(self : WgslIrEmitIntegerValue) -> Bool {
 }
 
 ///|
-fn WgslIrEmitIntegerValue::to_signed_int(self : WgslIrEmitIntegerValue) -> Int? {
+fn WgslIrEmitIntegerValue::to_signed_int(
+  self : WgslIrEmitIntegerValue,
+) -> Int32? {
   match self {
     Signed(value) => Some(value)
     Abstract(value) =>
@@ -838,7 +840,9 @@ fn WgslIrEmitIntegerValue::to_signed_int(self : WgslIrEmitIntegerValue) -> Int? 
 }
 
 ///|
-fn WgslIrEmitIntegerValue::to_unsigned(self : WgslIrEmitIntegerValue) -> UInt? {
+fn WgslIrEmitIntegerValue::to_unsigned(
+  self : WgslIrEmitIntegerValue,
+) -> UInt32? {
   match self {
     Unsigned(value) => Some(value)
     Signed(value) => wgsl_ir_emit_non_negative_int_to_uint(value)
@@ -847,7 +851,7 @@ fn WgslIrEmitIntegerValue::to_unsigned(self : WgslIrEmitIntegerValue) -> UInt? {
 }
 
 ///|
-fn wgsl_ir_emit_non_negative_int_to_uint(value : Int) -> UInt? {
+fn wgsl_ir_emit_non_negative_int_to_uint(value : Int32) -> UInt32? {
   if value < 0 {
     return None
   }
@@ -855,7 +859,7 @@ fn wgsl_ir_emit_non_negative_int_to_uint(value : Int) -> UInt? {
 }
 
 ///|
-fn wgsl_ir_emit_non_negative_int64_to_uint(value : Int64) -> UInt? {
+fn wgsl_ir_emit_non_negative_int64_to_uint(value : Int64) -> UInt32? {
   if value < Int64::from_int(0) {
     return None
   }

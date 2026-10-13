@@ -1,5 +1,5 @@
 ///|
-fn wgsl_template_const_skip_whitespace(source : String, start : Int) -> Int {
+fn wgsl_template_const_skip_whitespace(source : String, start : Int32) -> Int32 {
   let mut index = start
   while index < source.length() {
     match source.code_unit_at(index).to_int() {
@@ -13,7 +13,7 @@ fn wgsl_template_const_skip_whitespace(source : String, start : Int) -> Int {
 ///|
 fn wgsl_template_const_source_has_prefix_at(
   source : String,
-  start : Int,
+  start : Int32,
   prefix : String,
 ) -> Bool {
   guard prefix != "" && start + prefix.length() <= source.length() else {

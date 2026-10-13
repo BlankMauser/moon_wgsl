@@ -16,21 +16,21 @@
 pub(all) struct AttributeParseNode {
   name : String
   arguments : String?
-  start_line : Int
-  end_line : Int
-  end_offset : Int
+  start_line : Int32
+  end_line : Int32
+  end_offset : Int32
 } derive(Eq, Debug)
 
 ///|
 pub(all) struct AttributeParseDiagnostic {
-  offset : Int
+  offset : Int32
   incomplete : Bool
 } derive(Eq, Debug)
 
 ///|
 pub(all) struct AttributeParseSuccess {
   attributes : Array[AttributeParseNode]
-  consumed_offset : Int
+  consumed_offset : Int32
 } derive(Eq, Debug)
 
 ///|
@@ -41,12 +41,12 @@ pub(all) enum AttributeParseResult {
 
 ///|
 priv enum AttributeLexResult {
-  Lexed(Array[(Token, Int, Int)], Int)
+  Lexed(Array[(Token, Int32, Int32)], Int32)
   LexFailed(AttributeParseDiagnostic)
 }
 
 ///|
-fn attribute_parse_is_identifier_start(code : Int) -> Bool {
+fn attribute_parse_is_identifier_start(code : Int32) -> Bool {
   (code >= 65 && code <= 90) ||
   (code >= 97 && code <= 122) ||
   code == 95 ||
@@ -54,12 +54,12 @@ fn attribute_parse_is_identifier_start(code : Int) -> Bool {
 }
 
 ///|
-fn attribute_parse_is_identifier_char(code : Int) -> Bool {
+fn attribute_parse_is_identifier_char(code : Int32) -> Bool {
   attribute_parse_is_identifier_start(code) || (code >= 48 && code <= 57)
 }
 
 ///|
-fn attribute_parse_skip_line_comment(source : String, index : Int) -> Int {
+fn attribute_parse_skip_line_comment(source : String, index : Int32) -> Int32 {
   let mut cursor = index
   while cursor < source.length() && source.code_unit_at(cursor).to_int() != 10 {
     cursor += 1
@@ -70,9 +70,9 @@ fn attribute_parse_skip_line_comment(source : String, index : Int) -> Int {
 ///|
 fn attribute_parse_skip_block_comment(
   source : String,
-  index : Int,
-  line : Int,
-) -> (Int, Int, Bool) {
+  index : Int32,
+  line : Int32,
+) -> (Int32, Int32, Bool) {
   let mut cursor = index
   let mut current_line = line
   let mut depth = 1
@@ -105,9 +105,9 @@ fn attribute_parse_skip_block_comment(
 ///|
 fn attribute_parse_read_arguments(
   source : String,
-  index : Int,
-  line : Int,
-) -> (String, Int, Int, Bool) {
+  index : Int32,
+  line : Int32,
+) -> (String, Int32, Int32, Bool) {
   let start = index
   let mut cursor = index
   let mut current_line = line
@@ -159,7 +159,7 @@ fn attribute_parse_read_arguments(
 
 ///|
 fn attribute_parse_lex(source : String) -> AttributeLexResult {
-  let tokens : Array[(Token, Int, Int)] = []
+  let tokens : Array[(Token, Int32, Int32)] = []
   let mut index = 0
   let mut line = 1
   let mut consumed_offset = 0

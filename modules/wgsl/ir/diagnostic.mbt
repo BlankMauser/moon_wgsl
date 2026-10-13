@@ -41,8 +41,8 @@ pub(all) enum RayQueryIntersection {
 ///|
 pub(all) struct DocComments {
   types : Array[(Handle, Array[String])]
-  struct_members : Array[(Handle, Int, Array[String])]
-  entry_points : Array[(Int, Array[String])]
+  struct_members : Array[(Handle, Int32, Array[String])]
+  entry_points : Array[(Int32, Array[String])]
   functions : Array[(Handle, Array[String])]
   constants : Array[(Handle, Array[String])]
   global_variables : Array[(Handle, Array[String])]

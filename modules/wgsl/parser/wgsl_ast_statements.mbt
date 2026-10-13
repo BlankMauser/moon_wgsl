@@ -29,8 +29,8 @@ priv suberror WgslFunctionArgsTokenizeError {
 fn WgslDeclParser::tokenize_function_arguments(
   self : WgslDeclParser,
   fragment : WgslDelimitedTokenView,
-) -> Array[(Token, Int, Int)] raise WgslFunctionArgsTokenizeError {
-  let tokens : Array[(Token, Int, Int)] = [
+) -> Array[(Token, Int32, Int32)] raise WgslFunctionArgsTokenizeError {
+  let tokens : Array[(Token, Int32, Int32)] = [
     (LPAREN, fragment.open_start, fragment.open_start + 1),
   ]
   let parser = WgslDeclParser::{
@@ -90,7 +90,7 @@ fn WgslDeclParser::parse_function_result(
         token_view: rest,
       }
       let rest_len = rest.length()
-      let tokens : Array[(Token, Int, Int)] = [
+      let tokens : Array[(Token, Int32, Int32)] = [
         (ARROW(arrow_start), arrow_start, arrow_start + 2),
       ]
       parser.push_attribute_tokens(tokens)
@@ -123,8 +123,8 @@ fn wgsl_statement_is_local_decl(first_identifier : String?) -> Bool {
 ///|
 fn wgsl_statement_assignment_operator_at(
   tokens : Array[WgslToken],
-  index : Int,
-) -> (String, Int)? {
+  index : Int32,
+) -> (String, Int32)? {
   guard index >= 0 && index < tokens.length() else { return None }
   match tokens[index].operator_text() {
     Some(op) =>
@@ -158,7 +158,7 @@ fn wgsl_statement_assignment_operator_at(
 ///|
 fn wgsl_statement_assignment_operator(
   tokens : Array[WgslToken],
-) -> (Int, String, Int)? {
+) -> (Int32, String, Int32)? {
   let depth = WgslTokenDepth()
   for i in 0..<tokens.length() {
     if depth.at_top() {
@@ -264,7 +264,7 @@ fn wgsl_statement_token_identifier(token : WgslToken) -> String? {
 fn WgslDeclParser::parse_statement_local_binding(
   self : WgslDeclParser,
   tokens : Array[WgslToken],
-  keyword_index : Int,
+  keyword_index : Int32,
 ) -> WgslLocalDeclaration? {
   guard keyword_index >= 0 && keyword_index < tokens.length() else {
     return None
@@ -310,7 +310,7 @@ fn WgslDeclParser::parse_statement_local_binding(
 ///|
 fn collect_wgsl_statement_local_binding(
   tokens : Array[WgslToken],
-  index : Int,
+  index : Int32,
   local_bindings : Array[WgslLocalDeclaration],
   owner : WgslDeclParser,
 ) -> Unit {
@@ -354,11 +354,11 @@ priv suberror WgslBlockParseError {
 ///|
 fn WgslDeclParser::parse_block_tokens_checked(
   self : WgslDeclParser,
-  open_start : Int,
-  close_start : Int,
+  open_start : Int32,
+  close_start : Int32,
   inner : ArrayView[WgslToken],
 ) -> WgslBlock raise WgslBlockParseError {
-  let tokens : Array[(Token, Int, Int)] = [
+  let tokens : Array[(Token, Int32, Int32)] = [
     (LBRACE(open_start), open_start, open_start + 1),
   ]
   let parser = WgslDeclParser::{
@@ -382,8 +382,8 @@ fn WgslDeclParser::parse_block_tokens_checked(
 ///|
 fn WgslDeclParser::parse_block_tokens(
   self : WgslDeclParser,
-  open_start : Int,
-  close_start : Int,
+  open_start : Int32,
+  close_start : Int32,
   inner : ArrayView[WgslToken],
 ) -> WgslBlock {
   self.parse_block_tokens_checked(open_start, close_start, inner) catch {
@@ -397,7 +397,7 @@ fn WgslDeclParser::collect_statement_blocks(
   tokens : Array[WgslToken],
 ) -> Array[WgslBlock] {
   let blocks : Array[WgslBlock] = []
-  let open_stack : Array[Int] = []
+  let open_stack : Array[Int32] = []
   let source_template = WgslTokenDepth()
   for i in 0..<tokens.length() {
     if source_template.observe_source_template(tokens[i]) {
@@ -453,9 +453,9 @@ fn collect_wgsl_statement_scope_tokens(
 ///|
 fn wgsl_statement_top_level_token_index(
   tokens : Array[WgslToken],
-  start : Int,
-  code : Int,
-) -> Int {
+  start : Int32,
+  code : Int32,
+) -> Int32 {
   wgsl_statement_top_level_token_index_until(
     tokens,
     start,
@@ -467,10 +467,10 @@ fn wgsl_statement_top_level_token_index(
 ///|
 fn wgsl_statement_top_level_token_index_until(
   tokens : Array[WgslToken],
-  start : Int,
-  end_ : Int,
-  code : Int,
-) -> Int {
+  start : Int32,
+  end_ : Int32,
+  code : Int32,
+) -> Int32 {
   let depth = WgslTokenDepth()
   let limit = if end_ < tokens.length() { end_ } else { tokens.length() }
   for i in start..<limit {
@@ -485,10 +485,10 @@ fn wgsl_statement_top_level_token_index_until(
 ///|
 fn wgsl_statement_delimited_end(
   tokens : Array[WgslToken],
-  open_index : Int,
-  open_code : Int,
-  close_code : Int,
-) -> Int {
+  open_index : Int32,
+  open_code : Int32,
+  close_code : Int32,
+) -> Int32 {
   guard open_index >= 0 && open_index < tokens.length() else { return -1 }
   guard tokens[open_index].is_punctuation(open_code) else { return -1 }
   let mut depth = 0
@@ -509,8 +509,8 @@ fn wgsl_statement_delimited_end(
 fn wgsl_statement_push_expr_ref(
   owner : WgslDeclParser,
   tokens : Array[WgslToken],
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
   role : WgslStatementExpressionRole,
   expression_refs : Array[WgslExprRef],
   expressions : Array[WgslStatementExpression],
@@ -536,8 +536,8 @@ fn wgsl_statement_push_expr_ref(
 fn wgsl_statement_push_comma_expr_refs(
   owner : WgslDeclParser,
   tokens : Array[WgslToken],
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
   role : WgslStatementExpressionRole,
   expression_refs : Array[WgslExprRef],
   expressions : Array[WgslStatementExpression],
@@ -563,8 +563,8 @@ fn wgsl_statement_push_comma_expr_refs(
 fn wgsl_statement_case_selectors_from_tokens(
   owner : WgslDeclParser,
   tokens : Array[WgslToken],
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
   expression_refs : Array[WgslExprRef],
   expressions : Array[WgslStatementExpression],
 ) -> Array[WgslCaseSelector] {
@@ -574,7 +574,7 @@ fn wgsl_statement_case_selectors_from_tokens(
   }
   let depth = WgslTokenDepth()
   let mut item_start = start
-  fn push_selector(item_end : Int) -> Unit {
+  fn push_selector(item_end : Int32) -> Unit {
     guard item_end > item_start else { return }
     if item_start + 1 == item_end && tokens[item_start].is_identifier("default") {
       selectors.push(DefaultSelector)
@@ -604,8 +604,8 @@ fn wgsl_statement_case_selectors_from_tokens(
 fn WgslDeclParser::expr_ref_from_token_range(
   self : WgslDeclParser,
   tokens : Array[WgslToken],
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
 ) -> WgslExprRef? {
   guard start >= 0 && end_ > start && end_ <= tokens.length() else {
     return None
@@ -622,8 +622,8 @@ fn WgslDeclParser::expr_ref_from_token_range(
 ///|
 fn wgsl_statement_starts_with_local_binding(
   tokens : Array[WgslToken],
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
 ) -> Bool {
   guard start >= 0 && start < end_ && start < tokens.length() else {
     return false
@@ -636,8 +636,8 @@ fn wgsl_statement_starts_with_local_binding(
 ///|
 fn wgsl_statement_control_expression_end(
   tokens : Array[WgslToken],
-  start : Int,
-) -> Int {
+  start : Int32,
+) -> Int32 {
   let depth = WgslTokenDepth()
   for i in start..<tokens.length() {
     if depth.at_top() &&
@@ -657,11 +657,11 @@ fn wgsl_statement_control_expression_end(
 fn wgsl_statement_collect_condition_expr(
   owner : WgslDeclParser,
   tokens : Array[WgslToken],
-  keyword_index : Int,
+  keyword_index : Int32,
   role : WgslStatementExpressionRole,
   expression_refs : Array[WgslExprRef],
   expressions : Array[WgslStatementExpression],
-) -> Int {
+) -> Int32 {
   let expr_start = keyword_index + 1
   guard expr_start < tokens.length() else { return expr_start }
   if tokens[expr_start].is_punctuation(40) {
@@ -712,10 +712,10 @@ fn wgsl_statement_collect_condition_expr(
 fn wgsl_statement_collect_for_header_exprs(
   owner : WgslDeclParser,
   tokens : Array[WgslToken],
-  for_index : Int,
+  for_index : Int32,
   expression_refs : Array[WgslExprRef],
   expressions : Array[WgslStatementExpression],
-) -> Int {
+) -> Int32 {
   let header_start = for_index + 1
   guard header_start < tokens.length() else { return header_start }
   guard tokens[header_start].is_punctuation(40) else { return header_start }
@@ -1196,7 +1196,7 @@ fn wgsl_statement_payload_from_ast(
 fn wgsl_statement_leading_attributes(
   owner : WgslDeclParser,
   tokens : Array[WgslToken],
-) -> (Array[WgslAttribute], Int) {
+) -> (Array[WgslAttribute], Int32) {
   let attributes : Array[WgslAttribute] = []
   let mut index = 0
   while index + 1 < tokens.length() {
@@ -1238,7 +1238,7 @@ fn WgslDeclParser::collect_statement(self : WgslDeclParser) -> WgslStatement? {
   let mut end_pos = -1
   let mut missing_semicolon_at_statement_boundary = false
   let depth = WgslTokenDepth()
-  fn record_span(start : Int, end_ : Int) -> Unit {
+  fn record_span(start : Int32, end_ : Int32) -> Unit {
     if start_pos < 0 {
       start_pos = start
     }

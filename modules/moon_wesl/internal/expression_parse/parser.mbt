@@ -1,8 +1,13 @@
 ///|
 pub suberror ParseError {
-  UnexpectedToken(Token, (Int, Int), Array[TokenKind])
-  UnexpectedEndOfInput(Int, Array[TokenKind])
+  UnexpectedToken(Token, (Int32, Int32), Array[TokenKind])
+  UnexpectedEndOfInput(Int32, Array[TokenKind])
 } derive(Debug)
+
+///|
+#deprecated("Use Debug::to_repr instead")
+#doc(hidden)
+pub extend ParseError with Debug::{to_repr}
 
 ///|
 type YYObj = Error
@@ -39,14 +44,14 @@ priv suberror YYObj_ExpressionTypeParseNode {
 type YYState = (YYSymbol) -> YYDecision
 
 ///|
-type YYAction = (Int, ArrayView[(YYObj, Int, Int)]) -> YYObj
+type YYAction = (Int32, ArrayView[(YYObj, Int32, Int32)]) -> YYObj
 
 ///|
 priv enum YYDecision {
   Accept
   Shift(YYState)
-  Reduce(Int, YYSymbol, YYAction)
-  ReduceNoLookahead(Int, YYSymbol, YYAction)
+  Reduce(Int32, YYSymbol, YYAction)
+  ReduceNoLookahead(Int32, YYSymbol, YYAction)
   Error
 }
 
@@ -108,9 +113,8 @@ priv enum YYSymbol {
   EOI
 }
 
-// Workaround for EOI unused warning
-
 ///|
+// Workaround for EOI unused warning
 fn init {
   match (EOI : YYSymbol) {
     EOI => ()
@@ -118,11 +122,13 @@ fn init {
   }
 }
 
+///|
 // file:///./parser.mbty
 // 63|    expression                    { $1 }
-
-///|
-fn yy_action_0(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_0(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   YYObj_ExpressionParseNode(
     {
@@ -132,12 +138,14 @@ fn yy_action_0(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 153|    path_ident "(" opt_arguments ")"
 // 154|                                  { FunctionCall({ callee: $1, arguments: $3 }) }
-
-///|
-fn yy_action_1(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_1(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionTypeParseNode(_dollar1)
   guard! _args[2].0 is YYObj_Array_ExpressionParseNode_(_dollar3)
   YYObj_ExpressionParseNode(
@@ -148,12 +156,14 @@ fn yy_action_1(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 155|    path_ident TEMPLATE "(" opt_arguments ")"
 // 156|                                  { FunctionCall({ callee: $1.with_template($2), arguments: $4 }) }
-
-///|
-fn yy_action_2(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_2(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionTypeParseNode(_dollar1)
   guard! _args[1].0 is YYObj_String(_dollar2)
   guard! _args[3].0 is YYObj_Array_ExpressionParseNode_(_dollar4)
@@ -168,11 +178,13 @@ fn yy_action_2(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 142|    postfix postfix_suffix        { $1.apply_postfix($2) }
-
-///|
-fn yy_action_3(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_3(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[1].0 is YYObj_ExpressionPostfixSuffix(_dollar2)
   YYObj_ExpressionParseNode(
@@ -183,12 +195,14 @@ fn yy_action_3(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 72|    short_circuit_or "||" short_circuit_and
 // 73|                                  { Binary(ShortCircuitOr, $1, $3) }
-
-///|
-fn yy_action_4(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_4(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -199,11 +213,13 @@ fn yy_action_4(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 67|    short_circuit_or              { $1 }
-
-///|
-fn yy_action_5(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_5(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   YYObj_ExpressionParseNode(
     {
@@ -213,12 +229,14 @@ fn yy_action_5(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 78|    short_circuit_and "&&" bitwise_or
 // 79|                                  { Binary(ShortCircuitAnd, $1, $3) }
-
-///|
-fn yy_action_6(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_6(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -229,11 +247,13 @@ fn yy_action_6(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 71|    short_circuit_and             { $1 }
-
-///|
-fn yy_action_7(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_7(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   YYObj_ExpressionParseNode(
     {
@@ -243,11 +263,13 @@ fn yy_action_7(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 84|    bitwise_or "|" bitwise_xor    { Binary(BitwiseOr, $1, $3) }
-
-///|
-fn yy_action_8(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_8(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -258,11 +280,13 @@ fn yy_action_8(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 77|    bitwise_or                    { $1 }
-
-///|
-fn yy_action_9(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_9(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   YYObj_ExpressionParseNode(
     {
@@ -272,11 +296,13 @@ fn yy_action_9(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 89|    bitwise_xor "^" bitwise_and   { Binary(BitwiseXor, $1, $3) }
-
-///|
-fn yy_action_10(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_10(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -287,11 +313,13 @@ fn yy_action_10(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 83|    bitwise_xor                   { $1 }
-
-///|
-fn yy_action_11(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_11(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   YYObj_ExpressionParseNode(
     {
@@ -301,11 +329,13 @@ fn yy_action_11(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 94|    bitwise_and "&" equality      { Binary(BitwiseAnd, $1, $3) }
-
-///|
-fn yy_action_12(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_12(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -316,11 +346,13 @@ fn yy_action_12(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 88|    bitwise_and                   { $1 }
-
-///|
-fn yy_action_13(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_13(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   YYObj_ExpressionParseNode(
     {
@@ -330,11 +362,13 @@ fn yy_action_13(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 99|    equality "==" relational      { Binary(Equality, $1, $3) }
-
-///|
-fn yy_action_14(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_14(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -345,11 +379,13 @@ fn yy_action_14(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 100|    equality "!=" relational      { Binary(Inequality, $1, $3) }
-
-///|
-fn yy_action_15(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_15(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -360,11 +396,13 @@ fn yy_action_15(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 93|    equality                      { $1 }
-
-///|
-fn yy_action_16(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_16(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   YYObj_ExpressionParseNode(
     {
@@ -374,11 +412,13 @@ fn yy_action_16(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 105|    relational "<" shift          { Binary(LessThan, $1, $3) }
-
-///|
-fn yy_action_17(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_17(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -389,11 +429,13 @@ fn yy_action_17(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 106|    relational "<=" shift         { Binary(LessThanEqual, $1, $3) }
-
-///|
-fn yy_action_18(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_18(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -404,11 +446,13 @@ fn yy_action_18(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 107|    relational ">" shift          { Binary(GreaterThan, $1, $3) }
-
-///|
-fn yy_action_19(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_19(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -419,11 +463,13 @@ fn yy_action_19(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 108|    relational ">=" shift         { Binary(GreaterThanEqual, $1, $3) }
-
-///|
-fn yy_action_20(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_20(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -434,11 +480,13 @@ fn yy_action_20(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 98|    relational                    { $1 }
-
-///|
-fn yy_action_21(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_21(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   YYObj_ExpressionParseNode(
     {
@@ -448,11 +496,13 @@ fn yy_action_21(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 113|    shift "<<" additive           { Binary(ShiftLeft, $1, $3) }
-
-///|
-fn yy_action_22(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_22(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -463,11 +513,13 @@ fn yy_action_22(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 114|    shift ">>" additive           { Binary(ShiftRight, $1, $3) }
-
-///|
-fn yy_action_23(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_23(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -478,11 +530,13 @@ fn yy_action_23(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 104|    shift                         { $1 }
-
-///|
-fn yy_action_24(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_24(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   YYObj_ExpressionParseNode(
     {
@@ -492,11 +546,13 @@ fn yy_action_24(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 119|    additive "+" multiplicative   { Binary(Addition, $1, $3) }
-
-///|
-fn yy_action_25(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_25(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -507,11 +563,13 @@ fn yy_action_25(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 120|    additive "-" multiplicative   { Binary(Subtraction, $1, $3) }
-
-///|
-fn yy_action_26(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_26(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -522,11 +580,13 @@ fn yy_action_26(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 121|    additive "--" multiplicative  { Binary(Subtraction, $1, Unary(Negation, $3)) }
-
-///|
-fn yy_action_27(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_27(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -537,11 +597,13 @@ fn yy_action_27(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 112|    additive                      { $1 }
-
-///|
-fn yy_action_28(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_28(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   YYObj_ExpressionParseNode(
     {
@@ -551,11 +613,13 @@ fn yy_action_28(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 126|    multiplicative "*" unary      { Binary(Multiplication, $1, $3) }
-
-///|
-fn yy_action_29(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_29(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -566,11 +630,13 @@ fn yy_action_29(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 127|    multiplicative "/" unary      { Binary(Division, $1, $3) }
-
-///|
-fn yy_action_30(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_30(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -581,11 +647,13 @@ fn yy_action_30(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 128|    multiplicative "%" unary      { Binary(Remainder, $1, $3) }
-
-///|
-fn yy_action_31(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_31(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_ExpressionParseNode(
@@ -596,11 +664,13 @@ fn yy_action_31(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 118|    multiplicative                { $1 }
-
-///|
-fn yy_action_32(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_32(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   YYObj_ExpressionParseNode(
     {
@@ -610,11 +680,13 @@ fn yy_action_32(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 125|    unary                         { $1 }
-
-///|
-fn yy_action_33(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_33(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   YYObj_ExpressionParseNode(
     {
@@ -624,11 +696,13 @@ fn yy_action_33(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 146|    "[" expression "]"            { Indexing($2) }
-
-///|
-fn yy_action_34(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_34(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj_ExpressionParseNode(_dollar2)
   YYObj_ExpressionPostfixSuffix(
     {
@@ -638,11 +712,13 @@ fn yy_action_34(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 147|    "." IDENT                     { NamedComponent($2) }
-
-///|
-fn yy_action_35(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_35(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj_String(_dollar2)
   YYObj_ExpressionPostfixSuffix(
     {
@@ -652,11 +728,13 @@ fn yy_action_35(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 132|    postfix                       { $1 }
-
-///|
-fn yy_action_36(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_36(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   YYObj_ExpressionParseNode(
     {
@@ -666,11 +744,13 @@ fn yy_action_36(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 133|    "-" unary                     { Unary(Negation, $2) }
-
-///|
-fn yy_action_37(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_37(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj_ExpressionParseNode(_dollar2)
   YYObj_ExpressionParseNode(
     {
@@ -680,11 +760,13 @@ fn yy_action_37(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 134|    "!" unary                     { Unary(LogicalNegation, $2) }
-
-///|
-fn yy_action_38(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_38(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj_ExpressionParseNode(_dollar2)
   YYObj_ExpressionParseNode(
     {
@@ -694,11 +776,13 @@ fn yy_action_38(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 135|    "~" unary                     { Unary(BitwiseComplement, $2) }
-
-///|
-fn yy_action_39(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_39(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj_ExpressionParseNode(_dollar2)
   YYObj_ExpressionParseNode(
     {
@@ -708,11 +792,13 @@ fn yy_action_39(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 136|    "*" unary                     { Unary(Indirection, $2) }
-
-///|
-fn yy_action_40(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_40(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj_ExpressionParseNode(_dollar2)
   YYObj_ExpressionParseNode(
     {
@@ -722,11 +808,13 @@ fn yy_action_40(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 137|    "&" unary                     { Unary(AddressOf, $2) }
-
-///|
-fn yy_action_41(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_41(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj_ExpressionParseNode(_dollar2)
   YYObj_ExpressionParseNode(
     {
@@ -736,11 +824,13 @@ fn yy_action_41(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 141|    primary                       { $1 }
-
-///|
-fn yy_action_42(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_42(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   YYObj_ExpressionParseNode(
     {
@@ -750,11 +840,13 @@ fn yy_action_42(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 151|    literal                       { $1 }
-
-///|
-fn yy_action_43(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_43(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   YYObj_ExpressionParseNode(
     {
@@ -764,11 +856,13 @@ fn yy_action_43(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 173|    argument_list "," expression { $1.push($3); $1 }
-
-///|
-fn yy_action_44(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_44(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Array_ExpressionParseNode_(_dollar1)
   guard! _args[2].0 is YYObj_ExpressionParseNode(_dollar3)
   YYObj_Array_ExpressionParseNode_(
@@ -780,11 +874,13 @@ fn yy_action_44(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 168|    argument_list ","            { $1 }
-
-///|
-fn yy_action_45(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_45(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Array_ExpressionParseNode_(_dollar1)
   YYObj_Array_ExpressionParseNode_(
     {
@@ -794,11 +890,13 @@ fn yy_action_45(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 167|    argument_list                { $1 }
-
-///|
-fn yy_action_46(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_46(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Array_ExpressionParseNode_(_dollar1)
   YYObj_Array_ExpressionParseNode_(
     {
@@ -808,11 +906,13 @@ fn yy_action_46(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 172|    expression                   { [$1] }
-
-///|
-fn yy_action_47(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_47(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionParseNode(_dollar1)
   YYObj_Array_ExpressionParseNode_(
     {
@@ -822,11 +922,13 @@ fn yy_action_47(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 166|                                 { [] }
-
-///|
-fn yy_action_48(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_48(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Array_ExpressionParseNode_(
     {
       ()
@@ -835,11 +937,13 @@ fn yy_action_48(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 162|    path_ident "::" IDENT         { $1.qualified_child($3) }
-
-///|
-fn yy_action_49(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_49(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionTypeParseNode(_dollar1)
   guard! _args[2].0 is YYObj_String(_dollar3)
   YYObj_ExpressionTypeParseNode(
@@ -850,11 +954,13 @@ fn yy_action_49(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 152|    path_ident                    { TypeOrIdentifier($1) }
-
-///|
-fn yy_action_50(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_50(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ExpressionTypeParseNode(_dollar1)
   YYObj_ExpressionParseNode(
     {
@@ -864,11 +970,13 @@ fn yy_action_50(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 157|    "(" expression ")"            { Parenthesized($2) }
-
-///|
-fn yy_action_51(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_51(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj_ExpressionParseNode(_dollar2)
   YYObj_ExpressionParseNode(
     {
@@ -878,11 +986,13 @@ fn yy_action_51(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 161|    IDENT                         { ExpressionTypeParseNode::from_path([$1]) }
-
-///|
-fn yy_action_52(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_52(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_String(_dollar1)
   YYObj_ExpressionTypeParseNode(
     {
@@ -892,11 +1002,13 @@ fn yy_action_52(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 177|    NUMBER                       { Literal($1) }
-
-///|
-fn yy_action_53(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_53(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_String(_dollar1)
   YYObj_ExpressionParseNode(
     {
@@ -906,11 +1018,13 @@ fn yy_action_53(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 178|    "true"                       { Bool(true) }
-
-///|
-fn yy_action_54(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_54(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_ExpressionParseNode(
     {
       ()
@@ -919,11 +1033,13 @@ fn yy_action_54(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 179|    "false"                      { Bool(false) }
-
-///|
-fn yy_action_55(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_55(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_ExpressionParseNode(
     {
       ()
@@ -935,8 +1051,8 @@ fn yy_action_55(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
 ///|
 fn yy_input(
   token : Token,
-  _start_pos : Int,
-  _end_pos : Int,
+  _start_pos : Int32,
+  _end_pos : Int32,
 ) -> (YYSymbol, YYObj) {
   match token {
     IDENT(data) => (T_IDENT, YYObj_String(data))
@@ -975,6 +1091,7 @@ fn yy_input(
   }
 }
 
+///|
 // [0, parse_expression → • expression, $]
 // [1, expression → • short_circuit_or, $]
 // [2, short_circuit_or → • short_circuit_and, $ / PIPE_PIPE]
@@ -1025,8 +1142,6 @@ fn yy_input(
 // [54, literal → • TRUE, $ / LEFT_BRACKET / DOT / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / LEFT_BRACKET / DOT / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [56, parse_expression_prime → • parse_expression, $]
-
-///|
 fn yy_state_0(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_parse_expression => Shift(yy_state_1)
@@ -1060,41 +1175,37 @@ fn yy_state_0(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [56, parse_expression_prime → parse_expression •, $]
-
 ///|
+// [56, parse_expression_prime → parse_expression •, $]
 fn yy_state_1(_lookahead : YYSymbol) -> YYDecision {
   Accept
 }
 
-// [55, literal → FALSE •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [55, literal → FALSE •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_2(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_literal, yy_action_55)
 }
 
-// [54, literal → TRUE •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [54, literal → TRUE •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_3(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_literal, yy_action_54)
 }
 
-// [53, literal → NUMBER •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [53, literal → NUMBER •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_4(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_literal, yy_action_53)
 }
 
-// [46, path_ident → IDENT •, $ / TEMPLATE / LEFT_PAREN / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / DOUBLE_COLON / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [46, path_ident → IDENT •, $ / TEMPLATE / LEFT_PAREN / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / DOUBLE_COLON / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_5(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_path_ident, yy_action_52)
 }
 
+///|
 // [1, expression → • short_circuit_or, RIGHT_PAREN]
 // [2, short_circuit_or → • short_circuit_and, RIGHT_PAREN / PIPE_PIPE]
 // [3, short_circuit_or → • short_circuit_or PIPE_PIPE short_circuit_and, RIGHT_PAREN / PIPE_PIPE]
@@ -1144,8 +1255,6 @@ fn yy_state_5(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, RIGHT_PAREN / LEFT_BRACKET / DOT / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, RIGHT_PAREN / LEFT_BRACKET / DOT / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, RIGHT_PAREN / LEFT_BRACKET / DOT / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_6(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -1178,9 +1287,8 @@ fn yy_state_6(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [45, primary → LEFT_PAREN expression • RIGHT_PAREN, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [45, primary → LEFT_PAREN expression • RIGHT_PAREN, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_7(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_RIGHT_PAREN => Shift(yy_state_8)
@@ -1188,19 +1296,17 @@ fn yy_state_7(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [45, primary → LEFT_PAREN expression RIGHT_PAREN •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [45, primary → LEFT_PAREN expression RIGHT_PAREN •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_8(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_primary, yy_action_51)
 }
 
+///|
 // [42, primary → path_ident •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [43, primary → path_ident • LEFT_PAREN opt_arguments RIGHT_PAREN, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [44, primary → path_ident • TEMPLATE LEFT_PAREN opt_arguments RIGHT_PAREN, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [47, path_ident → path_ident • DOUBLE_COLON IDENT, $ / TEMPLATE / LEFT_PAREN / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / DOUBLE_COLON / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_9(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_DOUBLE_COLON => Shift(yy_state_10)
@@ -1235,9 +1341,8 @@ fn yy_state_9(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [47, path_ident → path_ident DOUBLE_COLON • IDENT, $ / TEMPLATE / LEFT_PAREN / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / DOUBLE_COLON / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [47, path_ident → path_ident DOUBLE_COLON • IDENT, $ / TEMPLATE / LEFT_PAREN / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / DOUBLE_COLON / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_10(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_IDENT => Shift(yy_state_11)
@@ -1245,16 +1350,14 @@ fn yy_state_10(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [47, path_ident → path_ident DOUBLE_COLON IDENT •, $ / TEMPLATE / LEFT_PAREN / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / DOUBLE_COLON / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [47, path_ident → path_ident DOUBLE_COLON IDENT •, $ / TEMPLATE / LEFT_PAREN / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / DOUBLE_COLON / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_11(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_path_ident, yy_action_49)
 }
 
-// [44, primary → path_ident TEMPLATE • LEFT_PAREN opt_arguments RIGHT_PAREN, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [44, primary → path_ident TEMPLATE • LEFT_PAREN opt_arguments RIGHT_PAREN, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_12(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_LEFT_PAREN => Shift(yy_state_13)
@@ -1262,6 +1365,7 @@ fn yy_state_12(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [1, expression → • short_circuit_or, RIGHT_PAREN / COMMA]
 // [2, short_circuit_or → • short_circuit_and, RIGHT_PAREN / COMMA / PIPE_PIPE]
 // [3, short_circuit_or → • short_circuit_or PIPE_PIPE short_circuit_and, RIGHT_PAREN / COMMA / PIPE_PIPE]
@@ -1316,8 +1420,6 @@ fn yy_state_12(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, RIGHT_PAREN / LEFT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, RIGHT_PAREN / LEFT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, RIGHT_PAREN / LEFT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_13(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -1353,18 +1455,16 @@ fn yy_state_13(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [51, argument_list → expression •, RIGHT_PAREN / COMMA]
-
 ///|
+// [51, argument_list → expression •, RIGHT_PAREN / COMMA]
 fn yy_state_14(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_argument_list, yy_action_47)
 }
 
+///|
 // [49, opt_arguments → argument_list •, RIGHT_PAREN]
 // [50, opt_arguments → argument_list • COMMA, RIGHT_PAREN]
 // [52, argument_list → argument_list • COMMA expression, RIGHT_PAREN / COMMA]
-
-///|
 fn yy_state_15(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_COMMA => Shift(yy_state_16)
@@ -1373,6 +1473,7 @@ fn yy_state_15(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [1, expression → • short_circuit_or, RIGHT_PAREN / COMMA]
 // [2, short_circuit_or → • short_circuit_and, RIGHT_PAREN / COMMA / PIPE_PIPE]
 // [3, short_circuit_or → • short_circuit_or PIPE_PIPE short_circuit_and, RIGHT_PAREN / COMMA / PIPE_PIPE]
@@ -1423,8 +1524,6 @@ fn yy_state_15(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, RIGHT_PAREN / LEFT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, RIGHT_PAREN / LEFT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, RIGHT_PAREN / LEFT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_16(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -1458,27 +1557,25 @@ fn yy_state_16(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [52, argument_list → argument_list COMMA expression •, RIGHT_PAREN / COMMA]
-
 ///|
+// [52, argument_list → argument_list COMMA expression •, RIGHT_PAREN / COMMA]
 fn yy_state_17(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_argument_list, yy_action_44)
 }
 
-// [41, primary → literal •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [41, primary → literal •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_18(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_primary, yy_action_43)
 }
 
-// [37, postfix → primary •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [37, postfix → primary •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_19(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_postfix, yy_action_42)
 }
 
+///|
 // [31, unary → • postfix, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [32, unary → • MINUS unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [33, unary → • BANG unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -1498,8 +1595,6 @@ fn yy_state_19(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_20(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -1521,13 +1616,13 @@ fn yy_state_20(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [36, unary → AMP unary •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [36, unary → AMP unary •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_21(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_unary, yy_action_41)
 }
 
+///|
 // [31, unary → • postfix, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [32, unary → • MINUS unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [33, unary → • BANG unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -1547,8 +1642,6 @@ fn yy_state_21(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_22(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -1570,13 +1663,13 @@ fn yy_state_22(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [35, unary → STAR unary •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [35, unary → STAR unary •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_23(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_unary, yy_action_40)
 }
 
+///|
 // [31, unary → • postfix, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [32, unary → • MINUS unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [33, unary → • BANG unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -1596,8 +1689,6 @@ fn yy_state_23(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_24(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -1619,13 +1710,13 @@ fn yy_state_24(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [34, unary → TILDE unary •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [34, unary → TILDE unary •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_25(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_unary, yy_action_39)
 }
 
+///|
 // [31, unary → • postfix, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [32, unary → • MINUS unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [33, unary → • BANG unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -1645,8 +1736,6 @@ fn yy_state_25(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_26(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -1668,13 +1757,13 @@ fn yy_state_26(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [33, unary → BANG unary •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [33, unary → BANG unary •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_27(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_unary, yy_action_38)
 }
 
+///|
 // [31, unary → • postfix, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [32, unary → • MINUS unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [32, unary → MINUS • unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -1694,8 +1783,6 @@ fn yy_state_27(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_28(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -1717,19 +1804,17 @@ fn yy_state_28(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [32, unary → MINUS unary •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [32, unary → MINUS unary •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_29(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_unary, yy_action_37)
 }
 
+///|
 // [31, unary → postfix •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [38, postfix → postfix • postfix_suffix, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [39, postfix_suffix → • LEFT_BRACKET expression RIGHT_BRACKET, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [40, postfix_suffix → • DOT IDENT, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_30(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_DOT => Shift(yy_state_31)
@@ -1762,9 +1847,8 @@ fn yy_state_30(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [40, postfix_suffix → DOT • IDENT, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [40, postfix_suffix → DOT • IDENT, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_31(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_IDENT => Shift(yy_state_32)
@@ -1772,13 +1856,13 @@ fn yy_state_31(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [40, postfix_suffix → DOT IDENT •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [40, postfix_suffix → DOT IDENT •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_32(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_postfix_suffix, yy_action_35)
 }
 
+///|
 // [1, expression → • short_circuit_or, RIGHT_BRACKET]
 // [2, short_circuit_or → • short_circuit_and, RIGHT_BRACKET / PIPE_PIPE]
 // [3, short_circuit_or → • short_circuit_or PIPE_PIPE short_circuit_and, RIGHT_BRACKET / PIPE_PIPE]
@@ -1828,8 +1912,6 @@ fn yy_state_32(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, LEFT_BRACKET / RIGHT_BRACKET / DOT / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, LEFT_BRACKET / RIGHT_BRACKET / DOT / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, LEFT_BRACKET / RIGHT_BRACKET / DOT / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_33(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -1862,9 +1944,8 @@ fn yy_state_33(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [39, postfix_suffix → LEFT_BRACKET expression • RIGHT_BRACKET, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [39, postfix_suffix → LEFT_BRACKET expression • RIGHT_BRACKET, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_34(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_RIGHT_BRACKET => Shift(yy_state_35)
@@ -1872,26 +1953,23 @@ fn yy_state_34(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [39, postfix_suffix → LEFT_BRACKET expression RIGHT_BRACKET •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [39, postfix_suffix → LEFT_BRACKET expression RIGHT_BRACKET •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_35(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_postfix_suffix, yy_action_34)
 }
 
-// [27, multiplicative → unary •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [27, multiplicative → unary •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_36(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_multiplicative, yy_action_33)
 }
 
+///|
 // [23, additive → multiplicative •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [28, multiplicative → multiplicative • STAR unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [29, multiplicative → multiplicative • SLASH unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [30, multiplicative → multiplicative • PERCENT unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_37(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_PERCENT => Shift(yy_state_38)
@@ -1921,6 +1999,7 @@ fn yy_state_37(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [30, multiplicative → multiplicative PERCENT • unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [31, unary → • postfix, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [32, unary → • MINUS unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -1940,8 +2019,6 @@ fn yy_state_37(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_38(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -1963,13 +2040,13 @@ fn yy_state_38(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [30, multiplicative → multiplicative PERCENT unary •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [30, multiplicative → multiplicative PERCENT unary •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_39(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_multiplicative, yy_action_31)
 }
 
+///|
 // [29, multiplicative → multiplicative SLASH • unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [31, unary → • postfix, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [32, unary → • MINUS unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -1989,8 +2066,6 @@ fn yy_state_39(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_40(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -2012,13 +2087,13 @@ fn yy_state_40(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [29, multiplicative → multiplicative SLASH unary •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [29, multiplicative → multiplicative SLASH unary •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_41(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_multiplicative, yy_action_30)
 }
 
+///|
 // [28, multiplicative → multiplicative STAR • unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [31, unary → • postfix, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [32, unary → • MINUS unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -2038,8 +2113,6 @@ fn yy_state_41(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_42(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -2061,19 +2134,17 @@ fn yy_state_42(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [28, multiplicative → multiplicative STAR unary •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [28, multiplicative → multiplicative STAR unary •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_43(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_multiplicative, yy_action_29)
 }
 
+///|
 // [20, shift → additive •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [24, additive → additive • PLUS multiplicative, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [25, additive → additive • MINUS multiplicative, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [26, additive → additive • MINUS_MINUS multiplicative, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_44(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_MINUS_MINUS => Shift(yy_state_45)
@@ -2100,6 +2171,7 @@ fn yy_state_44(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [26, additive → additive MINUS_MINUS • multiplicative, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [27, multiplicative → • unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [28, multiplicative → • multiplicative STAR unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -2123,8 +2195,6 @@ fn yy_state_44(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_45(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -2147,12 +2217,11 @@ fn yy_state_45(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [26, additive → additive MINUS_MINUS multiplicative •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [28, multiplicative → multiplicative • STAR unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [29, multiplicative → multiplicative • SLASH unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [30, multiplicative → multiplicative • PERCENT unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_46(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_PERCENT => Shift(yy_state_38)
@@ -2182,6 +2251,7 @@ fn yy_state_46(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [25, additive → additive MINUS • multiplicative, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [27, multiplicative → • unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [28, multiplicative → • multiplicative STAR unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -2205,8 +2275,6 @@ fn yy_state_46(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_47(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -2229,12 +2297,11 @@ fn yy_state_47(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [25, additive → additive MINUS multiplicative •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [28, multiplicative → multiplicative • STAR unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [29, multiplicative → multiplicative • SLASH unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [30, multiplicative → multiplicative • PERCENT unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_48(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_PERCENT => Shift(yy_state_38)
@@ -2264,6 +2331,7 @@ fn yy_state_48(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [24, additive → additive PLUS • multiplicative, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [27, multiplicative → • unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [28, multiplicative → • multiplicative STAR unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -2287,8 +2355,6 @@ fn yy_state_48(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_49(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -2311,12 +2377,11 @@ fn yy_state_49(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [24, additive → additive PLUS multiplicative •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [28, multiplicative → multiplicative • STAR unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [29, multiplicative → multiplicative • SLASH unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [30, multiplicative → multiplicative • PERCENT unary, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_50(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_PERCENT => Shift(yy_state_38)
@@ -2346,11 +2411,10 @@ fn yy_state_50(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [15, relational → shift •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [21, shift → shift • SHIFT_LEFT additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [22, shift → shift • SHIFT_RIGHT additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_51(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_SHIFT_RIGHT => Shift(yy_state_52)
@@ -2374,6 +2438,7 @@ fn yy_state_51(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [22, shift → shift SHIFT_RIGHT • additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [23, additive → • multiplicative, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [24, additive → • additive PLUS multiplicative, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -2401,8 +2466,6 @@ fn yy_state_51(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_52(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -2426,12 +2489,11 @@ fn yy_state_52(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [22, shift → shift SHIFT_RIGHT additive •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [24, additive → additive • PLUS multiplicative, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [25, additive → additive • MINUS multiplicative, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [26, additive → additive • MINUS_MINUS multiplicative, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_53(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_MINUS_MINUS => Shift(yy_state_45)
@@ -2458,6 +2520,7 @@ fn yy_state_53(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [21, shift → shift SHIFT_LEFT • additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [23, additive → • multiplicative, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [24, additive → • additive PLUS multiplicative, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -2485,8 +2548,6 @@ fn yy_state_53(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_54(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -2510,12 +2571,11 @@ fn yy_state_54(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [21, shift → shift SHIFT_LEFT additive •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [24, additive → additive • PLUS multiplicative, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [25, additive → additive • MINUS multiplicative, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [26, additive → additive • MINUS_MINUS multiplicative, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_55(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_MINUS_MINUS => Shift(yy_state_45)
@@ -2542,13 +2602,12 @@ fn yy_state_55(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [12, equality → relational •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [16, relational → relational • LESS shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [17, relational → relational • LESS_EQUAL shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [18, relational → relational • GREATER shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [19, relational → relational • GREATER_EQUAL shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_56(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_GREATER_EQUAL => Shift(yy_state_57)
@@ -2570,6 +2629,7 @@ fn yy_state_56(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [19, relational → relational GREATER_EQUAL • shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [20, shift → • additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [21, shift → • shift SHIFT_LEFT additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -2600,8 +2660,6 @@ fn yy_state_56(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_57(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -2626,11 +2684,10 @@ fn yy_state_57(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [19, relational → relational GREATER_EQUAL shift •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [21, shift → shift • SHIFT_LEFT additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [22, shift → shift • SHIFT_RIGHT additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_58(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_SHIFT_RIGHT => Shift(yy_state_52)
@@ -2654,6 +2711,7 @@ fn yy_state_58(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [18, relational → relational GREATER • shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [20, shift → • additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [21, shift → • shift SHIFT_LEFT additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -2684,8 +2742,6 @@ fn yy_state_58(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_59(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -2710,11 +2766,10 @@ fn yy_state_59(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [18, relational → relational GREATER shift •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [21, shift → shift • SHIFT_LEFT additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [22, shift → shift • SHIFT_RIGHT additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_60(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_SHIFT_RIGHT => Shift(yy_state_52)
@@ -2738,6 +2793,7 @@ fn yy_state_60(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [17, relational → relational LESS_EQUAL • shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [20, shift → • additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [21, shift → • shift SHIFT_LEFT additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -2768,8 +2824,6 @@ fn yy_state_60(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_61(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -2794,11 +2848,10 @@ fn yy_state_61(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [17, relational → relational LESS_EQUAL shift •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [21, shift → shift • SHIFT_LEFT additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [22, shift → shift • SHIFT_RIGHT additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_62(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_SHIFT_RIGHT => Shift(yy_state_52)
@@ -2822,6 +2875,7 @@ fn yy_state_62(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [16, relational → relational LESS • shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [20, shift → • additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [21, shift → • shift SHIFT_LEFT additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -2852,8 +2906,6 @@ fn yy_state_62(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_63(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -2878,11 +2930,10 @@ fn yy_state_63(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [16, relational → relational LESS shift •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [21, shift → shift • SHIFT_LEFT additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [22, shift → shift • SHIFT_RIGHT additive, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_64(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_SHIFT_RIGHT => Shift(yy_state_52)
@@ -2906,11 +2957,10 @@ fn yy_state_64(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [10, bitwise_and → equality •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET]
 // [13, equality → equality • EQUAL_EQUAL relational, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [14, equality → equality • BANG_EQUAL relational, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_65(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_BANG_EQUAL => Shift(yy_state_66)
@@ -2928,6 +2978,7 @@ fn yy_state_65(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [14, equality → equality BANG_EQUAL • relational, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [15, relational → • shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [16, relational → • relational LESS shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -2963,8 +3014,6 @@ fn yy_state_65(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_66(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -2990,13 +3039,12 @@ fn yy_state_66(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [14, equality → equality BANG_EQUAL relational •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [16, relational → relational • LESS shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [17, relational → relational • LESS_EQUAL shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [18, relational → relational • GREATER shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [19, relational → relational • GREATER_EQUAL shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_67(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_GREATER_EQUAL => Shift(yy_state_57)
@@ -3018,6 +3066,7 @@ fn yy_state_67(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [13, equality → equality EQUAL_EQUAL • relational, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [15, relational → • shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [16, relational → • relational LESS shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -3053,8 +3102,6 @@ fn yy_state_67(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_68(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -3080,13 +3127,12 @@ fn yy_state_68(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [13, equality → equality EQUAL_EQUAL relational •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [16, relational → relational • LESS shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [17, relational → relational • LESS_EQUAL shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [18, relational → relational • GREATER shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [19, relational → relational • GREATER_EQUAL shift, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / LESS / LESS_EQUAL / GREATER / GREATER_EQUAL / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_69(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_GREATER_EQUAL => Shift(yy_state_57)
@@ -3108,10 +3154,9 @@ fn yy_state_69(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [8, bitwise_xor → bitwise_and •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE / PIPE_PIPE / CARET]
 // [11, bitwise_and → bitwise_and • AMP equality, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET]
-
-///|
 fn yy_state_70(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_AMP => Shift(yy_state_71)
@@ -3127,6 +3172,7 @@ fn yy_state_70(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [11, bitwise_and → bitwise_and AMP • equality, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET]
 // [12, equality → • relational, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [13, equality → • equality EQUAL_EQUAL relational, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
@@ -3165,8 +3211,6 @@ fn yy_state_70(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_71(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -3193,11 +3237,10 @@ fn yy_state_71(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [11, bitwise_and → bitwise_and AMP equality •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET]
 // [13, equality → equality • EQUAL_EQUAL relational, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [14, equality → equality • BANG_EQUAL relational, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_72(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_BANG_EQUAL => Shift(yy_state_66)
@@ -3215,10 +3258,9 @@ fn yy_state_72(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [6, bitwise_or → bitwise_xor •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE / PIPE_PIPE]
 // [9, bitwise_xor → bitwise_xor • CARET bitwise_and, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE / PIPE_PIPE / CARET]
-
-///|
 fn yy_state_73(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_CARET => Shift(yy_state_74)
@@ -3233,6 +3275,7 @@ fn yy_state_73(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [9, bitwise_xor → bitwise_xor CARET • bitwise_and, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE / PIPE_PIPE / CARET]
 // [10, bitwise_and → • equality, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET]
 // [11, bitwise_and → • bitwise_and AMP equality, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET]
@@ -3273,8 +3316,6 @@ fn yy_state_73(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_74(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -3302,10 +3343,9 @@ fn yy_state_74(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [9, bitwise_xor → bitwise_xor CARET bitwise_and •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE / PIPE_PIPE / CARET]
 // [11, bitwise_and → bitwise_and • AMP equality, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET]
-
-///|
 fn yy_state_75(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_AMP => Shift(yy_state_71)
@@ -3321,10 +3361,9 @@ fn yy_state_75(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [4, short_circuit_and → bitwise_or •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE_PIPE]
 // [7, bitwise_or → bitwise_or • PIPE bitwise_xor, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE / PIPE_PIPE]
-
-///|
 fn yy_state_76(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_PIPE => Shift(yy_state_77)
@@ -3334,6 +3373,7 @@ fn yy_state_76(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [7, bitwise_or → bitwise_or PIPE • bitwise_xor, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE / PIPE_PIPE]
 // [8, bitwise_xor → • bitwise_and, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE / PIPE_PIPE / CARET]
 // [9, bitwise_xor → • bitwise_xor CARET bitwise_and, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE / PIPE_PIPE / CARET]
@@ -3376,8 +3416,6 @@ fn yy_state_76(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_77(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -3406,10 +3444,9 @@ fn yy_state_77(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [7, bitwise_or → bitwise_or PIPE bitwise_xor •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE / PIPE_PIPE]
 // [9, bitwise_xor → bitwise_xor • CARET bitwise_and, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE / PIPE_PIPE / CARET]
-
-///|
 fn yy_state_78(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_CARET => Shift(yy_state_74)
@@ -3424,10 +3461,9 @@ fn yy_state_78(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [2, short_circuit_or → short_circuit_and •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / PIPE_PIPE]
 // [5, short_circuit_and → short_circuit_and • AMP_AMP bitwise_or, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE_PIPE]
-
-///|
 fn yy_state_79(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_AMP_AMP => Shift(yy_state_80)
@@ -3437,6 +3473,7 @@ fn yy_state_79(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [5, short_circuit_and → short_circuit_and AMP_AMP • bitwise_or, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE_PIPE]
 // [6, bitwise_or → • bitwise_xor, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE / PIPE_PIPE]
 // [7, bitwise_or → • bitwise_or PIPE bitwise_xor, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE / PIPE_PIPE]
@@ -3481,8 +3518,6 @@ fn yy_state_79(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_80(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -3512,10 +3547,9 @@ fn yy_state_80(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [5, short_circuit_and → short_circuit_and AMP_AMP bitwise_or •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE_PIPE]
 // [7, bitwise_or → bitwise_or • PIPE bitwise_xor, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE / PIPE_PIPE]
-
-///|
 fn yy_state_81(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_PIPE => Shift(yy_state_77)
@@ -3525,10 +3559,9 @@ fn yy_state_81(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [1, expression → short_circuit_or •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA]
 // [3, short_circuit_or → short_circuit_or • PIPE_PIPE short_circuit_and, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / PIPE_PIPE]
-
-///|
 fn yy_state_82(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_PIPE_PIPE => Shift(yy_state_83)
@@ -3538,6 +3571,7 @@ fn yy_state_82(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [3, short_circuit_or → short_circuit_or PIPE_PIPE • short_circuit_and, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / PIPE_PIPE]
 // [4, short_circuit_and → • bitwise_or, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE_PIPE]
 // [5, short_circuit_and → • short_circuit_and AMP_AMP bitwise_or, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE_PIPE]
@@ -3584,8 +3618,6 @@ fn yy_state_82(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_83(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -3616,10 +3648,9 @@ fn yy_state_83(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [3, short_circuit_or → short_circuit_or PIPE_PIPE short_circuit_and •, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / PIPE_PIPE]
 // [5, short_circuit_and → short_circuit_and • AMP_AMP bitwise_or, $ / RIGHT_PAREN / RIGHT_BRACKET / COMMA / AMP_AMP / PIPE_PIPE]
-
-///|
 fn yy_state_84(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_AMP_AMP => Shift(yy_state_80)
@@ -3629,16 +3660,14 @@ fn yy_state_84(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [38, postfix → postfix postfix_suffix •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [38, postfix → postfix postfix_suffix •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_85(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_postfix, yy_action_3)
 }
 
-// [44, primary → path_ident TEMPLATE LEFT_PAREN opt_arguments • RIGHT_PAREN, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [44, primary → path_ident TEMPLATE LEFT_PAREN opt_arguments • RIGHT_PAREN, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_86(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_RIGHT_PAREN => Shift(yy_state_87)
@@ -3646,13 +3675,13 @@ fn yy_state_86(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [44, primary → path_ident TEMPLATE LEFT_PAREN opt_arguments RIGHT_PAREN •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [44, primary → path_ident TEMPLATE LEFT_PAREN opt_arguments RIGHT_PAREN •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_87(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(5, NT_primary, yy_action_2)
 }
 
+///|
 // [1, expression → • short_circuit_or, RIGHT_PAREN / COMMA]
 // [2, short_circuit_or → • short_circuit_and, RIGHT_PAREN / COMMA / PIPE_PIPE]
 // [3, short_circuit_or → • short_circuit_or PIPE_PIPE short_circuit_and, RIGHT_PAREN / COMMA / PIPE_PIPE]
@@ -3707,8 +3736,6 @@ fn yy_state_87(_lookahead : YYSymbol) -> YYDecision {
 // [53, literal → • NUMBER, RIGHT_PAREN / LEFT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [54, literal → • TRUE, RIGHT_PAREN / LEFT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 // [55, literal → • FALSE, RIGHT_PAREN / LEFT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
-///|
 fn yy_state_88(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_FALSE => Shift(yy_state_2)
@@ -3744,9 +3771,8 @@ fn yy_state_88(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [43, primary → path_ident LEFT_PAREN opt_arguments • RIGHT_PAREN, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [43, primary → path_ident LEFT_PAREN opt_arguments • RIGHT_PAREN, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_89(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_RIGHT_PAREN => Shift(yy_state_90)
@@ -3754,33 +3780,31 @@ fn yy_state_89(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [43, primary → path_ident LEFT_PAREN opt_arguments RIGHT_PAREN •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
-
 ///|
+// [43, primary → path_ident LEFT_PAREN opt_arguments RIGHT_PAREN •, $ / RIGHT_PAREN / LEFT_BRACKET / RIGHT_BRACKET / DOT / COMMA / LESS / LESS_EQUAL / SHIFT_LEFT / GREATER / GREATER_EQUAL / SHIFT_RIGHT / PLUS / MINUS / MINUS_MINUS / STAR / SLASH / PERCENT / AMP / AMP_AMP / PIPE / PIPE_PIPE / CARET / EQUAL_EQUAL / BANG_EQUAL]
 fn yy_state_90(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(4, NT_primary, yy_action_1)
 }
 
-// [0, parse_expression → expression •, $]
-
 ///|
+// [0, parse_expression → expression •, $]
 fn yy_state_91(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_parse_expression, yy_action_0)
 }
 
 ///|
 fn[T] yy_parse(
-  tokens : Array[(Token, Int, Int)],
+  tokens : Array[(Token, Int32, Int32)],
   start : YYState,
   return_ : (YYObj) -> T,
-  initial_pos? : Int,
+  initial_pos? : Int32,
 ) -> T raise ParseError {
   let mut cursor = 0
-  let mut state_stack : @list.List[YYState] = @list.cons(start, @list.empty())
-  let data_stack : Array[(YYObj, Int, Int)] = []
-  let mut last_pos = initial_pos.unwrap_or(tokens[0].1)
+  let mut state_stack : @list.List[YYState] = @list.cons(start, List([]))
+  let data_stack : Array[(YYObj, Int32, Int32)] = []
+  let mut last_pos = initial_pos.unwrap_or_else(fn() { tokens[0].1 })
   let mut state = start
-  let mut lookahead : (YYSymbol, (YYObj, Int, Int), Token?)? = None
+  let mut lookahead : (YYSymbol, (YYObj, Int32, Int32), Token?)? = None
   let mut last_shifted_state_stack = state_stack
   while true {
     let decision = match state(EOI) {
@@ -3856,7 +3880,7 @@ fn[T] yy_parse(
 fn error(
   stack : @list.List[YYState],
   token : Token?,
-  loc : (Int, Int),
+  loc : (Int32, Int32),
 ) -> Unit raise ParseError {
   let expected = []
   fn try_add(symbol : YYSymbol, kind : TokenKind) {
@@ -3933,8 +3957,8 @@ fn error(
 
 ///|
 pub fn parse_expression(
-  tokens : Array[(Token, Int, Int)],
-  initial_pos? : Int,
+  tokens : Array[(Token, Int32, Int32)],
+  initial_pos? : Int32,
 ) -> ExpressionParseNode raise ParseError {
   yy_parse(
     tokens,

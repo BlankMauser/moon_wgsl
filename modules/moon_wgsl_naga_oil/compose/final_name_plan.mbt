@@ -1,6 +1,6 @@
 ///|
 priv struct WgslModuleFinalNameApplication {
-  origin_index : Int
+  origin_index : Int32
   identity : WgslComposeSymbolIdentity
   reference_path : WgslReferencePath
   final_name : String
@@ -26,7 +26,7 @@ fn WgslModuleFinalNameApplicationPlan::is_empty(
 ///|
 fn WgslModuleFinalNameApplicationPlan::push(
   self : WgslModuleFinalNameApplicationPlan,
-  origin_index : Int,
+  origin_index : Int32,
   origin : WgslSourceOriginEntry,
   final_name : String,
 ) -> Unit {
@@ -108,7 +108,7 @@ fn WgslComposeSession::assigned_final_name_for_origin(
 ///|
 fn collect_wgsl_module_final_name_application_plan(
   session : WgslComposeSession,
-  start_index : Int,
+  start_index : Int32,
   alias_prefixes : Array[String],
 ) -> WgslModuleFinalNameApplicationPlan {
   let plan = WgslModuleFinalNameApplicationPlan()

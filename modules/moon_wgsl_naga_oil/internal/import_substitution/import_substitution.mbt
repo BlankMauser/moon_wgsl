@@ -16,17 +16,17 @@ pub fn WgslImportSubstitutionState::default() -> WgslImportSubstitutionState {
 
 ///|
 pub suberror WgslImportSubstitutionError {
-  AmbiguousImport(Int)
-  InvalidWgslSyntax(String, Int)
+  AmbiguousImport(Int32)
+  InvalidWgslSyntax(String, Int32)
 }
 
 ///|
-fn import_token_byte_offset(input : String, token : WgslToken) -> Int {
+fn import_token_byte_offset(input : String, token : WgslToken) -> Int32 {
   utf8_byte_length(input[:token.pos()].to_owned())
 }
 
 ///|
-fn import_token_byte_end(input : String, token : WgslToken) -> Int {
+fn import_token_byte_end(input : String, token : WgslToken) -> Int32 {
   utf8_byte_length(input[:token.end()].to_owned())
 }
 
@@ -34,7 +34,7 @@ fn import_token_byte_end(input : String, token : WgslToken) -> Int {
 fn declared_imports_find_index(
   declared_imports : Array[DeclaredImportBinding],
   used_name : String,
-) -> Int? {
+) -> Int32? {
   for i in 0..<declared_imports.length() {
     if declared_imports[i].used_name == used_name {
       return Some(i)
@@ -165,7 +165,7 @@ fn decorate(module_name : String) -> String {
 fn used_imports_find_index(
   used_imports : Array[ImportDefWithOffset],
   module_path : String,
-) -> Int? {
+) -> Int32? {
   for i in 0..<used_imports.length() {
     if used_imports[i].definition.import_path == module_path {
       return Some(i)
@@ -192,7 +192,7 @@ fn used_imports_record(
 ///|
 fn imported_identifier_replacement(
   ident : String,
-  token_byte_pos : Int,
+  token_byte_pos : Int32,
   declared_imports : Array[DeclaredImportBinding],
   used_imports : Array[ImportDefWithOffset],
   allow_ambiguous : Bool,
@@ -230,7 +230,7 @@ fn imported_identifier_replacement(
 ///|
 fn substitute_identifiers(
   input : String,
-  offset : Int,
+  offset : Int32,
   declared_imports : Array[DeclaredImportBinding],
   used_imports : Array[ImportDefWithOffset],
   allow_ambiguous : Bool,
@@ -272,7 +272,7 @@ fn substitute_identifiers(
 ///|
 fn substitute_identifiers_wgsl_parse_error(
   error : WgslParseError,
-  offset : Int,
+  offset : Int32,
 ) -> WgslImportSubstitutionError {
   match error {
     UnparsedDeclaration(text, parse_offset) =>
@@ -295,7 +295,7 @@ pub fn WgslImportSubstitutionState::declare_imports(
 pub fn WgslImportSubstitutionState::rewrite_source(
   self : WgslImportSubstitutionState,
   input : String,
-  offset : Int,
+  offset : Int32,
   used_imports : Array[ImportDefWithOffset],
   allow_ambiguous : Bool,
 ) -> String raise WgslImportSubstitutionError {

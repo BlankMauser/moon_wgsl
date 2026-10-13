@@ -23,9 +23,9 @@ fn wgsl_analysis_string_list_push_unique(
 ///|
 fn wgsl_analysis_declaration_name_map(
   declarations : Array[WgslGlobalDecl],
-) -> (@set.Set[String], Map[String, Int]) {
+) -> (@set.Set[String], Map[String, Int32]) {
   let declaration_names : @set.Set[String] = Set([])
-  let declaration_indexes : Map[String, Int] = Map([])
+  let declaration_indexes : Map[String, Int32] = Map([])
   for i in 0..<declarations.length() {
     let decl = declarations[i]
     if decl.name() != "" {

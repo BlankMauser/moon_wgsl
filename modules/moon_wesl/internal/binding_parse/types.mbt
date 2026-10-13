@@ -32,7 +32,7 @@ pub(all) struct BindingParseNode {
 
 ///|
 pub(all) struct BindingParseDiagnostic {
-  offset : Int
+  offset : Int32
   incomplete : Bool
 } derive(Eq, Debug)
 
@@ -44,12 +44,12 @@ pub(all) enum BindingParseResult {
 
 ///|
 priv enum BindingLexResult {
-  Lexed(Array[(Token, Int, Int)])
+  Lexed(Array[(Token, Int32, Int32)])
   LexFailed(BindingParseDiagnostic)
 }
 
 ///|
-fn binding_parse_is_identifier_start(code : Int) -> Bool {
+fn binding_parse_is_identifier_start(code : Int32) -> Bool {
   (code >= 65 && code <= 90) ||
   (code >= 97 && code <= 122) ||
   code == 95 ||
@@ -57,12 +57,12 @@ fn binding_parse_is_identifier_start(code : Int) -> Bool {
 }
 
 ///|
-fn binding_parse_is_identifier_char(code : Int) -> Bool {
+fn binding_parse_is_identifier_char(code : Int32) -> Bool {
   binding_parse_is_identifier_start(code) || (code >= 48 && code <= 57)
 }
 
 ///|
-fn binding_parse_skip_line_comment(source : String, index : Int) -> Int {
+fn binding_parse_skip_line_comment(source : String, index : Int32) -> Int32 {
   let mut cursor = index
   while cursor < source.length() && source.code_unit_at(cursor).to_int() != 10 {
     cursor += 1
@@ -73,8 +73,8 @@ fn binding_parse_skip_line_comment(source : String, index : Int) -> Int {
 ///|
 fn binding_parse_skip_block_comment(
   source : String,
-  index : Int,
-) -> (Int, Bool) {
+  index : Int32,
+) -> (Int32, Bool) {
   let mut cursor = index
   let mut depth = 1
   while cursor + 1 < source.length() {
@@ -99,7 +99,7 @@ fn binding_parse_skip_block_comment(
 }
 
 ///|
-fn binding_parse_skip_layout(source : String, index : Int) -> (Int, Bool) {
+fn binding_parse_skip_layout(source : String, index : Int32) -> (Int32, Bool) {
   let mut cursor = index
   while cursor < source.length() {
     let code = source.code_unit_at(cursor).to_int()
@@ -133,10 +133,10 @@ fn binding_parse_skip_layout(source : String, index : Int) -> (Int, Bool) {
 ///|
 fn binding_parse_skip_balanced(
   source : String,
-  index : Int,
-  open_code : Int,
-  close_code : Int,
-) -> (Int, Bool) {
+  index : Int32,
+  open_code : Int32,
+  close_code : Int32,
+) -> (Int32, Bool) {
   let mut cursor = index
   let mut depth = 1
   while cursor < source.length() {
@@ -173,7 +173,10 @@ fn binding_parse_skip_balanced(
 }
 
 ///|
-fn binding_parse_skip_attributes(source : String, index : Int) -> (Int, Bool) {
+fn binding_parse_skip_attributes(
+  source : String,
+  index : Int32,
+) -> (Int32, Bool) {
   let mut cursor = index
   while cursor < source.length() && source.code_unit_at(cursor).to_int() == 64 {
     cursor += 1
@@ -203,7 +206,7 @@ fn binding_parse_skip_attributes(source : String, index : Int) -> (Int, Bool) {
 }
 
 ///|
-fn binding_parse_read_ident(source : String, index : Int) -> (String, Int)? {
+fn binding_parse_read_ident(source : String, index : Int32) -> (String, Int32)? {
   if index >= source.length() ||
     !binding_parse_is_identifier_start(source.code_unit_at(index).to_int()) {
     return None
@@ -220,8 +223,8 @@ fn binding_parse_read_ident(source : String, index : Int) -> (String, Int)? {
 ///|
 fn binding_parse_read_template(
   source : String,
-  index : Int,
-) -> (String, Int, Bool) {
+  index : Int32,
+) -> (String, Int32, Bool) {
   let start = index + 1
   let (end_, ok) = binding_parse_skip_balanced(source, index + 1, 60, 62)
   if !ok {
@@ -244,10 +247,10 @@ fn binding_parse_keyword_token(name : String) -> Token {
 
 ///|
 fn binding_parse_push(
-  tokens : Array[(Token, Int, Int)],
+  tokens : Array[(Token, Int32, Int32)],
   token : Token,
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
 ) -> Unit {
   tokens.push((token, start, end_))
 }
@@ -255,11 +258,11 @@ fn binding_parse_push(
 ///|
 fn binding_parse_segment_end(
   source : String,
-  index : Int,
-  first_stop : Int,
-  second_stop : Int,
+  index : Int32,
+  first_stop : Int32,
+  second_stop : Int32,
   track_angle : Bool,
-) -> (String, Int, Bool) {
+) -> (String, Int32, Bool) {
   let start = index
   let mut cursor = index
   let mut angle_depth = 0
@@ -334,7 +337,7 @@ fn binding_parse_segment_end(
 
 ///|
 fn binding_parse_lex(source : String) -> BindingLexResult {
-  let tokens : Array[(Token, Int, Int)] = []
+  let tokens : Array[(Token, Int32, Int32)] = []
   let mut index = 0
   let (start_index, ok) = binding_parse_skip_layout(source, index)
   if !ok {

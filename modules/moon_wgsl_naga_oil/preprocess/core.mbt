@@ -22,14 +22,14 @@ pub fn Preprocessor::default() -> Preprocessor {
 
 ///|
 pub suberror PreprocessError {
-  GlslInvalidVersion(Int)
-  ElseWithoutCondition(Int)
-  TooManyEndIfs(Int)
-  NotEnoughEndIfs(Int)
-  UnknownShaderDef(String, Int)
-  UnknownShaderDefOperator(String, Int)
-  InvalidShaderDefComparisonValue(String, String, String, Int)
-  ImportParseError(String, Int)
+  GlslInvalidVersion(Int32)
+  ElseWithoutCondition(Int32)
+  TooManyEndIfs(Int32)
+  NotEnoughEndIfs(Int32)
+  UnknownShaderDef(String, Int32)
+  UnknownShaderDefOperator(String, Int32)
+  InvalidShaderDefComparisonValue(String, String, String, Int32)
+  ImportParseError(String, Int32)
 }
 
 ///|
@@ -54,7 +54,7 @@ fn Scope::branch(
   self : Scope,
   is_else : Bool,
   condition : Bool,
-  offset : Int,
+  offset : Int32,
 ) -> Unit raise PreprocessError {
   if is_else {
     let previous_scope = self.levels.pop()
@@ -90,7 +90,7 @@ fn Scope::branch(
 }
 
 ///|
-fn Scope::pop(self : Scope, offset : Int) -> Unit raise PreprocessError {
+fn Scope::pop(self : Scope, offset : Int32) -> Unit raise PreprocessError {
   self.levels.pop() |> ignore
   if self.levels.is_empty() {
     raise TooManyEndIfs(offset)
@@ -105,7 +105,7 @@ fn Scope::active(self : Scope) -> Bool {
 }
 
 ///|
-fn Scope::finish(self : Scope, offset : Int) -> Unit raise PreprocessError {
+fn Scope::finish(self : Scope, offset : Int32) -> Unit raise PreprocessError {
   if self.levels.length() != 1 {
     raise NotEnoughEndIfs(offset)
   } else {

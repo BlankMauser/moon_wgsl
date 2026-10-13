@@ -3,8 +3,8 @@ fn WgslDeclParser::parse_function(
   self : WgslDeclParser,
   attributes : Array[WgslAttribute],
   qualifier : WgslFunctionQualifier?,
-  qualifier_start : Int?,
-  qualifier_end : Int?,
+  qualifier_start : Int32?,
+  qualifier_end : Int32?,
   fn_keyword : WgslIdent,
 ) -> WgslFunction? {
   let name = if qualifier == Some(Override) {
@@ -118,8 +118,8 @@ priv suberror WgslStructMembersTokenizeError {
 fn WgslDeclParser::tokenize_struct_members(
   self : WgslDeclParser,
   fragment : WgslDelimitedTokenView,
-) -> Array[(Token, Int, Int)] raise WgslStructMembersTokenizeError {
-  let tokens : Array[(Token, Int, Int)] = [
+) -> Array[(Token, Int32, Int32)] raise WgslStructMembersTokenizeError {
+  let tokens : Array[(Token, Int32, Int32)] = [
     (LBRACE(fragment.open_start), fragment.open_start, fragment.open_start + 1),
   ]
   let parser = WgslDeclParser::{
@@ -243,7 +243,7 @@ priv suberror WgslTypedInitializerTailParseError {
 fn WgslDeclParser::parse_typed_initializer_tail_checked(
   self : WgslDeclParser,
 ) -> WgslTypedInitializerTail raise WgslTypedInitializerTailParseError {
-  let tokens : Array[(Token, Int, Int)] = []
+  let tokens : Array[(Token, Int32, Int32)] = []
   match self.view() {
     [token, .. rest] if token.is_punctuation(58) => {
       let pos = token.pos()
@@ -333,7 +333,7 @@ fn WgslDeclParser::parse_type_alias(self : WgslDeclParser) -> WgslTypeAlias? {
 
 ///|
 fn WgslDeclParser::parse_type_alias_tail(self : WgslDeclParser) -> WgslTypeRef? {
-  let tokens : Array[(Token, Int, Int)] = []
+  let tokens : Array[(Token, Int32, Int32)] = []
   match self.view() {
     [token, .. rest] if token.is_punctuation(61) => {
       let pos = token.pos()
@@ -373,7 +373,7 @@ fn WgslDeclParser::parse_source_directive(
   } else {
     ("", keyword.end(), keyword.end())
   }
-  let tokens : Array[(Token, Int, Int)] = [
+  let tokens : Array[(Token, Int32, Int32)] = [
     (SOURCE_TEXT(text), 0, 0),
     (token, keyword.start(), keyword.end()),
   ]
@@ -405,7 +405,7 @@ fn WgslDeclParser::parse_const_assert_checked(
     Some(value) => value
     None => raise UnexpectedToken
   }
-  let tokens : Array[(Token, Int, Int)] = [
+  let tokens : Array[(Token, Int32, Int32)] = [
     (EXPR_REF(expr), expr.start(), expr.end()),
     (EOF, expr.end(), expr.end()),
   ]

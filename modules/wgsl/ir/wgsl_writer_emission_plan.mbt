@@ -52,8 +52,8 @@ fn WgslIrWriterModule::source_directives(
 ///|
 fn WgslIrWriterPlanner::entry_point_order(
   self : WgslIrWriterPlanner,
-) -> Array[Int] {
-  let order : Array[Int] = []
+) -> Array[Int32] {
+  let order : Array[Int32] = []
   for index in 0..<self.shader_module.entry_points.length() {
     match self.filter {
       Some(filter) =>

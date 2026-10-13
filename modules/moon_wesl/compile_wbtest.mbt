@@ -22,8 +22,8 @@ fn compile_test_module(
 ///|
 fn compile_test_named_items(
   names : Array[String],
-) -> @hashmap.HashMap[String, Int] {
-  let items : @hashmap.HashMap[String, Int] = HashMap([])
+) -> @hashmap.HashMap[String, Int32] {
+  let items : @hashmap.HashMap[String, Int32] = HashMap([])
   for i in 0..<names.length() {
     items.set(names[i], i)
   }
@@ -85,7 +85,7 @@ fn compile_test_ast_refs_with_import(
       end_line: 1,
     },
   ]
-  let import_by_local : @hashmap.HashMap[String, Int] = HashMap([])
+  let import_by_local : @hashmap.HashMap[String, Int32] = HashMap([])
   import_by_local.set(local_name, 0)
   wesl_collect_ast_item_references(
     header,

@@ -1,33 +1,33 @@
 ///|
 priv struct WgslDeclParser {
   source_text : String
-  source_start : Int
+  source_start : Int32
   mut token_view : ArrayView[WgslToken]
 }
 
 ///|
 priv struct WgslTextFragment {
   text : String
-  start : Int
-  end : Int
+  start : Int32
+  end : Int32
 }
 
 ///|
 priv struct WgslDelimitedTokenView {
   inner : ArrayView[WgslToken]
-  open_start : Int
-  close_start : Int
-  consumed : Int
+  open_start : Int32
+  close_start : Int32
+  consumed : Int32
 }
 
 ///|
 priv struct WgslTokenDepth {
-  mut paren : Int
-  mut angle : Int
-  mut bracket : Int
-  mut brace : Int
+  mut paren : Int32
+  mut angle : Int32
+  mut bracket : Int32
+  mut brace : Int32
   mut source_template_pending_hash : Bool
-  mut source_template_brace : Int
+  mut source_template_brace : Int32
 }
 
 ///|
@@ -127,7 +127,7 @@ fn WgslTokenDepth::observe_statement_token(
 }
 
 ///|
-fn wgsl_shift_token(token : WgslToken, offset : Int) -> WgslToken {
+fn wgsl_shift_token(token : WgslToken, offset : Int32) -> WgslToken {
   token.shift(offset)
 }
 
@@ -135,7 +135,7 @@ fn wgsl_shift_token(token : WgslToken, offset : Int) -> WgslToken {
 fn tokenize_at(
   source : String,
   emit_whitespace : Bool,
-  source_start : Int,
+  source_start : Int32,
 ) -> Array[WgslToken] {
   let tokens : Array[WgslToken] = []
   for token in tokenize_wgsl(source, emit_whitespace) {
@@ -145,7 +145,10 @@ fn tokenize_at(
 }
 
 ///|
-fn WgslDeclParser::new_at(text : String, source_start : Int) -> WgslDeclParser {
+fn WgslDeclParser::new_at(
+  text : String,
+  source_start : Int32,
+) -> WgslDeclParser {
   let tokens = tokenize_at(replace_comments(text), false, source_start)
   { source_text: text, source_start, token_view: tokens[:], }
 }
@@ -153,8 +156,8 @@ fn WgslDeclParser::new_at(text : String, source_start : Int) -> WgslDeclParser {
 ///|
 fn WgslDeclParser::slice(
   self : WgslDeclParser,
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
 ) -> String {
   let local_start = start - self.source_start
   let local_end = end_ - self.source_start
@@ -180,7 +183,10 @@ fn WgslDeclParser::update_view(
 }
 
 ///|
-fn WgslDeclParser::consume_if_other(self : WgslDeclParser, code : Int) -> Bool {
+fn WgslDeclParser::consume_if_other(
+  self : WgslDeclParser,
+  code : Int32,
+) -> Bool {
   match self.view() {
     [token, .. rest] if token.is_punctuation(code) => {
       self.update_view(rest)
@@ -203,7 +209,7 @@ fn WgslDeclParser::consume_ident_node(self : WgslDeclParser) -> WgslIdent? {
 }
 
 ///|
-fn WgslDeclParser::drop_tokens(self : WgslDeclParser, count : Int) -> Unit {
+fn WgslDeclParser::drop_tokens(self : WgslDeclParser, count : Int32) -> Unit {
   let mut view = self.view()
   let mut remaining = count
   while remaining > 0 {
@@ -221,8 +227,8 @@ fn WgslDeclParser::drop_tokens(self : WgslDeclParser, count : Int) -> Unit {
 ///|
 fn WgslDeclParser::collect_delimited_token_view(
   self : WgslDeclParser,
-  open_code : Int,
-  close_code : Int,
+  open_code : Int32,
+  close_code : Int32,
 ) -> WgslDelimitedTokenView? {
   let view = self.view()
   let open_start = match view {
@@ -276,7 +282,7 @@ fn WgslDeclParser::consume_path_ident_node(self : WgslDeclParser) -> WgslIdent? 
 ///|
 fn WgslDeclParser::push_attribute_tokens(
   self : WgslDeclParser,
-  tokens : Array[(Token, Int, Int)],
+  tokens : Array[(Token, Int32, Int32)],
 ) -> Unit {
   while true {
     match self.view() {
@@ -328,7 +334,7 @@ fn WgslDeclParser::push_attribute_tokens(
 ///|
 fn WgslDeclParser::collect_until_top_level_fragment(
   self : WgslDeclParser,
-  stops : Array[Int],
+  stops : Array[Int32],
 ) -> WgslTextFragment {
   self.collect_until_top_level_fragment_with_mode(stops, false)
 }
@@ -336,7 +342,7 @@ fn WgslDeclParser::collect_until_top_level_fragment(
 ///|
 fn WgslDeclParser::collect_until_top_level_type_fragment(
   self : WgslDeclParser,
-  stops : Array[Int],
+  stops : Array[Int32],
 ) -> WgslTextFragment {
   self.collect_until_top_level_fragment_with_mode(stops, true)
 }
@@ -344,7 +350,7 @@ fn WgslDeclParser::collect_until_top_level_type_fragment(
 ///|
 fn WgslDeclParser::collect_until_top_level_fragment_with_mode(
   self : WgslDeclParser,
-  stops : Array[Int],
+  stops : Array[Int32],
   track_angle : Bool,
 ) -> WgslTextFragment {
   let mut start_pos = -1
@@ -385,9 +391,9 @@ fn WgslDeclParser::collect_until_top_level_fragment_with_mode(
 ///|
 fn wgsl_trim_fragment_bounds(
   text : String,
-  start : Int,
-  end_ : Int,
-) -> (String, Int, Int) {
+  start : Int32,
+  end_ : Int32,
+) -> (String, Int32, Int32) {
   let mut left = start
   let mut right = end_
   while left < right {

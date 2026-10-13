@@ -4,7 +4,7 @@ fn WgslIrLowerer::member_index_for_expression(
   function : Function,
   expression_handle : Handle,
   member_name : String,
-) -> Int raise WgslIrLowerError {
+) -> Int32 raise WgslIrLowerError {
   match self.function_expression_type(function, expression_handle) {
     Some(ty_handle) =>
       match
@@ -32,7 +32,7 @@ fn WgslIrLowerer::member_index_for_global_expression(
   self : WgslIrLowerer,
   expression_handle : Handle,
   member_name : String,
-) -> Int raise WgslIrLowerError {
+) -> Int32 raise WgslIrLowerError {
   match self.global_expression_type(expression_handle) {
     Some(ty_handle) =>
       match
@@ -541,7 +541,7 @@ fn WgslIrLowerer::as_expression_result_type(
   self : WgslIrLowerer,
   input : Handle?,
   kind : ScalarKind,
-  width : Int,
+  width : Int32,
 ) -> Handle? {
   guard input is Some(input_ty) else { return None }
   let scalar = Scalar::Scalar(kind, width)

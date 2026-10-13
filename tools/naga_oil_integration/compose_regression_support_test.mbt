@@ -43,7 +43,10 @@ fn compose_regression_empty_options() -> @contract.WgslComposeOptions {
 }
 
 ///|
-fn compose_regression_count_occurrences(text : String, pattern : String) -> Int {
+fn compose_regression_count_occurrences(
+  text : String,
+  pattern : String,
+) -> Int32 {
   if pattern == "" {
     return 0
   }

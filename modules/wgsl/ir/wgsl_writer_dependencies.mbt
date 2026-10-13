@@ -14,15 +14,15 @@
 
 ///|
 priv struct WgslIrFunctionCallGraph {
-  direct_calls : Array[Array[Int]]
+  direct_calls : Array[Array[Int32]]
 }
 
 ///|
 fn WgslIrWriterPlanner::function_order(
   self : WgslIrWriterPlanner,
-) -> Array[Int] {
+) -> Array[Int32] {
   let call_graph = self.function_call_graph()
-  let order : Array[Int] = []
+  let order : Array[Int32] = []
   let reachable = self.reachable_function_order(call_graph)
   for index in reachable {
     if self.function_order_should_include(index, order) {
@@ -41,7 +41,7 @@ fn WgslIrWriterPlanner::function_order(
 fn WgslIrWriterPlanner::function_call_graph(
   self : WgslIrWriterPlanner,
 ) -> WgslIrFunctionCallGraph {
-  let direct_calls : Array[Array[Int]] = []
+  let direct_calls : Array[Array[Int32]] = []
   for function in self.shader_module.functions.items {
     direct_calls.push(wgsl_ir_collect_block_function_calls(function))
   }
@@ -51,8 +51,8 @@ fn WgslIrWriterPlanner::function_call_graph(
 ///|
 fn WgslIrFunctionCallGraph::direct_calls_for(
   self : WgslIrFunctionCallGraph,
-  index : Int,
-) -> Array[Int] {
+  index : Int32,
+) -> Array[Int32] {
   match self.direct_calls.get(index) {
     Some(calls) => calls
     None => []
@@ -63,8 +63,8 @@ fn WgslIrFunctionCallGraph::direct_calls_for(
 fn WgslIrWriterPlanner::reachable_function_order(
   self : WgslIrWriterPlanner,
   call_graph : WgslIrFunctionCallGraph,
-) -> Array[Int] {
-  let order : Array[Int] = []
+) -> Array[Int32] {
+  let order : Array[Int32] = []
   for entry_point in self.shader_module.entry_points {
     self.push_source_prefix_before_entry(order, entry_point, call_graph)
     let direct = wgsl_ir_collect_block_function_calls(entry_point.function)
@@ -80,7 +80,7 @@ fn WgslIrWriterPlanner::reachable_function_order(
 ///|
 fn WgslIrWriterPlanner::push_source_prefix_before_entry(
   self : WgslIrWriterPlanner,
-  order : Array[Int],
+  order : Array[Int32],
   entry_point : EntryPoint,
   call_graph : WgslIrFunctionCallGraph,
 ) -> Unit {
@@ -98,25 +98,25 @@ fn WgslIrWriterPlanner::push_source_prefix_before_entry(
 ///|
 fn WgslIrWriterPlanner::push_function_with_dependencies(
   self : WgslIrWriterPlanner,
-  order : Array[Int],
-  index : Int,
+  order : Array[Int32],
+  index : Int32,
   call_graph : WgslIrFunctionCallGraph,
 ) -> Unit {
-  let visiting : Array[Int] = []
+  let visiting : Array[Int32] = []
   self.push_function_with_dependencies_inner(order, visiting, index, call_graph)
 }
 
 ///|
 fn WgslIrWriterPlanner::push_reachable_function_with_dependencies(
   self : WgslIrWriterPlanner,
-  order : Array[Int],
-  index : Int,
+  order : Array[Int32],
+  index : Int32,
   call_graph : WgslIrFunctionCallGraph,
 ) -> Unit {
   if !self.function_order_should_include(index, order) {
     return
   }
-  let dependencies : Array[Int] = []
+  let dependencies : Array[Int32] = []
   self.collect_transitive_function_dependencies(index, dependencies, call_graph)
   for dependency_index in 0..<self.shader_module.functions.items.length() {
     if dependency_index < index && dependencies.contains(dependency_index) {
@@ -141,8 +141,8 @@ fn WgslIrWriterPlanner::push_reachable_function_with_dependencies(
 ///|
 fn WgslIrWriterPlanner::collect_transitive_function_dependencies(
   self : WgslIrWriterPlanner,
-  index : Int,
-  dependencies : Array[Int],
+  index : Int32,
+  dependencies : Array[Int32],
   call_graph : WgslIrFunctionCallGraph,
 ) -> Unit {
   if !self.function_order_should_include(index, []) {
@@ -165,9 +165,9 @@ fn WgslIrWriterPlanner::collect_transitive_function_dependencies(
 ///|
 fn WgslIrWriterPlanner::push_function_with_dependencies_inner(
   self : WgslIrWriterPlanner,
-  order : Array[Int],
-  visiting : Array[Int],
-  index : Int,
+  order : Array[Int32],
+  visiting : Array[Int32],
+  index : Int32,
   call_graph : WgslIrFunctionCallGraph,
 ) -> Unit {
   if !self.function_order_should_include(index, order) ||
@@ -192,8 +192,8 @@ fn WgslIrWriterPlanner::push_function_with_dependencies_inner(
 ///|
 fn WgslIrWriterPlanner::function_order_should_include(
   self : WgslIrWriterPlanner,
-  index : Int,
-  emitted : Array[Int],
+  index : Int32,
+  emitted : Array[Int32],
 ) -> Bool {
   if emitted.contains(index) {
     return false
@@ -227,7 +227,7 @@ fn wgsl_ir_function_is_entry_point_name(
 ///|
 fn WgslIrWriterPlanner::should_emit_function(
   self : WgslIrWriterPlanner,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   match self.filter {
     Some(filter) => filter.contains_function(index)
@@ -236,8 +236,8 @@ fn WgslIrWriterPlanner::should_emit_function(
 }
 
 ///|
-fn wgsl_ir_collect_block_function_calls(function : Function) -> Array[Int] {
-  let calls : Array[Int] = []
+fn wgsl_ir_collect_block_function_calls(function : Function) -> Array[Int32] {
+  let calls : Array[Int32] = []
   wgsl_ir_collect_function_calls_from_block(function, function.body, calls)
   calls
 }
@@ -246,7 +246,7 @@ fn wgsl_ir_collect_block_function_calls(function : Function) -> Array[Int] {
 fn wgsl_ir_collect_function_calls_from_block(
   function : Function,
   block : Block,
-  calls : Array[Int],
+  calls : Array[Int32],
 ) -> Unit {
   for statement in block.statements {
     wgsl_ir_collect_function_calls_from_statement(function, statement, calls)
@@ -257,7 +257,7 @@ fn wgsl_ir_collect_function_calls_from_block(
 fn wgsl_ir_collect_function_calls_from_statement(
   function : Function,
   statement : Statement,
-  calls : Array[Int],
+  calls : Array[Int32],
 ) -> Unit {
   match statement {
     Emit(range) => {
@@ -411,7 +411,7 @@ fn wgsl_ir_collect_function_calls_from_statement(
 fn wgsl_ir_collect_function_calls_from_expression(
   function : Function,
   handle : Handle,
-  calls : Array[Int],
+  calls : Array[Int32],
 ) -> Unit {
   match function.expressions.items.get(handle.index()) {
     Some(expression) =>
@@ -426,7 +426,7 @@ fn wgsl_ir_collect_function_calls_from_expression(
 fn wgsl_ir_collect_function_calls_from_expression_inner(
   function : Function,
   expression : Expression,
-  calls : Array[Int],
+  calls : Array[Int32],
 ) -> Unit {
   match expression {
     Compose(_, components) =>
@@ -573,7 +573,7 @@ fn wgsl_ir_collect_function_calls_from_expression_inner(
 fn wgsl_ir_collect_sample_level_function_calls(
   function : Function,
   level : SampleLevel,
-  calls : Array[Int],
+  calls : Array[Int32],
 ) -> Unit {
   match level {
     Exact(handle) | Bias(handle) =>
@@ -590,7 +590,7 @@ fn wgsl_ir_collect_sample_level_function_calls(
 fn wgsl_ir_collect_optional_function_call(
   function : Function,
   handle : Handle?,
-  calls : Array[Int],
+  calls : Array[Int32],
 ) -> Unit {
   match handle {
     Some(value) =>
@@ -600,7 +600,7 @@ fn wgsl_ir_collect_optional_function_call(
 }
 
 ///|
-fn wgsl_ir_push_function_call(calls : Array[Int], index : Int) -> Unit {
+fn wgsl_ir_push_function_call(calls : Array[Int32], index : Int32) -> Unit {
   if !calls.contains(index) {
     calls.push(index)
   }

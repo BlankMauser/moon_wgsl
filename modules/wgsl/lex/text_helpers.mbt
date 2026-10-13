@@ -22,7 +22,7 @@ pub fn trim_trailing_semicolons(text : String) -> String {
 }
 
 ///|
-fn utf8_byte_width(code_point : Int) -> Int {
+fn utf8_byte_width(code_point : Int32) -> Int32 {
   if code_point <= 0x7F {
     1
   } else if code_point <= 0x7FF {
@@ -35,7 +35,7 @@ fn utf8_byte_width(code_point : Int) -> Int {
 }
 
 ///|
-pub fn utf8_byte_length(text : String) -> Int {
+pub fn utf8_byte_length(text : String) -> Int32 {
   let mut length = 0
   let mut index = 0
   while index < text.length() {

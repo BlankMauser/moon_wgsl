@@ -3,7 +3,7 @@ priv struct WgslPreparedComposeSource {
   active_source : String
   directive_scan_items : Array[WgslDirectiveScanItem]
   importless_source : String
-  cache_id : Int
+  cache_id : Int32
   mut unit : WgslTranslationUnit?
   mut semantic_facts : WgslComposeSemanticFacts?
   mut importless_semantic_facts : WgslComposeSemanticFacts?

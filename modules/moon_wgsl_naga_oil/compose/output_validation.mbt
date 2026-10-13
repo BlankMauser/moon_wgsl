@@ -20,7 +20,7 @@ fn deduplicate_identical_wgsl_declarations(
     error => raise composer_error_from_wgsl_parse_error(error)
   }
   let declarations_by_name : Map[String, String] = Map([])
-  let duplicate_spans : Array[(Int, Int)] = []
+  let duplicate_spans : Array[(Int32, Int32)] = []
   for declaration in unit.declarations() {
     let name = declaration.name()
     if name == "" {

@@ -18,7 +18,7 @@ fn wgsl_ir_function_expression_graph_contains(
   root : Handle,
   needle : Handle,
 ) -> Bool {
-  let visited : @set.Set[Int] = Set([])
+  let visited : @set.Set[Int32] = Set([])
   wgsl_ir_function_expression_graph_contains_inner(
     function, root, needle, visited,
   )
@@ -29,7 +29,7 @@ fn wgsl_ir_function_expression_graph_contains_inner(
   function : Function,
   root : Handle,
   needle : Handle,
-  visited : @set.Set[Int],
+  visited : @set.Set[Int32],
 ) -> Bool {
   if root == needle {
     return true
@@ -52,7 +52,7 @@ fn wgsl_ir_function_expression_operands_contain(
   function : Function,
   expression : Expression,
   needle : Handle,
-  visited : @set.Set[Int],
+  visited : @set.Set[Int32],
 ) -> Bool {
   match expression {
     Compose(_, components)
@@ -167,7 +167,7 @@ fn wgsl_ir_function_handle_array_contains(
   function : Function,
   handles : Array[Handle],
   needle : Handle,
-  visited : @set.Set[Int],
+  visited : @set.Set[Int32],
 ) -> Bool {
   for handle in handles {
     if wgsl_ir_function_handle_contains(function, handle, needle, visited) {
@@ -182,7 +182,7 @@ fn wgsl_ir_function_optional_handle_contains(
   function : Function,
   handle : Handle?,
   needle : Handle,
-  visited : @set.Set[Int],
+  visited : @set.Set[Int32],
 ) -> Bool {
   match handle {
     Some(value) =>
@@ -196,7 +196,7 @@ fn wgsl_ir_function_handle_contains(
   function : Function,
   handle : Handle,
   needle : Handle,
-  visited : @set.Set[Int],
+  visited : @set.Set[Int32],
 ) -> Bool {
   wgsl_ir_function_expression_graph_contains_inner(
     function, handle, needle, visited,
@@ -208,7 +208,7 @@ fn wgsl_ir_function_sample_level_contains(
   function : Function,
   level : SampleLevel,
   needle : Handle,
-  visited : @set.Set[Int],
+  visited : @set.Set[Int32],
 ) -> Bool {
   match level {
     Exact(handle) | Bias(handle) =>
@@ -225,7 +225,7 @@ fn wgsl_ir_function_image_query_contains(
   function : Function,
   query : ImageQuery,
   needle : Handle,
-  visited : @set.Set[Int],
+  visited : @set.Set[Int32],
 ) -> Bool {
   match query {
     Size(level) =>
@@ -241,7 +241,7 @@ fn wgsl_ir_function_cooperative_data_contains(
   function : Function,
   data : CooperativeData,
   needle : Handle,
-  visited : @set.Set[Int],
+  visited : @set.Set[Int32],
 ) -> Bool {
   wgsl_ir_function_handle_contains(function, data.pointer, needle, visited) ||
   wgsl_ir_function_handle_contains(function, data.stride, needle, visited)

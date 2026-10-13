@@ -270,7 +270,7 @@ pub fn write_package_artifact(
 pub fn write_artifact(
   result : @moon_wesl.CompileResult,
   artifact_name : String,
-  out_dir? : String? = None,
+  out_dir~ : String? = None,
 ) -> Unit raise WeslIoError {
   if artifact_name == "" ||
     artifact_name.contains("/") ||

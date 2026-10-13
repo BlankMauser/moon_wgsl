@@ -78,7 +78,7 @@ fn WgslIrLowerer::type_layout(
 fn WgslIrLowerer::array_size_layout_count(
   self : WgslIrLowerer,
   size : ArraySize,
-) -> Int raise WgslIrLowerError {
+) -> Int32 raise WgslIrLowerError {
   match size {
     Constant(value) => value
     Dynamic => 1
@@ -132,7 +132,7 @@ fn WgslIrLowerer::refresh_dependent_type_layouts(
 fn WgslIrLowerer::refresh_struct_layout(
   self : WgslIrLowerer,
   members : Array[StructMember],
-) -> (Array[StructMember], Int)? raise WgslIrLowerError {
+) -> (Array[StructMember], Int32)? raise WgslIrLowerError {
   let refreshed : Array[StructMember] = []
   let mut offset = 0
   let mut max_align = 1
@@ -177,7 +177,7 @@ fn WgslIrLowerer::refresh_struct_layout(
 fn wgsl_ir_struct_member_size(
   attributes : Array[@ast.WgslAttribute],
   layout : WgslIrLayout,
-) -> Int raise WgslIrLowerError {
+) -> Int32 raise WgslIrLowerError {
   match wgsl_ir_attribute_named(attributes, "size") {
     Some(attribute) =>
       match wgsl_ir_attribute_int_value(attribute) {
@@ -197,7 +197,7 @@ fn wgsl_ir_struct_member_size(
 fn wgsl_ir_struct_member_align(
   attributes : Array[@ast.WgslAttribute],
   layout : WgslIrLayout,
-) -> Int raise WgslIrLowerError {
+) -> Int32 raise WgslIrLowerError {
   match wgsl_ir_attribute_named(attributes, "align") {
     Some(attribute) =>
       match wgsl_ir_attribute_int_value(attribute) {
@@ -218,12 +218,12 @@ fn wgsl_ir_struct_member_align(
 }
 
 ///|
-fn wgsl_ir_is_power_of_two(value : Int) -> Bool {
+fn wgsl_ir_is_power_of_two(value : Int32) -> Bool {
   value > 0 && (value & (value - 1)) == 0
 }
 
 ///|
-fn wgsl_ir_cooperative_size_width(size : CooperativeSize) -> Int {
+fn wgsl_ir_cooperative_size_width(size : CooperativeSize) -> Int32 {
   match size {
     Eight => 8
     Sixteen => 16

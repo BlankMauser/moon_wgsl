@@ -226,7 +226,7 @@ fn wgsl_ir_emit_storage_format_scalar(format : StorageFormat) -> Scalar {
 }
 
 ///|
-fn wgsl_ir_swizzle_component(index : Int) -> String raise WgslIrEmitError {
+fn wgsl_ir_swizzle_component(index : Int32) -> String raise WgslIrEmitError {
   match index {
     0 => "x"
     1 => "y"
@@ -237,7 +237,7 @@ fn wgsl_ir_swizzle_component(index : Int) -> String raise WgslIrEmitError {
 }
 
 ///|
-fn wgsl_ir_gather_component_index(component : SwizzleComponent) -> Int {
+fn wgsl_ir_gather_component_index(component : SwizzleComponent) -> Int32 {
   match component {
     X => 0
     Y => 1
@@ -257,7 +257,7 @@ fn wgsl_ir_swizzle_component_name(component : SwizzleComponent) -> String {
 }
 
 ///|
-fn wgsl_ir_indent(count : Int) -> String {
+fn wgsl_ir_indent(count : Int32) -> String {
   let out = StringBuilder()
   for _ in 0..<count {
     out.write_string("    ")

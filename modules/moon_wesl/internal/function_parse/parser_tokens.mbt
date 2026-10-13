@@ -11,6 +11,11 @@ pub(all) enum Token {
 } derive(Debug)
 
 ///|
+#deprecated("Use Debug::to_repr instead")
+#doc(hidden)
+pub extend Token with Debug::{to_repr}
+
+///|
 pub fn Token::kind(self : Token) -> TokenKind {
   match self {
     IDENT(_) => TK_IDENT
@@ -37,8 +42,14 @@ pub(all) enum TokenKind {
 }
 
 ///|
+#deprecated("Use Show::to_string or Show::output instead")
+#doc(hidden)
+pub extend TokenKind with Show::{output, to_string}
+
+///|
 pub impl Show for TokenKind with fn output(self, logger) {
-  logger.write_string(
+  Logger::write_string(
+    logger,
     match self {
       TK_IDENT => "IDENT"
       TK_GENERICS => "GENERICS"
@@ -51,6 +62,11 @@ pub impl Show for TokenKind with fn output(self, logger) {
     },
   )
 }
+
+///|
+#deprecated("Use Debug::to_repr instead")
+#doc(hidden)
+pub extend TokenKind with Debug::{to_repr}
 
 ///|
 pub impl Debug for TokenKind with fn to_repr(self) {

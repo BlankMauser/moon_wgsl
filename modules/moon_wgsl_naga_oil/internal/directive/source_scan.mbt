@@ -7,14 +7,14 @@ pub enum WgslDirectiveScanItemKind {
 
 ///|
 pub struct WgslDirectiveScanSource {
-  priv start : Int
+  priv start : Int32
   priv original_text : String
   priv cleaned_text : String
 } derive(Debug)
 
 ///|
 fn WgslDirectiveScanSource::WgslDirectiveScanSource(
-  start : Int,
+  start : Int32,
   original_text : String,
   cleaned_text : String,
 ) -> WgslDirectiveScanSource {
@@ -22,7 +22,7 @@ fn WgslDirectiveScanSource::WgslDirectiveScanSource(
 }
 
 ///|
-fn WgslDirectiveScanSource::start(self : WgslDirectiveScanSource) -> Int {
+fn WgslDirectiveScanSource::start(self : WgslDirectiveScanSource) -> Int32 {
   self.start
 }
 
@@ -50,7 +50,7 @@ pub struct WgslDirectiveScanItem {
 priv struct WgslDirectiveScanLine {
   original : String
   cleaned : String
-  start : Int
+  start : Int32
 }
 
 ///|
@@ -78,7 +78,7 @@ fn wgsl_directive_scan_exact_lines(source : String) -> Array[String] {
 ///|
 fn WgslDirectiveScanItem::WgslDirectiveScanItem(
   kind : WgslDirectiveScanItemKind,
-  start : Int,
+  start : Int32,
   original_text : String,
   cleaned_text : String,
 ) -> WgslDirectiveScanItem {
@@ -93,7 +93,7 @@ pub fn WgslDirectiveScanItem::kind(
 }
 
 ///|
-pub fn WgslDirectiveScanItem::start(self : WgslDirectiveScanItem) -> Int {
+pub fn WgslDirectiveScanItem::start(self : WgslDirectiveScanItem) -> Int32 {
   self.source.start()
 }
 
@@ -147,8 +147,8 @@ fn wgsl_directive_scan_line_kind(
 ///|
 fn wgsl_directive_scan_import_item_line_end(
   lines : Array[WgslDirectiveScanLine],
-  line_index : Int,
-) -> Int {
+  line_index : Int32,
+) -> Int32 {
   let mut item_end = line_index + 1
   let mut balance = raw_import_brace_balance_next(0, lines[line_index].cleaned)
   while balance > 0 && item_end < lines.length() {
@@ -161,8 +161,8 @@ fn wgsl_directive_scan_import_item_line_end(
 ///|
 fn wgsl_directive_scan_join_lines(
   lines : Array[WgslDirectiveScanLine],
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
   cleaned : Bool,
 ) -> String {
   let out = StringBuilder()
@@ -177,8 +177,8 @@ fn wgsl_directive_scan_push_item(
   items : Array[WgslDirectiveScanItem],
   lines : Array[WgslDirectiveScanLine],
   raw_kind : WgslDirectiveScanItemKind,
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
 ) -> Unit {
   if end_ <= start {
     return
@@ -201,7 +201,7 @@ fn wgsl_directive_scan_push_item(
 ///|
 pub fn parse_wgsl_directive_scan_items(
   source : String,
-  include_glsl_version? : Bool = true,
+  include_glsl_version~ : Bool = true,
 ) -> Array[WgslDirectiveScanItem] {
   let lines = wgsl_directive_scan_build_lines(source)
   let items : Array[WgslDirectiveScanItem] = []

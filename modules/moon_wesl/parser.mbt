@@ -14,25 +14,25 @@
 
 ///|
 priv enum ParserToken {
-  At(Int, Int, Int)
-  LParen(Int, Int, Int)
-  RParen(Int, Int, Int)
-  LBrace(Int, Int, Int)
-  RBrace(Int, Int, Int)
-  LBracket(Int, Int, Int)
-  RBracket(Int, Int, Int)
-  Comma(Int, Int, Int)
-  Semi(Int, Int, Int)
-  Eq(Int, Int, Int)
-  Lt(Int, Int, Int)
-  Gt(Int, Int, Int)
-  DoubleColon(Int, Int, Int)
-  Ident(String, Int, Int, Int)
-  Other(Int, Int, Int)
+  At(Int32, Int32, Int32)
+  LParen(Int32, Int32, Int32)
+  RParen(Int32, Int32, Int32)
+  LBrace(Int32, Int32, Int32)
+  RBrace(Int32, Int32, Int32)
+  LBracket(Int32, Int32, Int32)
+  RBracket(Int32, Int32, Int32)
+  Comma(Int32, Int32, Int32)
+  Semi(Int32, Int32, Int32)
+  Eq(Int32, Int32, Int32)
+  Lt(Int32, Int32, Int32)
+  Gt(Int32, Int32, Int32)
+  DoubleColon(Int32, Int32, Int32)
+  Ident(String, Int32, Int32, Int32)
+  Other(Int32, Int32, Int32)
 }
 
 ///|
-fn ParserToken::start(self : ParserToken) -> Int {
+fn ParserToken::start(self : ParserToken) -> Int32 {
   match self {
     At(start, _, _) => start
     LParen(start, _, _) => start
@@ -53,7 +53,7 @@ fn ParserToken::start(self : ParserToken) -> Int {
 }
 
 ///|
-fn ParserToken::end(self : ParserToken) -> Int {
+fn ParserToken::end(self : ParserToken) -> Int32 {
   match self {
     At(_, end_, _) => end_
     LParen(_, end_, _) => end_
@@ -74,7 +74,7 @@ fn ParserToken::end(self : ParserToken) -> Int {
 }
 
 ///|
-fn ParserToken::line(self : ParserToken) -> Int {
+fn ParserToken::line(self : ParserToken) -> Int32 {
   match self {
     At(_, _, line) => line
     LParen(_, _, line) => line
@@ -95,17 +95,17 @@ fn ParserToken::line(self : ParserToken) -> Int {
 }
 
 ///|
-fn parser_is_identifier_start(code : Int) -> Bool {
+fn parser_is_identifier_start(code : Int32) -> Bool {
   @lex.wgsl_identifier_start_code_point(code)
 }
 
 ///|
-fn parser_is_identifier_char(code : Int) -> Bool {
+fn parser_is_identifier_char(code : Int32) -> Bool {
   @lex.wgsl_identifier_continue_code_point(code)
 }
 
 ///|
-fn parser_identifier_start_width(source : String, index : Int) -> Int {
+fn parser_identifier_start_width(source : String, index : Int32) -> Int32 {
   match @lex.wgsl_code_point_at(source, index) {
     Some((code_point, width)) if parser_is_identifier_start(code_point) => width
     _ => 0
@@ -113,7 +113,7 @@ fn parser_identifier_start_width(source : String, index : Int) -> Int {
 }
 
 ///|
-fn parser_identifier_continue_width(source : String, index : Int) -> Int {
+fn parser_identifier_continue_width(source : String, index : Int32) -> Int32 {
   match @lex.wgsl_code_point_at(source, index) {
     Some((code_point, width)) if parser_is_identifier_char(code_point) => width
     _ => 0
@@ -121,7 +121,7 @@ fn parser_identifier_continue_width(source : String, index : Int) -> Int {
 }
 
 ///|
-fn parser_identifier_continues_before(source : String, index : Int) -> Bool {
+fn parser_identifier_continues_before(source : String, index : Int32) -> Bool {
   guard index > 0 else { return false }
   let previous = index - 1
   let previous_code = source.code_unit_at(previous).to_int()
@@ -241,13 +241,13 @@ fn parser_lex(source : String) -> Array[ParserToken] {
 }
 
 ///|
-fn[T] ArrayView::start(self : ArrayView[T]) -> Int = "%arrayview.start"
+fn[T] ArrayView::start(self : ArrayView[T]) -> Int32 = "%arrayview.start"
 
 ///|
 priv struct Parser {
   source : String
   tokens : Array[ParserToken]
-  mut position : Int
+  mut position : Int32
 }
 
 ///|
@@ -271,7 +271,7 @@ fn Parser::update_view(self : Parser, view : ArrayView[ParserToken]) -> Unit {
 }
 
 ///|
-fn Parser::update_view_after_offset(self : Parser, offset : Int) -> Unit {
+fn Parser::update_view_after_offset(self : Parser, offset : Int32) -> Unit {
   let mut position = self.position
   while position < self.tokens.length() &&
         self.tokens[position].start() < offset {
@@ -294,8 +294,8 @@ fn[A] Parser::error(
 ///|
 fn Parser::source_slice(
   self : Parser,
-  start_offset : Int,
-  end_offset : Int,
+  start_offset : Int32,
+  end_offset : Int32,
 ) -> String {
   if start_offset >= end_offset {
     ""
@@ -833,7 +833,7 @@ fn parser_expression_from_generated(
 ///|
 fn parser_assignment_operator_at_top_level(
   source : String,
-) -> (String, Int, Int)? {
+) -> (String, Int32, Int32)? {
   let mut cursor = 0
   let mut paren_depth = 0
   let mut bracket_depth = 0
@@ -979,7 +979,7 @@ fn parser_statement_update_expression(
 }
 
 ///|
-fn parser_skip_layout_and_comments(source : String, index : Int) -> Int {
+fn parser_skip_layout_and_comments(source : String, index : Int32) -> Int32 {
   let mut cursor = index
   let mut running = true
   while running && cursor < source.length() {
@@ -1023,10 +1023,10 @@ fn parser_skip_layout_and_comments(source : String, index : Int) -> Int {
 ///|
 fn parser_find_matching_delimiter(
   source : String,
-  open_index : Int,
-  open_code : Int,
-  close_code : Int,
-) -> Int? {
+  open_index : Int32,
+  open_code : Int32,
+  close_code : Int32,
+) -> Int32? {
   if open_index >= source.length() ||
     source.code_unit_at(open_index).to_int() != open_code {
     return None
@@ -1095,9 +1095,9 @@ fn parser_parse_embedded_function_body(
 ///|
 fn parser_parse_braced_statement_body(
   source : String,
-  open_index : Int,
+  open_index : Int32,
   item_source : String,
-) -> (FunctionBody, Int) raise WeslCompileError {
+) -> (FunctionBody, Int32) raise WeslCompileError {
   match parser_find_matching_delimiter(source, open_index, 123, 125) {
     Some(close_index) =>
       (
@@ -1114,9 +1114,9 @@ fn parser_parse_braced_statement_body(
 ///|
 fn parser_parse_parenthesized_condition(
   source : String,
-  open_index : Int,
+  open_index : Int32,
   item_source : String,
-) -> (Expression, Int) raise WeslCompileError {
+) -> (Expression, Int32) raise WeslCompileError {
   match parser_find_matching_delimiter(source, open_index, 40, 41) {
     Some(close_index) =>
       (
@@ -1134,7 +1134,7 @@ fn parser_parse_parenthesized_condition(
 }
 
 ///|
-fn parser_find_control_body_start(source : String, index : Int) -> Int? {
+fn parser_find_control_body_start(source : String, index : Int32) -> Int32? {
   let mut cursor = index
   let mut paren_depth = 0
   let mut bracket_depth = 0
@@ -1182,9 +1182,9 @@ fn parser_find_control_body_start(source : String, index : Int) -> Int? {
 ///|
 fn parser_parse_control_condition_and_body_start(
   source : String,
-  start_index : Int,
+  start_index : Int32,
   item_source : String,
-) -> (Expression, Int) raise WeslCompileError {
+) -> (Expression, Int32) raise WeslCompileError {
   let condition_start = parser_skip_layout_and_comments(source, start_index)
   if condition_start < source.length() &&
     source.code_unit_at(condition_start).to_int() == 40 {
@@ -1338,7 +1338,7 @@ fn parser_for_update(
 }
 
 ///|
-fn parser_keyword_at(source : String, index : Int, keyword : String) -> Bool {
+fn parser_keyword_at(source : String, index : Int32, keyword : String) -> Bool {
   if index + keyword.length() > source.length() {
     return false
   }
@@ -1362,8 +1362,8 @@ fn parser_keyword_at(source : String, index : Int, keyword : String) -> Bool {
 ///|
 fn parser_find_switch_clause_header_end(
   source : String,
-  index : Int,
-) -> (Int, Int)? {
+  index : Int32,
+) -> (Int32, Int32)? {
   let mut cursor = index
   let mut paren_depth = 0
   let mut bracket_depth = 0
@@ -1416,7 +1416,10 @@ fn parser_find_switch_clause_header_end(
 }
 
 ///|
-fn parser_skip_switch_clause_attributes(source : String, index : Int) -> Int {
+fn parser_skip_switch_clause_attributes(
+  source : String,
+  index : Int32,
+) -> Int32 {
   let mut cursor = parser_skip_layout_and_comments(source, index)
   let mut running = true
   while running && cursor < source.length() {
@@ -1454,7 +1457,7 @@ fn parser_skip_switch_clause_attributes(source : String, index : Int) -> Int {
 }
 
 ///|
-fn parser_switch_clause_header_at(source : String, index : Int) -> Int? {
+fn parser_switch_clause_header_at(source : String, index : Int32) -> Int32? {
   let header = parser_skip_switch_clause_attributes(source, index)
   if parser_keyword_at(source, header, "case") ||
     parser_keyword_at(source, header, "default") {
@@ -1465,7 +1468,7 @@ fn parser_switch_clause_header_at(source : String, index : Int) -> Int? {
 }
 
 ///|
-fn parser_find_next_switch_clause(source : String, index : Int) -> Int {
+fn parser_find_next_switch_clause(source : String, index : Int32) -> Int32 {
   let mut cursor = index
   let mut paren_depth = 0
   let mut bracket_depth = 0
@@ -1858,8 +1861,8 @@ fn parser_trim_statement_semicolon(source : String) -> String {
 ///|
 fn parser_skip_balanced_attribute_arguments(
   source : String,
-  index : Int,
-) -> (Int, Bool) {
+  index : Int32,
+) -> (Int32, Bool) {
   let mut cursor = index
   let mut depth = 1
   while cursor < source.length() {

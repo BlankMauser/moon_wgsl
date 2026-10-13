@@ -91,7 +91,7 @@ fn WgslIrLowerer::lower_statement_with_block_context(
   self : WgslIrLowerer,
   statement : @ast.WgslStatement,
   statements : Array[@ast.WgslStatement],
-  statement_index : Int,
+  statement_index : Int32,
   function : Function,
   scope : WgslIrFunctionScope,
   block : Block,
@@ -124,7 +124,7 @@ fn WgslIrLowerer::lower_statement_with_block_context(
 fn WgslIrLowerer::predeclare_source_var_suffix_locals(
   self : WgslIrLowerer,
   statements : Array[@ast.WgslStatement],
-  statement_index : Int,
+  statement_index : Int32,
   function : Function,
   scope : WgslIrFunctionScope,
 ) -> Unit raise WgslIrLowerError {

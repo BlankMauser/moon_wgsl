@@ -1,8 +1,13 @@
 ///|
 pub suberror ParseError {
-  UnexpectedToken(Token, (Int, Int), Array[TokenKind])
-  UnexpectedEndOfInput(Int, Array[TokenKind])
+  UnexpectedToken(Token, (Int32, Int32), Array[TokenKind])
+  UnexpectedEndOfInput(Int32, Array[TokenKind])
 } derive(Debug)
+
+///|
+#deprecated("Use Debug::to_repr instead")
+#doc(hidden)
+pub extend ParseError with Debug::{to_repr}
 
 ///|
 type YYObj = Error
@@ -34,14 +39,14 @@ priv suberror YYObj_String_ {
 type YYState = (YYSymbol) -> YYDecision
 
 ///|
-type YYAction = (Int, ArrayView[(YYObj, Int, Int)]) -> YYObj
+type YYAction = (Int32, ArrayView[(YYObj, Int32, Int32)]) -> YYObj
 
 ///|
 priv enum YYDecision {
   Accept
   Shift(YYState)
-  Reduce(Int, YYSymbol, YYAction)
-  ReduceNoLookahead(Int, YYSymbol, YYAction)
+  Reduce(Int32, YYSymbol, YYAction)
+  ReduceNoLookahead(Int32, YYSymbol, YYAction)
   Error
 }
 
@@ -72,9 +77,8 @@ priv enum YYSymbol {
   EOI
 }
 
-// Workaround for EOI unused warning
-
 ///|
+// Workaround for EOI unused warning
 fn init {
   match (EOI : YYSymbol) {
     EOI => ()
@@ -82,12 +86,14 @@ fn init {
   }
 }
 
+///|
 // file:///./parser.mbty
 // 33|    attributes "fn" IDENT tail
 // 34|                                 { Function($3) }
-
-///|
-fn yy_action_0(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_0(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[2].0 is YYObj_String(_dollar3)
   YYObj_GlobalParseHeader(
     {
@@ -97,12 +103,14 @@ fn yy_action_0(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 35|    attributes "struct" IDENT tail
 // 36|                                 { Struct($3) }
-
-///|
-fn yy_action_1(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_1(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[2].0 is YYObj_String(_dollar3)
   YYObj_GlobalParseHeader(
     {
@@ -112,12 +120,14 @@ fn yy_action_1(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 37|    attributes "alias" IDENT tail
 // 38|                                 { Alias($3) }
-
-///|
-fn yy_action_2(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_2(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[2].0 is YYObj_String(_dollar3)
   YYObj_GlobalParseHeader(
     {
@@ -127,12 +137,14 @@ fn yy_action_2(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 39|    attributes "const" IDENT tail
 // 40|                                 { Const($3) }
-
-///|
-fn yy_action_3(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_3(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[2].0 is YYObj_String(_dollar3)
   YYObj_GlobalParseHeader(
     {
@@ -142,12 +154,14 @@ fn yy_action_3(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 41|    attributes "override" IDENT tail
 // 42|                                 { Override($3) }
-
-///|
-fn yy_action_4(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_4(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[2].0 is YYObj_String(_dollar3)
   YYObj_GlobalParseHeader(
     {
@@ -157,12 +171,14 @@ fn yy_action_4(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 43|    attributes "let" IDENT tail
 // 44|                                 { Let($3) }
-
-///|
-fn yy_action_5(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_5(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[2].0 is YYObj_String(_dollar3)
   YYObj_GlobalParseHeader(
     {
@@ -172,12 +188,14 @@ fn yy_action_5(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 45|    attributes "var" opt_var_template IDENT tail
 // 46|                                 { Var({ name: Some($4), template_arguments: $3 }) }
-
-///|
-fn yy_action_6(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_6(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[3].0 is YYObj_String(_dollar4)
   guard! _args[2].0 is YYObj_String_(_dollar3)
   YYObj_GlobalParseHeader(
@@ -188,11 +206,13 @@ fn yy_action_6(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 62|    VAR_TEMPLATE                  { Some($1) }
-
-///|
-fn yy_action_7(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_7(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_String(_dollar1)
   YYObj_String_(
     {
@@ -202,11 +222,13 @@ fn yy_action_7(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 61|                                 { None }
-
-///|
-fn yy_action_8(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_8(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_String_(
     {
       ()
@@ -215,12 +237,14 @@ fn yy_action_8(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 47|    attributes "const_assert" tail
 // 48|                                 { ConstAssert }
-
-///|
-fn yy_action_9(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_9(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_GlobalParseHeader(
     {
       ()
@@ -229,11 +253,13 @@ fn yy_action_9(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 49|    attributes "enable" tail      { EnableDirective }
-
-///|
-fn yy_action_10(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_10(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_GlobalParseHeader(
     {
       ()
@@ -242,11 +268,13 @@ fn yy_action_10(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 50|    attributes "requires" tail    { RequiresDirective }
-
-///|
-fn yy_action_11(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_11(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_GlobalParseHeader(
     {
       ()
@@ -255,11 +283,13 @@ fn yy_action_11(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 51|    attributes "diagnostic" tail  { DiagnosticDirective }
-
-///|
-fn yy_action_12(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_12(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_GlobalParseHeader(
     {
       ()
@@ -268,11 +298,13 @@ fn yy_action_12(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 52|    attributes other_global       { Other }
-
-///|
-fn yy_action_13(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_13(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_GlobalParseHeader(
     {
       ()
@@ -281,11 +313,13 @@ fn yy_action_13(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 57|    attributes ATTRIBUTE          { () }
-
-///|
-fn yy_action_14(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_14(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -294,11 +328,13 @@ fn yy_action_14(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 67|    tail tail_item                { () }
-
-///|
-fn yy_action_15(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_15(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -307,11 +343,13 @@ fn yy_action_15(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 71|    IDENT                         { () }
-
-///|
-fn yy_action_16(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_16(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -320,11 +358,13 @@ fn yy_action_16(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 72|    VAR_TEMPLATE                  { () }
-
-///|
-fn yy_action_17(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_17(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -333,11 +373,13 @@ fn yy_action_17(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 73|    ATTRIBUTE                     { () }
-
-///|
-fn yy_action_18(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_18(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -346,11 +388,13 @@ fn yy_action_18(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 74|    "fn"                          { () }
-
-///|
-fn yy_action_19(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_19(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -359,11 +403,13 @@ fn yy_action_19(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 75|    "struct"                      { () }
-
-///|
-fn yy_action_20(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_20(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -372,11 +418,13 @@ fn yy_action_20(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 76|    "alias"                       { () }
-
-///|
-fn yy_action_21(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_21(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -385,11 +433,13 @@ fn yy_action_21(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 77|    "const"                       { () }
-
-///|
-fn yy_action_22(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_22(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -398,11 +448,13 @@ fn yy_action_22(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 78|    "override"                    { () }
-
-///|
-fn yy_action_23(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_23(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -411,11 +463,13 @@ fn yy_action_23(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 79|    "let"                         { () }
-
-///|
-fn yy_action_24(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_24(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -424,11 +478,13 @@ fn yy_action_24(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 80|    "var"                         { () }
-
-///|
-fn yy_action_25(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_25(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -437,11 +493,13 @@ fn yy_action_25(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 81|    "const_assert"                { () }
-
-///|
-fn yy_action_26(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_26(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -450,11 +508,13 @@ fn yy_action_26(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 82|    "enable"                      { () }
-
-///|
-fn yy_action_27(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_27(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -463,11 +523,13 @@ fn yy_action_27(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 83|    "requires"                    { () }
-
-///|
-fn yy_action_28(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_28(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -476,11 +538,13 @@ fn yy_action_28(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 84|    "diagnostic"                  { () }
-
-///|
-fn yy_action_29(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_29(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -489,11 +553,13 @@ fn yy_action_29(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 85|    OTHER                         { () }
-
-///|
-fn yy_action_30(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_30(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -502,11 +568,13 @@ fn yy_action_30(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 89|    other_item tail               { () }
-
-///|
-fn yy_action_31(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_31(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -515,11 +583,13 @@ fn yy_action_31(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 66|                                 { () }
-
-///|
-fn yy_action_32(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_32(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -528,11 +598,13 @@ fn yy_action_32(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 93|    IDENT                         { () }
-
-///|
-fn yy_action_33(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_33(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -541,11 +613,13 @@ fn yy_action_33(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 94|    VAR_TEMPLATE                  { () }
-
-///|
-fn yy_action_34(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_34(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -554,11 +628,13 @@ fn yy_action_34(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 95|    OTHER                         { () }
-
-///|
-fn yy_action_35(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_35(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -567,11 +643,13 @@ fn yy_action_35(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./parser.mbty
 // 56|                                 { () }
-
-///|
-fn yy_action_36(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_36(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -583,8 +661,8 @@ fn yy_action_36(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
 ///|
 fn yy_input(
   token : Token,
-  _start_pos : Int,
-  _end_pos : Int,
+  _start_pos : Int32,
+  _end_pos : Int32,
 ) -> (YYSymbol, YYObj) {
   match token {
     IDENT(data) => (T_IDENT, YYObj_String(data))
@@ -605,6 +683,7 @@ fn yy_input(
   }
 }
 
+///|
 // [0, parse_global_header → • attributes FN IDENT tail, $]
 // [1, parse_global_header → • attributes STRUCT IDENT tail, $]
 // [2, parse_global_header → • attributes ALIAS IDENT tail, $]
@@ -620,8 +699,6 @@ fn yy_input(
 // [12, attributes → •, IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [13, attributes → • attributes ATTRIBUTE, IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [37, parse_global_header_prime → • parse_global_header, $]
-
-///|
 fn yy_state_0(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_parse_global_header => Shift(yy_state_1)
@@ -645,13 +722,13 @@ fn yy_state_0(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [37, parse_global_header_prime → parse_global_header •, $]
-
 ///|
+// [37, parse_global_header_prime → parse_global_header •, $]
 fn yy_state_1(_lookahead : YYSymbol) -> YYDecision {
   Accept
 }
 
+///|
 // [0, parse_global_header → attributes • FN IDENT tail, $]
 // [1, parse_global_header → attributes • STRUCT IDENT tail, $]
 // [2, parse_global_header → attributes • ALIAS IDENT tail, $]
@@ -669,8 +746,6 @@ fn yy_state_1(_lookahead : YYSymbol) -> YYDecision {
 // [34, other_item → • IDENT, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [35, other_item → • VAR_TEMPLATE, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [36, other_item → • OTHER, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_2(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_OTHER => Shift(yy_state_3)
@@ -694,32 +769,28 @@ fn yy_state_2(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [36, other_item → OTHER •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [36, other_item → OTHER •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_3(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_other_item, yy_action_35)
 }
 
-// [35, other_item → VAR_TEMPLATE •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [35, other_item → VAR_TEMPLATE •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_4(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_other_item, yy_action_34)
 }
 
-// [34, other_item → IDENT •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [34, other_item → IDENT •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_5(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_other_item, yy_action_33)
 }
 
+///|
 // [16, tail → •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [17, tail → • tail tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [33, other_global → other_item • tail, $]
-
-///|
 fn yy_state_6(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_tail => Shift(yy_state_7)
@@ -743,6 +814,7 @@ fn yy_state_6(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [17, tail → tail • tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [18, tail_item → • IDENT, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [19, tail_item → • VAR_TEMPLATE, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
@@ -760,8 +832,6 @@ fn yy_state_6(_lookahead : YYSymbol) -> YYDecision {
 // [31, tail_item → • DIAGNOSTIC, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [32, tail_item → • OTHER, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [33, other_global → other_item tail •, $]
-
-///|
 fn yy_state_7(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_OTHER => Shift(yy_state_8)
@@ -785,137 +855,118 @@ fn yy_state_7(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [32, tail_item → OTHER •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [32, tail_item → OTHER •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_8(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_tail_item, yy_action_30)
 }
 
-// [31, tail_item → DIAGNOSTIC •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [31, tail_item → DIAGNOSTIC •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_9(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_tail_item, yy_action_29)
 }
 
-// [30, tail_item → REQUIRES •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [30, tail_item → REQUIRES •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_10(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_tail_item, yy_action_28)
 }
 
-// [29, tail_item → ENABLE •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [29, tail_item → ENABLE •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_11(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_tail_item, yy_action_27)
 }
 
-// [28, tail_item → CONST_ASSERT •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [28, tail_item → CONST_ASSERT •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_12(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_tail_item, yy_action_26)
 }
 
-// [27, tail_item → VAR •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [27, tail_item → VAR •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_13(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_tail_item, yy_action_25)
 }
 
-// [26, tail_item → LET •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [26, tail_item → LET •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_14(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_tail_item, yy_action_24)
 }
 
-// [25, tail_item → OVERRIDE •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [25, tail_item → OVERRIDE •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_15(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_tail_item, yy_action_23)
 }
 
-// [24, tail_item → CONST •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [24, tail_item → CONST •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_16(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_tail_item, yy_action_22)
 }
 
-// [23, tail_item → ALIAS •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [23, tail_item → ALIAS •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_17(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_tail_item, yy_action_21)
 }
 
-// [22, tail_item → STRUCT •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [22, tail_item → STRUCT •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_18(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_tail_item, yy_action_20)
 }
 
-// [21, tail_item → FN •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [21, tail_item → FN •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_19(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_tail_item, yy_action_19)
 }
 
-// [20, tail_item → ATTRIBUTE •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [20, tail_item → ATTRIBUTE •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_20(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_tail_item, yy_action_18)
 }
 
-// [19, tail_item → VAR_TEMPLATE •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [19, tail_item → VAR_TEMPLATE •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_21(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_tail_item, yy_action_17)
 }
 
-// [18, tail_item → IDENT •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [18, tail_item → IDENT •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_22(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_tail_item, yy_action_16)
 }
 
-// [17, tail → tail tail_item •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [17, tail → tail tail_item •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_23(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_tail, yy_action_15)
 }
 
-// [13, attributes → attributes ATTRIBUTE •, IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
 ///|
+// [13, attributes → attributes ATTRIBUTE •, IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 fn yy_state_24(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_attributes, yy_action_14)
 }
 
-// [11, parse_global_header → attributes other_global •, $]
-
 ///|
+// [11, parse_global_header → attributes other_global •, $]
 fn yy_state_25(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_parse_global_header, yy_action_13)
 }
 
+///|
 // [10, parse_global_header → attributes DIAGNOSTIC • tail, $]
 // [16, tail → •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [17, tail → • tail tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_26(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_tail => Shift(yy_state_27)
@@ -939,6 +990,7 @@ fn yy_state_26(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [10, parse_global_header → attributes DIAGNOSTIC tail •, $]
 // [17, tail → tail • tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [18, tail_item → • IDENT, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
@@ -956,8 +1008,6 @@ fn yy_state_26(_lookahead : YYSymbol) -> YYDecision {
 // [30, tail_item → • REQUIRES, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [31, tail_item → • DIAGNOSTIC, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [32, tail_item → • OTHER, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_27(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_OTHER => Shift(yy_state_8)
@@ -981,11 +1031,10 @@ fn yy_state_27(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [9, parse_global_header → attributes REQUIRES • tail, $]
 // [16, tail → •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [17, tail → • tail tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_28(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_tail => Shift(yy_state_29)
@@ -1009,6 +1058,7 @@ fn yy_state_28(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [9, parse_global_header → attributes REQUIRES tail •, $]
 // [17, tail → tail • tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [18, tail_item → • IDENT, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
@@ -1026,8 +1076,6 @@ fn yy_state_28(_lookahead : YYSymbol) -> YYDecision {
 // [30, tail_item → • REQUIRES, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [31, tail_item → • DIAGNOSTIC, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [32, tail_item → • OTHER, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_29(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_OTHER => Shift(yy_state_8)
@@ -1051,11 +1099,10 @@ fn yy_state_29(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [8, parse_global_header → attributes ENABLE • tail, $]
 // [16, tail → •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [17, tail → • tail tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_30(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_tail => Shift(yy_state_31)
@@ -1079,6 +1126,7 @@ fn yy_state_30(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [8, parse_global_header → attributes ENABLE tail •, $]
 // [17, tail → tail • tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [18, tail_item → • IDENT, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
@@ -1096,8 +1144,6 @@ fn yy_state_30(_lookahead : YYSymbol) -> YYDecision {
 // [30, tail_item → • REQUIRES, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [31, tail_item → • DIAGNOSTIC, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [32, tail_item → • OTHER, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_31(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_OTHER => Shift(yy_state_8)
@@ -1121,11 +1167,10 @@ fn yy_state_31(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [7, parse_global_header → attributes CONST_ASSERT • tail, $]
 // [16, tail → •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [17, tail → • tail tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_32(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_tail => Shift(yy_state_33)
@@ -1149,6 +1194,7 @@ fn yy_state_32(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [7, parse_global_header → attributes CONST_ASSERT tail •, $]
 // [17, tail → tail • tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [18, tail_item → • IDENT, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
@@ -1166,8 +1212,6 @@ fn yy_state_32(_lookahead : YYSymbol) -> YYDecision {
 // [30, tail_item → • REQUIRES, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [31, tail_item → • DIAGNOSTIC, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [32, tail_item → • OTHER, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_33(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_OTHER => Shift(yy_state_8)
@@ -1191,11 +1235,10 @@ fn yy_state_33(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [6, parse_global_header → attributes VAR • opt_var_template IDENT tail, $]
 // [14, opt_var_template → •, IDENT]
 // [15, opt_var_template → • VAR_TEMPLATE, IDENT]
-
-///|
 fn yy_state_34(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_VAR_TEMPLATE => Shift(yy_state_35)
@@ -1205,16 +1248,14 @@ fn yy_state_34(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [15, opt_var_template → VAR_TEMPLATE •, IDENT]
-
 ///|
+// [15, opt_var_template → VAR_TEMPLATE •, IDENT]
 fn yy_state_35(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_opt_var_template, yy_action_7)
 }
 
-// [6, parse_global_header → attributes VAR opt_var_template • IDENT tail, $]
-
 ///|
+// [6, parse_global_header → attributes VAR opt_var_template • IDENT tail, $]
 fn yy_state_36(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_IDENT => Shift(yy_state_37)
@@ -1222,11 +1263,10 @@ fn yy_state_36(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [6, parse_global_header → attributes VAR opt_var_template IDENT • tail, $]
 // [16, tail → •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [17, tail → • tail tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_37(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_tail => Shift(yy_state_38)
@@ -1250,6 +1290,7 @@ fn yy_state_37(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [6, parse_global_header → attributes VAR opt_var_template IDENT tail •, $]
 // [17, tail → tail • tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [18, tail_item → • IDENT, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
@@ -1267,8 +1308,6 @@ fn yy_state_37(_lookahead : YYSymbol) -> YYDecision {
 // [30, tail_item → • REQUIRES, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [31, tail_item → • DIAGNOSTIC, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [32, tail_item → • OTHER, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_38(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_OTHER => Shift(yy_state_8)
@@ -1292,9 +1331,8 @@ fn yy_state_38(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [5, parse_global_header → attributes LET • IDENT tail, $]
-
 ///|
+// [5, parse_global_header → attributes LET • IDENT tail, $]
 fn yy_state_39(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_IDENT => Shift(yy_state_40)
@@ -1302,11 +1340,10 @@ fn yy_state_39(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [5, parse_global_header → attributes LET IDENT • tail, $]
 // [16, tail → •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [17, tail → • tail tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_40(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_tail => Shift(yy_state_41)
@@ -1330,6 +1367,7 @@ fn yy_state_40(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [5, parse_global_header → attributes LET IDENT tail •, $]
 // [17, tail → tail • tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [18, tail_item → • IDENT, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
@@ -1347,8 +1385,6 @@ fn yy_state_40(_lookahead : YYSymbol) -> YYDecision {
 // [30, tail_item → • REQUIRES, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [31, tail_item → • DIAGNOSTIC, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [32, tail_item → • OTHER, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_41(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_OTHER => Shift(yy_state_8)
@@ -1372,9 +1408,8 @@ fn yy_state_41(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [4, parse_global_header → attributes OVERRIDE • IDENT tail, $]
-
 ///|
+// [4, parse_global_header → attributes OVERRIDE • IDENT tail, $]
 fn yy_state_42(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_IDENT => Shift(yy_state_43)
@@ -1382,11 +1417,10 @@ fn yy_state_42(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [4, parse_global_header → attributes OVERRIDE IDENT • tail, $]
 // [16, tail → •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [17, tail → • tail tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_43(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_tail => Shift(yy_state_44)
@@ -1410,6 +1444,7 @@ fn yy_state_43(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [4, parse_global_header → attributes OVERRIDE IDENT tail •, $]
 // [17, tail → tail • tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [18, tail_item → • IDENT, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
@@ -1427,8 +1462,6 @@ fn yy_state_43(_lookahead : YYSymbol) -> YYDecision {
 // [30, tail_item → • REQUIRES, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [31, tail_item → • DIAGNOSTIC, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [32, tail_item → • OTHER, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_44(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_OTHER => Shift(yy_state_8)
@@ -1452,9 +1485,8 @@ fn yy_state_44(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [3, parse_global_header → attributes CONST • IDENT tail, $]
-
 ///|
+// [3, parse_global_header → attributes CONST • IDENT tail, $]
 fn yy_state_45(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_IDENT => Shift(yy_state_46)
@@ -1462,11 +1494,10 @@ fn yy_state_45(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [3, parse_global_header → attributes CONST IDENT • tail, $]
 // [16, tail → •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [17, tail → • tail tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_46(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_tail => Shift(yy_state_47)
@@ -1490,6 +1521,7 @@ fn yy_state_46(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [3, parse_global_header → attributes CONST IDENT tail •, $]
 // [17, tail → tail • tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [18, tail_item → • IDENT, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
@@ -1507,8 +1539,6 @@ fn yy_state_46(_lookahead : YYSymbol) -> YYDecision {
 // [30, tail_item → • REQUIRES, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [31, tail_item → • DIAGNOSTIC, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [32, tail_item → • OTHER, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_47(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_OTHER => Shift(yy_state_8)
@@ -1532,9 +1562,8 @@ fn yy_state_47(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [2, parse_global_header → attributes ALIAS • IDENT tail, $]
-
 ///|
+// [2, parse_global_header → attributes ALIAS • IDENT tail, $]
 fn yy_state_48(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_IDENT => Shift(yy_state_49)
@@ -1542,11 +1571,10 @@ fn yy_state_48(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [2, parse_global_header → attributes ALIAS IDENT • tail, $]
 // [16, tail → •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [17, tail → • tail tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_49(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_tail => Shift(yy_state_50)
@@ -1570,6 +1598,7 @@ fn yy_state_49(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [2, parse_global_header → attributes ALIAS IDENT tail •, $]
 // [17, tail → tail • tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [18, tail_item → • IDENT, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
@@ -1587,8 +1616,6 @@ fn yy_state_49(_lookahead : YYSymbol) -> YYDecision {
 // [30, tail_item → • REQUIRES, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [31, tail_item → • DIAGNOSTIC, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [32, tail_item → • OTHER, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_50(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_OTHER => Shift(yy_state_8)
@@ -1612,9 +1639,8 @@ fn yy_state_50(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [1, parse_global_header → attributes STRUCT • IDENT tail, $]
-
 ///|
+// [1, parse_global_header → attributes STRUCT • IDENT tail, $]
 fn yy_state_51(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_IDENT => Shift(yy_state_52)
@@ -1622,11 +1648,10 @@ fn yy_state_51(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [1, parse_global_header → attributes STRUCT IDENT • tail, $]
 // [16, tail → •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [17, tail → • tail tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_52(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_tail => Shift(yy_state_53)
@@ -1650,6 +1675,7 @@ fn yy_state_52(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [1, parse_global_header → attributes STRUCT IDENT tail •, $]
 // [17, tail → tail • tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [18, tail_item → • IDENT, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
@@ -1667,8 +1693,6 @@ fn yy_state_52(_lookahead : YYSymbol) -> YYDecision {
 // [30, tail_item → • REQUIRES, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [31, tail_item → • DIAGNOSTIC, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [32, tail_item → • OTHER, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_53(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_OTHER => Shift(yy_state_8)
@@ -1692,9 +1716,8 @@ fn yy_state_53(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [0, parse_global_header → attributes FN • IDENT tail, $]
-
 ///|
+// [0, parse_global_header → attributes FN • IDENT tail, $]
 fn yy_state_54(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_IDENT => Shift(yy_state_55)
@@ -1702,11 +1725,10 @@ fn yy_state_54(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [0, parse_global_header → attributes FN IDENT • tail, $]
 // [16, tail → •, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [17, tail → • tail tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_55(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_tail => Shift(yy_state_56)
@@ -1730,6 +1752,7 @@ fn yy_state_55(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [0, parse_global_header → attributes FN IDENT tail •, $]
 // [17, tail → tail • tail_item, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [18, tail_item → • IDENT, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
@@ -1747,8 +1770,6 @@ fn yy_state_55(_lookahead : YYSymbol) -> YYDecision {
 // [30, tail_item → • REQUIRES, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [31, tail_item → • DIAGNOSTIC, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
 // [32, tail_item → • OTHER, $ / IDENT / VAR_TEMPLATE / ATTRIBUTE / FN / STRUCT / ALIAS / CONST / OVERRIDE / LET / VAR / CONST_ASSERT / ENABLE / REQUIRES / DIAGNOSTIC / OTHER]
-
-///|
 fn yy_state_56(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_OTHER => Shift(yy_state_8)
@@ -1774,17 +1795,17 @@ fn yy_state_56(_lookahead : YYSymbol) -> YYDecision {
 
 ///|
 fn[T] yy_parse(
-  tokens : Array[(Token, Int, Int)],
+  tokens : Array[(Token, Int32, Int32)],
   start : YYState,
   return_ : (YYObj) -> T,
-  initial_pos? : Int,
+  initial_pos? : Int32,
 ) -> T raise ParseError {
   let mut cursor = 0
-  let mut state_stack : @list.List[YYState] = @list.cons(start, @list.empty())
-  let data_stack : Array[(YYObj, Int, Int)] = []
-  let mut last_pos = initial_pos.unwrap_or(tokens[0].1)
+  let mut state_stack : @list.List[YYState] = @list.cons(start, List([]))
+  let data_stack : Array[(YYObj, Int32, Int32)] = []
+  let mut last_pos = initial_pos.unwrap_or_else(fn() { tokens[0].1 })
   let mut state = start
-  let mut lookahead : (YYSymbol, (YYObj, Int, Int), Token?)? = None
+  let mut lookahead : (YYSymbol, (YYObj, Int32, Int32), Token?)? = None
   let mut last_shifted_state_stack = state_stack
   while true {
     let decision = match state(EOI) {
@@ -1860,7 +1881,7 @@ fn[T] yy_parse(
 fn error(
   stack : @list.List[YYState],
   token : Token?,
-  loc : (Int, Int),
+  loc : (Int32, Int32),
 ) -> Unit raise ParseError {
   let expected = []
   fn try_add(symbol : YYSymbol, kind : TokenKind) {
@@ -1919,8 +1940,8 @@ fn error(
 
 ///|
 pub fn parse_global_header(
-  tokens : Array[(Token, Int, Int)],
-  initial_pos? : Int,
+  tokens : Array[(Token, Int32, Int32)],
+  initial_pos? : Int32,
 ) -> GlobalParseHeader raise ParseError {
   yy_parse(
     tokens,

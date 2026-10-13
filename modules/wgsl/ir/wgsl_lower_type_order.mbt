@@ -16,8 +16,8 @@
 priv struct WgslStructPredeclareEntry {
   declaration : @ast.WgslGlobalDecl
   name : String
-  source_start : Int
-  first_use : Int
+  source_start : Int32
+  first_use : Int32
   dependencies : Array[String]
 }
 
@@ -27,7 +27,7 @@ fn wgsl_ir_struct_predeclare_order(
 ) -> Array[@ast.WgslGlobalDecl] {
   let struct_names = @set.Set([])
   let entry_names = @set.Set([])
-  let first_uses : Map[String, Int] = Map([])
+  let first_uses : Map[String, Int32] = Map([])
   let entries : Array[WgslStructPredeclareEntry] = []
   for declaration in declarations {
     match declaration.data() {
@@ -84,7 +84,7 @@ fn wgsl_ir_struct_predeclare_order(
 fn wgsl_ir_compare_struct_predeclare_entries(
   lhs : WgslStructPredeclareEntry,
   rhs : WgslStructPredeclareEntry,
-) -> Int {
+) -> Int32 {
   let first_use_compare = lhs.first_use - rhs.first_use
   if first_use_compare != 0 {
     return first_use_compare
@@ -100,13 +100,13 @@ fn wgsl_ir_compare_struct_predeclare_entries(
 fn wgsl_ir_order_struct_predeclare_entries_by_dependencies(
   entries : Array[WgslStructPredeclareEntry],
 ) -> Array[WgslStructPredeclareEntry] {
-  let index_by_name : Map[String, Int] = Map([])
+  let index_by_name : Map[String, Int32] = Map([])
   for i in 0..<entries.length() {
     index_by_name.set(entries[i].name, i)
   }
   let ordered : Array[WgslStructPredeclareEntry] = []
-  let visiting : @set.Set[Int] = Set([])
-  let emitted : @set.Set[Int] = Set([])
+  let visiting : @set.Set[Int32] = Set([])
+  let emitted : @set.Set[Int32] = Set([])
   for i in 0..<entries.length() {
     wgsl_ir_push_struct_predeclare_entry_with_dependencies(
       entries, index_by_name, i, visiting, emitted, ordered,
@@ -118,10 +118,10 @@ fn wgsl_ir_order_struct_predeclare_entries_by_dependencies(
 ///|
 fn wgsl_ir_push_struct_predeclare_entry_with_dependencies(
   entries : Array[WgslStructPredeclareEntry],
-  index_by_name : Map[String, Int],
-  index : Int,
-  visiting : @set.Set[Int],
-  emitted : @set.Set[Int],
+  index_by_name : Map[String, Int32],
+  index : Int32,
+  visiting : @set.Set[Int32],
+  emitted : @set.Set[Int32],
   ordered : Array[WgslStructPredeclareEntry],
 ) -> Unit {
   if emitted.contains(index) || visiting.contains(index) {
@@ -203,7 +203,7 @@ fn wgsl_ir_collect_struct_type_ref_dependency(
 fn wgsl_ir_record_decl_struct_type_first_uses(
   declaration : @ast.WgslGlobalDecl,
   struct_names : @set.Set[String],
-  first_uses : Map[String, Int],
+  first_uses : Map[String, Int32],
 ) -> Unit {
   match declaration.data() {
     Function(function) => {
@@ -284,7 +284,7 @@ fn wgsl_ir_record_decl_struct_type_first_uses(
 fn wgsl_ir_record_struct_type_ref_first_use(
   ty_ref : @ast.WgslTypeRef,
   struct_names : @set.Set[String],
-  first_uses : Map[String, Int],
+  first_uses : Map[String, Int32],
 ) -> Unit {
   let name = ty_ref.name()
   if struct_names.contains(name) {

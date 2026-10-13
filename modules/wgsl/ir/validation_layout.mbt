@@ -205,7 +205,7 @@ fn wgsl_ir_validation_storage_format_scalar(format : StorageFormat) -> Scalar {
 ///|
 fn wgsl_ir_validation_scalar_width_is_valid(
   kind : ScalarKind,
-  width : Int,
+  width : Int32,
 ) -> Bool {
   match kind {
     Bool => width == 1
@@ -215,7 +215,7 @@ fn wgsl_ir_validation_scalar_width_is_valid(
 }
 
 ///|
-fn wgsl_ir_validation_swizzle_index(component : SwizzleComponent) -> Int {
+fn wgsl_ir_validation_swizzle_index(component : SwizzleComponent) -> Int32 {
   match component {
     X => 0
     Y => 1
@@ -225,12 +225,12 @@ fn wgsl_ir_validation_swizzle_index(component : SwizzleComponent) -> Int {
 }
 
 ///|
-fn wgsl_ir_validation_is_power_of_two(value : Int) -> Bool {
+fn wgsl_ir_validation_is_power_of_two(value : Int32) -> Bool {
   value > 0 && (value & (value - 1)) == 0
 }
 
 ///|
-fn wgsl_ir_validation_align_to(value : Int, align : Int) -> Int {
+fn wgsl_ir_validation_align_to(value : Int32, align : Int32) -> Int32 {
   if align <= 1 {
     value
   } else {
@@ -239,7 +239,7 @@ fn wgsl_ir_validation_align_to(value : Int, align : Int) -> Int {
 }
 
 ///|
-fn wgsl_ir_validation_cooperative_size_width(size : CooperativeSize) -> Int {
+fn wgsl_ir_validation_cooperative_size_width(size : CooperativeSize) -> Int32 {
   match size {
     Eight => 8
     Sixteen => 16

@@ -195,10 +195,10 @@ fn wgsl_import_request_satisfies_dependency(
 ///|
 fn wgsl_import_request_declared_dependency_indexes(
   requests : Array[WgslImportRequest],
-  request_index : Int,
+  request_index : Int32,
   declared_dependencies : Array[WgslImportRequest],
-) -> Array[Int] {
-  let indexes : Array[Int] = []
+) -> Array[Int32] {
+  let indexes : Array[Int32] = []
   for dependency in declared_dependencies {
     for i in 0..<requests.length() {
       if i == request_index {
@@ -240,10 +240,10 @@ fn Composer::declared_dependency_requests_for_import_request(
 ///|
 fn push_wgsl_import_request_with_declared_dependencies(
   requests : Array[WgslImportRequest],
-  dependency_indexes : Array[Array[Int]],
-  index : Int,
-  visiting : @set.Set[Int],
-  emitted : @set.Set[Int],
+  dependency_indexes : Array[Array[Int32]],
+  index : Int32,
+  visiting : @set.Set[Int32],
+  emitted : @set.Set[Int32],
   ordered : Array[WgslImportRequest],
 ) -> Unit {
   if emitted.contains(index) {
@@ -272,7 +272,7 @@ fn Composer::order_wgsl_import_requests_by_declared_dependencies(
   session : WgslComposeSession,
   importer_defs : WgslActiveComposeDefs,
 ) -> Array[WgslImportRequest] raise ComposerError {
-  let dependency_indexes : Array[Array[Int]] = []
+  let dependency_indexes : Array[Array[Int32]] = []
   for i in 0..<requests.length() {
     let declared_dependencies = self.declared_dependency_requests_for_import_request(
       requests[i],
@@ -286,8 +286,8 @@ fn Composer::order_wgsl_import_requests_by_declared_dependencies(
     )
   }
   let ordered : Array[WgslImportRequest] = []
-  let visiting : @set.Set[Int] = Set([])
-  let emitted : @set.Set[Int] = Set([])
+  let visiting : @set.Set[Int32] = Set([])
+  let emitted : @set.Set[Int32] = Set([])
   for i in 0..<requests.length() {
     push_wgsl_import_request_with_declared_dependencies(
       requests, dependency_indexes, i, visiting, emitted, ordered,

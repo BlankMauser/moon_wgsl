@@ -24,7 +24,7 @@ fn trace_compat_writer_function_plan_for_source(
 pub fn trace_writer_function_plan(
   source : String,
   function_name_prefix : String,
-  options? : WgslNagaPipelineOptions = WgslNagaPipelineOptions::compat(),
+  options~ : WgslNagaPipelineOptions = WgslNagaPipelineOptions::compat(),
 ) -> String raise WgslNagaPipelineError {
   trace_writer_function_plan_with_compose_context(
     source,
@@ -39,7 +39,7 @@ pub fn trace_writer_compose_function_plan(
   source : String,
   function_name_prefix : String,
   context : WgslNagaComposeContext,
-  options? : WgslNagaPipelineOptions = WgslNagaPipelineOptions::compat(),
+  options~ : WgslNagaPipelineOptions = WgslNagaPipelineOptions::compat(),
 ) -> String raise WgslNagaPipelineError {
   trace_writer_function_plan_with_compose_context(
     source, function_name_prefix, context, options,
@@ -90,7 +90,7 @@ fn trace_writer_function_plan_with_compose_context(
 ///|
 pub fn trace_writer_module_plan(
   source : String,
-  options? : WgslNagaPipelineOptions = WgslNagaPipelineOptions::compat(),
+  options~ : WgslNagaPipelineOptions = WgslNagaPipelineOptions::compat(),
 ) -> String raise WgslNagaPipelineError {
   trace_writer_compose_module_plan(
     source,
@@ -103,7 +103,7 @@ pub fn trace_writer_module_plan(
 pub fn trace_writer_compose_module_plan(
   source : String,
   context : WgslNagaComposeContext,
-  options? : WgslNagaPipelineOptions = WgslNagaPipelineOptions::compat(),
+  options~ : WgslNagaPipelineOptions = WgslNagaPipelineOptions::compat(),
 ) -> String raise WgslNagaPipelineError {
   let module_ = lower_validated_wgsl_source_to_ir_with_options(source, context)
   let view = build_wgsl_ir_writer_module(
@@ -660,8 +660,8 @@ fn wgsl_ir_trace_emit_range_statement_kinds(
   range : HandleRange,
 ) -> Array[String] {
   let rows : Array[String] = []
-  let mut start : Int? = None
-  let mut end : Int? = None
+  let mut start : Int32? = None
+  let mut end : Int32? = None
   for index in range.start.index()..<=range.end.index() {
     if wgsl_ir_trace_expression_has_raw_short_circuit_temporary_owner(
         function,
@@ -705,8 +705,8 @@ fn wgsl_ir_trace_expression_has_raw_short_circuit_temporary_owner(
 ///|
 fn wgsl_ir_trace_flush_emit_statement_range(
   rows : Array[String],
-  start : Int?,
-  end : Int?,
+  start : Int32?,
+  end : Int32?,
 ) -> Unit {
   match (start, end) {
     (Some(first), Some(last)) => rows.push("Emit(\{first}..\{last})")

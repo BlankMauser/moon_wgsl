@@ -15,8 +15,8 @@
 ///|
 pub(all) enum ShaderDefValue {
   Bool(Bool)
-  Int(Int)
-  UInt(UInt)
+  Int(Int32)
+  UInt(UInt32)
   Raw(String)
 } derive(Eq, Debug)
 

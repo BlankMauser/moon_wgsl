@@ -31,15 +31,15 @@ pub(all) enum WgslPreprocessorDirectiveKind {
 ///|
 pub struct WgslPreprocessorIdent {
   priv name : String
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
 } derive(Debug)
 
 ///|
 fn WgslPreprocessorIdent::WgslPreprocessorIdent(
   name : String,
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
 ) -> WgslPreprocessorIdent {
   { name, start, end, }
 }
@@ -50,28 +50,28 @@ pub fn WgslPreprocessorIdent::name(self : WgslPreprocessorIdent) -> String {
 }
 
 ///|
-pub fn WgslPreprocessorIdent::start(self : WgslPreprocessorIdent) -> Int {
+pub fn WgslPreprocessorIdent::start(self : WgslPreprocessorIdent) -> Int32 {
   self.start
 }
 
 ///|
-pub fn WgslPreprocessorIdent::end(self : WgslPreprocessorIdent) -> Int {
+pub fn WgslPreprocessorIdent::end(self : WgslPreprocessorIdent) -> Int32 {
   self.end
 }
 
 ///|
 pub struct WgslPreprocessorDirectiveTail {
   priv text : String
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
   priv has_required_separator : Bool
 } derive(Debug)
 
 ///|
 fn WgslPreprocessorDirectiveTail::WgslPreprocessorDirectiveTail(
   text : String,
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
   has_required_separator : Bool,
 ) -> WgslPreprocessorDirectiveTail {
   { text, start, end, has_required_separator, }
@@ -82,8 +82,8 @@ pub struct WgslPreprocessorDirective {
   priv kind : WgslPreprocessorDirectiveKind
   priv name : WgslPreprocessorIdent
   priv tail : WgslPreprocessorDirectiveTail
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
 } derive(Debug)
 
 ///|
@@ -91,8 +91,8 @@ fn WgslPreprocessorDirective::WgslPreprocessorDirective(
   kind : WgslPreprocessorDirectiveKind,
   name : WgslPreprocessorIdent,
   tail : WgslPreprocessorDirectiveTail,
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
 ) -> WgslPreprocessorDirective {
   { kind, name, tail, start, end, }
 }
@@ -135,31 +135,33 @@ pub fn WgslPreprocessorDirective::has_required_tail_separator(
 ///|
 pub fn WgslPreprocessorDirective::start(
   self : WgslPreprocessorDirective,
-) -> Int {
+) -> Int32 {
   self.start
 }
 
 ///|
-pub fn WgslPreprocessorDirective::end(self : WgslPreprocessorDirective) -> Int {
+pub fn WgslPreprocessorDirective::end(
+  self : WgslPreprocessorDirective,
+) -> Int32 {
   self.end
 }
 
 ///|
 pub fn WgslPreprocessorDirective::tail_start(
   self : WgslPreprocessorDirective,
-) -> Int {
+) -> Int32 {
   self.tail.start
 }
 
 ///|
 pub fn WgslPreprocessorDirective::tail_end(
   self : WgslPreprocessorDirective,
-) -> Int {
+) -> Int32 {
   self.tail.end
 }
 
 ///|
-fn wgsl_directive_identifier_code_unit(code : Int) -> Bool {
+fn wgsl_directive_identifier_code_unit(code : Int32) -> Bool {
   (code >= 65 && code <= 90) ||
   (code >= 97 && code <= 122) ||
   (code >= 48 && code <= 57) ||
@@ -167,7 +169,10 @@ fn wgsl_directive_identifier_code_unit(code : Int) -> Bool {
 }
 
 ///|
-fn wgsl_directive_line_trim_ascii_space_end(text : String, start : Int) -> Int {
+fn wgsl_directive_line_trim_ascii_space_end(
+  text : String,
+  start : Int32,
+) -> Int32 {
   let mut end = text.length()
   while end > start {
     let code = text.code_unit_at(end - 1).to_int()
@@ -201,7 +206,7 @@ fn wgsl_directive_line_kind(name : String) -> WgslPreprocessorDirectiveKind {
 ///|
 pub fn parse_wgsl_directive_line_at(
   line : String,
-  source_start : Int,
+  source_start : Int32,
 ) -> WgslPreprocessorDirective? {
   let hash_start = wgsl_regex_skip_whitespace(line, 0)
   guard hash_start < line.length() &&

@@ -17,8 +17,8 @@ priv struct WgslDeclHead {
   attributes : Array[WgslAttribute]
   keyword : WgslIdent?
   qualifier : WgslFunctionQualifier?
-  qualifier_start : Int?
-  qualifier_end : Int?
+  qualifier_start : Int32?
+  qualifier_end : Int32?
   fn_keyword : WgslIdent?
 }
 

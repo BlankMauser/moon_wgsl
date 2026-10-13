@@ -27,7 +27,7 @@ pub(all) struct DirectiveParseNode {
 
 ///|
 pub(all) struct DirectiveParseDiagnostic {
-  offset : Int
+  offset : Int32
   incomplete : Bool
 } derive(Eq, Debug)
 
@@ -39,12 +39,12 @@ pub(all) enum DirectiveParseResult {
 
 ///|
 priv enum DirectiveLexResult {
-  Lexed(Array[(Token, Int, Int)])
+  Lexed(Array[(Token, Int32, Int32)])
   LexFailed(DirectiveParseDiagnostic)
 }
 
 ///|
-fn directive_parse_skip_line_comment(source : String, index : Int) -> Int {
+fn directive_parse_skip_line_comment(source : String, index : Int32) -> Int32 {
   let mut cursor = index
   while cursor < source.length() && source.code_unit_at(cursor).to_int() != 10 {
     cursor += 1
@@ -55,8 +55,8 @@ fn directive_parse_skip_line_comment(source : String, index : Int) -> Int {
 ///|
 fn directive_parse_skip_block_comment(
   source : String,
-  index : Int,
-) -> (Int, Bool) {
+  index : Int32,
+) -> (Int32, Bool) {
   let mut cursor = index
   let mut depth = 1
   while cursor + 1 < source.length() {
@@ -81,7 +81,7 @@ fn directive_parse_skip_block_comment(
 }
 
 ///|
-fn directive_parse_skip_layout(source : String, index : Int) -> (Int, Bool) {
+fn directive_parse_skip_layout(source : String, index : Int32) -> (Int32, Bool) {
   let mut cursor = index
   while cursor < source.length() {
     let code = source.code_unit_at(cursor).to_int()
@@ -113,7 +113,7 @@ fn directive_parse_skip_layout(source : String, index : Int) -> (Int, Bool) {
 }
 
 ///|
-fn directive_parse_is_identifier_start(code : Int) -> Bool {
+fn directive_parse_is_identifier_start(code : Int32) -> Bool {
   (code >= 65 && code <= 90) ||
   (code >= 97 && code <= 122) ||
   code == 95 ||
@@ -121,14 +121,17 @@ fn directive_parse_is_identifier_start(code : Int) -> Bool {
 }
 
 ///|
-fn directive_parse_is_item_char(code : Int) -> Bool {
+fn directive_parse_is_item_char(code : Int32) -> Bool {
   directive_parse_is_identifier_start(code) ||
   (code >= 48 && code <= 57) ||
   code == 46
 }
 
 ///|
-fn directive_parse_read_item(source : String, index : Int) -> (String, Int)? {
+fn directive_parse_read_item(
+  source : String,
+  index : Int32,
+) -> (String, Int32)? {
   if index >= source.length() ||
     !directive_parse_is_identifier_start(source.code_unit_at(index).to_int()) {
     return None
@@ -145,10 +148,10 @@ fn directive_parse_read_item(source : String, index : Int) -> (String, Int)? {
 ///|
 fn directive_parse_skip_balanced(
   source : String,
-  index : Int,
-  open_code : Int,
-  close_code : Int,
-) -> (Int, Bool) {
+  index : Int32,
+  open_code : Int32,
+  close_code : Int32,
+) -> (Int32, Bool) {
   let mut cursor = index
   let mut depth = 1
   while cursor < source.length() {
@@ -167,7 +170,10 @@ fn directive_parse_skip_balanced(
 }
 
 ///|
-fn directive_parse_skip_attributes(source : String, index : Int) -> (Int, Bool) {
+fn directive_parse_skip_attributes(
+  source : String,
+  index : Int32,
+) -> (Int32, Bool) {
   let mut cursor = index
   while cursor < source.length() && source.code_unit_at(cursor).to_int() == 64 {
     cursor += 1
@@ -203,17 +209,17 @@ fn directive_parse_keyword_token(name : String) -> Token {
 
 ///|
 fn directive_parse_push(
-  tokens : Array[(Token, Int, Int)],
+  tokens : Array[(Token, Int32, Int32)],
   token : Token,
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
 ) -> Unit {
   tokens.push((token, start, end_))
 }
 
 ///|
 fn directive_parse_lex(source : String) -> DirectiveLexResult {
-  let tokens : Array[(Token, Int, Int)] = []
+  let tokens : Array[(Token, Int32, Int32)] = []
   let mut index = 0
   let (start_index, ok) = directive_parse_skip_layout(source, index)
   if !ok {

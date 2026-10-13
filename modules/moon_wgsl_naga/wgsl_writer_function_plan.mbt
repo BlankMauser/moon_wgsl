@@ -24,33 +24,33 @@ priv struct WgslIrFunctionWriterPlan {
 
 ///|
 priv struct WgslIrExpressionWriterPlan {
-  expression_count : Int
-  implicit_expression_slots_before : Array[Int]
+  expression_count : Int32
+  implicit_expression_slots_before : Array[Int32]
 }
 
 ///|
 priv struct WgslIrCallArgumentWriterPlan {
-  call_expression_count : Int
-  call_result_expression_count : Int
+  call_expression_count : Int32
+  call_result_expression_count : Int32
 }
 
 ///|
 priv struct WgslIrShortCircuitWriterPlan {
-  result_locals : Array[Int]
+  result_locals : Array[Int32]
 }
 
 ///|
 priv struct WgslIrMaterializationWriterPlan {
-  materialized_expressions : @set.Set[Int]
-  temporary_initializer_expressions : @set.Set[Int]
-  elided_local_alias_targets : Map[Int, Handle]
+  materialized_expressions : @set.Set[Int32]
+  temporary_initializer_expressions : @set.Set[Int32]
+  elided_local_alias_targets : Map[Int32, Handle]
 }
 
 ///|
 priv struct WgslIrNameWriterPlan {
-  materialized_temporary_slots : Int
-  local_declaration_slots : Int
-  named_expression_slots : Int
+  materialized_temporary_slots : Int32
+  local_declaration_slots : Int32
+  named_expression_slots : Int32
 }
 
 ///|
@@ -84,7 +84,7 @@ fn WgslIrFunctionWriterPlan::statement_plan(
 ///|
 fn WgslIrFunctionWriterPlan::local_declaration_order(
   self : WgslIrFunctionWriterPlan,
-) -> Array[Int] {
+) -> Array[Int32] {
   self.body.local_declaration_order()
 }
 
@@ -126,7 +126,7 @@ fn WgslIrFunctionWriterPlan::temporary_index(
   self : WgslIrFunctionWriterPlan,
   function : Function,
   handle : Handle,
-) -> Int {
+) -> Int32 {
   wgsl_ir_emit_expression_temporary_index(function, self, handle)
 }
 
@@ -134,7 +134,7 @@ fn WgslIrFunctionWriterPlan::temporary_index(
 fn WgslIrFunctionWriterPlan::implicit_expression_slot_offset(
   self : WgslIrFunctionWriterPlan,
   handle : Handle,
-) -> Int {
+) -> Int32 {
   self.body.implicit_expression_slot_offset(handle)
 }
 
@@ -187,7 +187,7 @@ fn WgslIrExpressionWriterPlan::from_function(
 ///|
 fn WgslIrExpressionWriterPlan::implicit_expression_slot_count(
   self : WgslIrExpressionWriterPlan,
-) -> Int {
+) -> Int32 {
   match self.implicit_expression_slots_before.last() {
     Some(value) => value
     None => 0
@@ -219,7 +219,7 @@ fn WgslIrCallArgumentWriterPlan::from_function(
 fn WgslIrShortCircuitWriterPlan::from_function(
   function : Function,
 ) -> WgslIrShortCircuitWriterPlan {
-  let result_locals : Array[Int] = []
+  let result_locals : Array[Int32] = []
   for local_index in 0..<function.local_variables.items.length() {
     if function.local_variables.items[local_index].short_circuit_result {
       result_locals.push(local_index)

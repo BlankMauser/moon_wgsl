@@ -233,7 +233,7 @@ fn wgsl_ir_atomic_function_name(function : AtomicFunction) -> String {
 }
 
 ///|
-fn wgsl_ir_align_to(value : Int, align : Int) -> Int {
+fn wgsl_ir_align_to(value : Int32, align : Int32) -> Int32 {
   if align <= 1 {
     value
   } else {

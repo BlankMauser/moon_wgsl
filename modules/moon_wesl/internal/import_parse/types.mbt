@@ -21,7 +21,7 @@ pub(all) struct ImportParseNode {
 
 ///|
 pub(all) struct ImportParseDiagnostic {
-  offset : Int
+  offset : Int32
   incomplete : Bool
 } derive(Eq, Debug)
 
@@ -33,23 +33,23 @@ pub(all) enum ImportParseResult {
 
 ///|
 priv enum ImportLexResult {
-  Lexed(Array[(Token, Int, Int)])
+  Lexed(Array[(Token, Int32, Int32)])
   LexFailed(ImportParseDiagnostic)
 }
 
 ///|
-fn import_parse_is_identifier_start(code : Int) -> Bool {
+fn import_parse_is_identifier_start(code : Int32) -> Bool {
   (code >= 65 && code <= 90) || (code >= 97 && code <= 122) || code == 95
 }
 
 ///|
-fn import_parse_is_identifier_char(code : Int) -> Bool {
+fn import_parse_is_identifier_char(code : Int32) -> Bool {
   import_parse_is_identifier_start(code) || (code >= 48 && code <= 57)
 }
 
 ///|
 fn import_parse_lex(source : String) -> ImportLexResult {
-  let tokens : Array[(Token, Int, Int)] = []
+  let tokens : Array[(Token, Int32, Int32)] = []
   let mut index = 0
   while index < source.length() {
     let code = source.code_unit_at(index).to_int()

@@ -31,7 +31,7 @@ fn WgslIrEmitter::as_expression_result_type(
   self : WgslIrEmitter,
   input : Handle?,
   kind : ScalarKind,
-  width : Int,
+  width : Int32,
 ) -> Handle? {
   self.type_inference().as_expression_result_type(input, kind, width)
 }

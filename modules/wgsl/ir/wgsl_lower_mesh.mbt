@@ -111,7 +111,7 @@ fn WgslIrLowerer::mesh_output_array_info(
   self : WgslIrLowerer,
   ty : Handle,
   member_name : String,
-) -> (Handle, Int, Handle?) raise WgslIrLowerError {
+) -> (Handle, Int32, Handle?) raise WgslIrLowerError {
   guard self.shader_module.types.get(ty) is Some(array_type) else {
     raise UnsupportedExpression("invalid mesh output \{member_name} type")
   }

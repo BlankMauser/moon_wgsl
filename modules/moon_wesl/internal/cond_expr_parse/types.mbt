@@ -23,7 +23,7 @@ pub(all) enum CondExprNode {
 
 ///|
 pub(all) struct CondExprDiagnostic {
-  offset : Int
+  offset : Int32
   incomplete : Bool
 } derive(Eq, Debug)
 
@@ -35,12 +35,12 @@ pub(all) enum CondExprParseResult {
 
 ///|
 priv enum CondExprLexResult {
-  Lexed(Array[(Token, Int, Int)])
+  Lexed(Array[(Token, Int32, Int32)])
   LexFailed(CondExprDiagnostic)
 }
 
 ///|
-fn cond_expr_is_identifier_char(code : Int) -> Bool {
+fn cond_expr_is_identifier_char(code : Int32) -> Bool {
   (code >= 48 && code <= 57) ||
   (code >= 65 && code <= 90) ||
   (code >= 97 && code <= 122) ||
@@ -58,17 +58,17 @@ fn cond_expr_keyword_token(name : String) -> Token {
 
 ///|
 fn cond_expr_push_token(
-  tokens : Array[(Token, Int, Int)],
+  tokens : Array[(Token, Int32, Int32)],
   token : Token,
-  start : Int,
-  width : Int,
+  start : Int32,
+  width : Int32,
 ) -> Unit {
   tokens.push((token, start, start + width))
 }
 
 ///|
 fn cond_expr_lex(source : String) -> CondExprLexResult {
-  let tokens : Array[(Token, Int, Int)] = []
+  let tokens : Array[(Token, Int32, Int32)] = []
   let mut index = 0
   while index < source.length() {
     let code = source.code_unit_at(index).to_int()

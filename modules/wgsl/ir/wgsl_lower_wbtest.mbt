@@ -593,8 +593,8 @@ test "WGSL AST lowerer commits source-let right binary before literal-left paren
     error => abort(error.message())
   }
   let function = module_.functions.items[0]
-  let mut product : Int? = None
-  let mut literal : Int? = None
+  let mut product : Int32? = None
+  let mut literal : Int32? = None
   for index, expression in function.expressions.items {
     match expression {
       Binary(Multiply, _, _) if product == None => product = Some(index)
@@ -2297,8 +2297,8 @@ test "WGSL AST lowerer predeclares right function argument root before left memb
     error => abort(error.message())
   }
   let function = module_.functions.items[0]
-  let mut surface_argument : Int? = None
-  let mut shadow_bias_load : Int? = None
+  let mut surface_argument : Int32? = None
+  let mut shadow_bias_load : Int32? = None
   for index, expression in function.expressions.items {
     match expression {
       FunctionArgument(argument_index) if argument_index == 1 &&
@@ -2336,9 +2336,9 @@ test "WGSL AST lowerer schedules right multiply argument before left pointer fie
     error => abort(error.message())
   }
   let function = module_.functions.items[0]
-  let mut vertex_argument : Int? = None
-  let mut field_load : Int? = None
-  let mut multiply : Int? = None
+  let mut vertex_argument : Int32? = None
+  let mut field_load : Int32? = None
+  let mut multiply : Int32? = None
   for index, expression in function.expressions.items {
     match expression {
       FunctionArgument(argument_index) if argument_index == 1 &&
@@ -2383,8 +2383,8 @@ test "WGSL AST lowerer predeclares compound assignment RHS function argument pro
     error => abort(error.message())
   }
   let function = module_.functions.items[0]
-  let mut scale_argument : Int? = None
-  let mut result_ddx_load : Int? = None
+  let mut scale_argument : Int32? = None
+  let mut result_ddx_load : Int32? = None
   for index, expression in function.expressions.items {
     match expression {
       FunctionArgument(argument_index) if argument_index == 0 &&
@@ -2478,10 +2478,10 @@ test "WGSL AST lowerer orders global scale root before argument product in subtr
     error => abort(error.message())
   }
   let function = module_.functions.items[0]
-  let mut global_root : Int? = None
-  let mut view_argument : Int? = None
-  let mut delta_argument : Int? = None
-  let mut global_load : Int? = None
+  let mut global_root : Int32? = None
+  let mut view_argument : Int32? = None
+  let mut delta_argument : Int32? = None
+  let mut global_load : Int32? = None
   for index, expression in function.expressions.items {
     match expression {
       GlobalVariable(_) if global_root == None => global_root = Some(index)
@@ -2520,10 +2520,10 @@ test "WGSL AST lowerer predeclares later fma direct argument after first constru
     error => abort(error.message())
   }
   let function = module_.functions.items[0]
-  let mut sampling_argument : Int? = None
-  let mut n_argument : Int? = None
-  let mut sampling_splat : Int? = None
-  let mut horizon_load : Int? = None
+  let mut sampling_argument : Int32? = None
+  let mut n_argument : Int32? = None
+  let mut sampling_splat : Int32? = None
+  let mut horizon_load : Int32? = None
   for index, expression in function.expressions.items {
     match expression {
       FunctionArgument(0) if sampling_argument == None =>
@@ -2568,8 +2568,8 @@ test "WGSL AST lowerer does not treat user call math argument as constructor" {
     error => abort(error.message())
   }
   let function = module_.functions.items[1]
-  let mut call_result : Int? = None
-  let mut base_color_argument : Int? = None
+  let mut call_result : Int32? = None
+  let mut base_color_argument : Int32? = None
   for index, expression in function.expressions.items {
     match expression {
       CallResult(_) if call_result == None => call_result = Some(index)
@@ -2599,10 +2599,10 @@ test "WGSL AST lowerer schedules store pointer argument reads through assignment
     error => abort(error.message())
   }
   let function = module_.functions.items[1]
-  let mut bitmask_root : Int? = None
-  let mut horizon_access : Int? = None
-  let mut bitmask_load : Int? = None
-  let mut samples_argument : Int? = None
+  let mut bitmask_root : Int32? = None
+  let mut horizon_access : Int32? = None
+  let mut bitmask_load : Int32? = None
+  let mut samples_argument : Int32? = None
   for index, expression in function.expressions.items {
     match expression {
       FunctionArgument(2) if bitmask_root == None => bitmask_root = Some(index)
@@ -2655,8 +2655,8 @@ test "WGSL AST lowerer predeclares right argument projection before left member 
     error => abort(error.message())
   }
   let function = module_.functions.items[0]
-  let mut surface_argument : Int? = None
-  let mut first_member_load : Int? = None
+  let mut surface_argument : Int32? = None
+  let mut first_member_load : Int32? = None
   for index, expression in function.expressions.items {
     match expression {
       FunctionArgument(argument_index) if argument_index == 0 &&
@@ -2698,11 +2698,11 @@ test "WGSL AST lowerer keeps math-call additive left subtree before right produc
     error => abort(error.message())
   }
   let function = module_.functions.items[0]
-  let mut global_root : Int? = None
-  let mut left_unary : Int? = None
-  let mut surface_argument : Int? = None
-  let mut surface_swizzle : Int? = None
-  let mut shadow_depth_load : Int? = None
+  let mut global_root : Int32? = None
+  let mut left_unary : Int32? = None
+  let mut surface_argument : Int32? = None
+  let mut surface_swizzle : Int32? = None
+  let mut shadow_depth_load : Int32? = None
   for index, expression in function.expressions.items {
     match expression {
       GlobalVariable(_) if global_root == None => global_root = Some(index)
@@ -2755,7 +2755,7 @@ test "WGSL AST lowerer keeps left splat constructor before grouped product RHS" 
   }
   let function = module_.functions.items[0]
   let mut splats_before_load = 0
-  let mut scale_load : Int? = None
+  let mut scale_load : Int32? = None
   for index, expression in function.expressions.items {
     match expression {
       Load(pointer) if scale_load == None =>
@@ -2796,8 +2796,8 @@ test "WGSL AST lowerer keeps field assignment RHS local load before global produ
     error => abort(error.message())
   }
   let function = module_.functions.items[0]
-  let mut first_uv_load : Int? = None
-  let mut first_material_load : Int? = None
+  let mut first_uv_load : Int32? = None
+  let mut first_material_load : Int32? = None
   for index, expression in function.expressions.items {
     match expression {
       Load(pointer) =>
@@ -2837,8 +2837,8 @@ test "WGSL AST lowerer appends literal-left division product denominator before 
     error => abort(error.message())
   }
   let function = module_.functions.items[0]
-  let mut denominator_binary : Int? = None
-  let mut numerator_literal : Int? = None
+  let mut denominator_binary : Int32? = None
+  let mut numerator_literal : Int32? = None
   for index, expression in function.expressions.items {
     match expression {
       Binary(Multiply, _, _) if denominator_binary == None =>
@@ -2869,8 +2869,8 @@ test "WGSL AST lowerer appends literal-left division call denominator before num
     error => abort(error.message())
   }
   let function = module_.functions.items[1]
-  let mut denominator_call : Int? = None
-  let mut numerator_literal : Int? = None
+  let mut denominator_call : Int32? = None
+  let mut numerator_literal : Int32? = None
   for index, expression in function.expressions.items {
     match expression {
       CallResult(_) if denominator_call == None =>
@@ -2928,9 +2928,9 @@ test "WGSL AST lowerer prelowers later reference call argument before prior dire
     error => abort(error.message())
   }
   let function = module_.functions.items[1]
-  let mut depth_argument : Int? = None
-  let mut frag_argument : Int? = None
-  let mut soft_shadow_load : Int? = None
+  let mut depth_argument : Int32? = None
+  let mut frag_argument : Int32? = None
+  let mut soft_shadow_load : Int32? = None
   for index, expression in function.expressions.items {
     match expression {
       FunctionArgument(argument_index) if argument_index == 0 &&
@@ -3015,8 +3015,8 @@ test "WGSL AST lowerer skips alias projection call arguments when prelowering la
     error => abort(error.message())
   }
   let function = module_.functions.items[1]
-  let mut frag_argument : Int? = None
-  let mut soft_shadow_load : Int? = None
+  let mut frag_argument : Int32? = None
+  let mut soft_shadow_load : Int32? = None
   for index, expression in function.expressions.items {
     match expression {
       FunctionArgument(argument_index) if argument_index == 1 &&
@@ -3063,9 +3063,9 @@ test "WGSL AST lowerer keeps earlier compound call argument before later referen
     error => abort(error.message())
   }
   let function = module_.functions.items[1]
-  let mut flip_constant : Int? = None
-  let mut position_product : Int? = None
-  let mut soft_shadow_load : Int? = None
+  let mut flip_constant : Int32? = None
+  let mut position_product : Int32? = None
+  let mut soft_shadow_load : Int32? = None
   for index, expression in function.expressions.items {
     match expression {
       Constant(_) if flip_constant == None => flip_constant = Some(index)

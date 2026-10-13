@@ -30,7 +30,7 @@ fn WgslIrLowerer::lower_if_reject_chain(
   self : WgslIrLowerer,
   blocks : Array[@ast.WgslBlock],
   conditions : Array[@ast.WgslExprRef],
-  condition_index : Int,
+  condition_index : Int32,
   function : Function,
   scope : WgslIrFunctionScope,
 ) -> Block raise WgslIrLowerError {

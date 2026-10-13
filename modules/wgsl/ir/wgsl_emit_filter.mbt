@@ -15,13 +15,13 @@
 ///|
 pub struct WgslIrReachability {
   types : @set.Set[String]
-  type_order : Array[Int]
+  type_order : Array[Int32]
   constants : @set.Set[String]
-  constant_order : Array[Int]
+  constant_order : Array[Int32]
   overrides : @set.Set[String]
-  override_order : Array[Int]
+  override_order : Array[Int32]
   global_variables : @set.Set[String]
-  global_variable_order : Array[Int]
+  global_variable_order : Array[Int32]
   functions : @set.Set[String]
   entry_points : @set.Set[String]
 }
@@ -43,17 +43,20 @@ fn WgslIrReachability::WgslIrReachability() -> WgslIrReachability {
 }
 
 ///|
-fn wgsl_ir_reachability_key(index : Int) -> String {
+fn wgsl_ir_reachability_key(index : Int32) -> String {
   index.to_string()
 }
 
 ///|
-fn wgsl_ir_reachability_contains(items : @set.Set[String], index : Int) -> Bool {
+fn wgsl_ir_reachability_contains(
+  items : @set.Set[String],
+  index : Int32,
+) -> Bool {
   items.contains(wgsl_ir_reachability_key(index))
 }
 
 ///|
-fn wgsl_ir_reachability_mark(items : @set.Set[String], index : Int) -> Bool {
+fn wgsl_ir_reachability_mark(items : @set.Set[String], index : Int32) -> Bool {
   let key = wgsl_ir_reachability_key(index)
   if items.contains(key) {
     return false
@@ -65,7 +68,7 @@ fn wgsl_ir_reachability_mark(items : @set.Set[String], index : Int) -> Bool {
 ///|
 pub fn WgslIrReachability::contains_type(
   self : WgslIrReachability,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   wgsl_ir_reachability_contains(self.types, index)
 }
@@ -73,7 +76,7 @@ pub fn WgslIrReachability::contains_type(
 ///|
 pub fn WgslIrReachability::contains_constant(
   self : WgslIrReachability,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   wgsl_ir_reachability_contains(self.constants, index)
 }
@@ -81,7 +84,7 @@ pub fn WgslIrReachability::contains_constant(
 ///|
 pub fn WgslIrReachability::contains_override(
   self : WgslIrReachability,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   wgsl_ir_reachability_contains(self.overrides, index)
 }
@@ -89,7 +92,7 @@ pub fn WgslIrReachability::contains_override(
 ///|
 pub fn WgslIrReachability::contains_global_variable(
   self : WgslIrReachability,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   wgsl_ir_reachability_contains(self.global_variables, index)
 }
@@ -97,7 +100,7 @@ pub fn WgslIrReachability::contains_global_variable(
 ///|
 pub fn WgslIrReachability::contains_function(
   self : WgslIrReachability,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   wgsl_ir_reachability_contains(self.functions, index)
 }
@@ -105,7 +108,7 @@ pub fn WgslIrReachability::contains_function(
 ///|
 pub fn WgslIrReachability::contains_entry_point(
   self : WgslIrReachability,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   wgsl_ir_reachability_contains(self.entry_points, index)
 }
@@ -305,7 +308,7 @@ fn WgslIrReachability::mark_function(
 fn WgslIrReachability::mark_entry_point(
   self : WgslIrReachability,
   shader_module : Module,
-  index : Int,
+  index : Int32,
 ) -> Unit {
   if !wgsl_ir_reachability_mark(self.entry_points, index) {
     return

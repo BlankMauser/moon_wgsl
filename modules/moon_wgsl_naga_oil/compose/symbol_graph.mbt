@@ -49,13 +49,13 @@ pub struct WgslComposeImportArenaSymbol {
   priv kind : WgslComposeDeclarationKind
   priv source_symbol_name : String
   priv generated_symbol_name : String
-  priv source_decl_rank : Int
-  priv source_order_rank : Int
+  priv source_decl_rank : Int32
+  priv source_order_rank : Int32
 } derive(Eq, Debug)
 
 ///|
 pub struct WgslComposeImportArenaEvent {
-  priv sequence : Int
+  priv sequence : Int32
   priv importer_rel_path : String
   priv target_rel_path : String
   priv module_path : String
@@ -157,7 +157,7 @@ pub fn WgslComposeFinalNameTable::canonical_entries_for_rel_path(
 ///|
 pub fn WgslComposeFinalNameTable::canonical_entry_count(
   self : WgslComposeFinalNameTable,
-) -> Int {
+) -> Int32 {
   self.canonical_entries.length()
 }
 
@@ -242,8 +242,8 @@ pub fn WgslComposeImportArenaSymbol::WgslComposeImportArenaSymbol(
   kind : WgslComposeDeclarationKind,
   source_symbol_name : String,
   generated_symbol_name : String,
-  source_decl_rank? : Int = -1,
-  source_order_rank? : Int = -1,
+  source_decl_rank~ : Int32 = -1,
+  source_order_rank~ : Int32 = -1,
 ) -> WgslComposeImportArenaSymbol {
   {
     kind,
@@ -278,20 +278,20 @@ pub fn WgslComposeImportArenaSymbol::generated_symbol_name(
 ///|
 pub fn WgslComposeImportArenaSymbol::source_order_rank(
   self : WgslComposeImportArenaSymbol,
-) -> Int {
+) -> Int32 {
   self.source_order_rank
 }
 
 ///|
 pub fn WgslComposeImportArenaSymbol::source_decl_rank(
   self : WgslComposeImportArenaSymbol,
-) -> Int {
+) -> Int32 {
   self.source_decl_rank
 }
 
 ///|
 pub fn WgslComposeImportArenaEvent::WgslComposeImportArenaEvent(
-  sequence : Int,
+  sequence : Int32,
   importer_rel_path : String,
   target_rel_path : String,
   module_path : String,
@@ -315,7 +315,7 @@ pub fn WgslComposeImportArenaEvent::WgslComposeImportArenaEvent(
 ///|
 pub fn WgslComposeImportArenaEvent::sequence(
   self : WgslComposeImportArenaEvent,
-) -> Int {
+) -> Int32 {
   self.sequence
 }
 
@@ -465,7 +465,7 @@ pub fn WgslComposeLinkGraph::record_import(
 ///|
 pub fn WgslComposeLinkGraph::import_edge_count(
   self : WgslComposeLinkGraph,
-) -> Int {
+) -> Int32 {
   self.import_edges.length()
 }
 
@@ -497,7 +497,7 @@ pub fn WgslComposeLinkGraph::record_import_arena_event(
 ///|
 pub fn WgslComposeLinkGraph::import_arena_event_count(
   self : WgslComposeLinkGraph,
-) -> Int {
+) -> Int32 {
   self.import_arena_events.length()
 }
 

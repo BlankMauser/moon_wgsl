@@ -498,7 +498,7 @@ fn WgslIrLowerer::reused_source_local_const_constructor_literal_handle(
 fn WgslIrLowerer::source_local_const_constructor_initializer_is_vector_splat(
   self : WgslIrLowerer,
   ty_handle : Handle,
-  argument_count : Int,
+  argument_count : Int32,
 ) -> Bool {
   guard argument_count == 1 else { return false }
   match self.shader_module.types.get(ty_handle) {
@@ -511,7 +511,7 @@ fn WgslIrLowerer::source_local_const_constructor_initializer_is_vector_splat(
 fn WgslIrLowerer::source_local_const_constructor_initializer_vector_splat_size(
   self : WgslIrLowerer,
   ty_handle : Handle,
-  argument_count : Int,
+  argument_count : Int32,
 ) -> VectorSize? {
   guard argument_count == 1 else { return None }
   match self.shader_module.types.get(ty_handle) {
@@ -524,8 +524,8 @@ fn WgslIrLowerer::source_local_const_constructor_initializer_vector_splat_size(
 fn WgslIrLowerer::constructor_literal_argument_expected_type(
   self : WgslIrLowerer,
   ty_handle : Handle,
-  argument_index : Int,
-  argument_count : Int,
+  argument_index : Int32,
+  argument_count : Int32,
 ) -> Handle? {
   match self.shader_module.types.get(ty_handle) {
     Some(ty) =>
@@ -572,7 +572,7 @@ fn wgsl_ir_expr_node_literal_token(
 fn WgslIrLowerer::record_source_local_const_initializer_literals(
   self : WgslIrLowerer,
   expr_ref : @ast.WgslExprRef,
-  expression_mark : Int,
+  expression_mark : Int32,
   function : Function,
   scope : WgslIrFunctionScope,
   explicit_ty : Handle?,
@@ -632,7 +632,7 @@ fn WgslIrLowerer::source_local_const_literal_initializer_context_type(
   self : WgslIrLowerer,
   function : Function,
   literal : Handle,
-  expression_end : Int,
+  expression_end : Int32,
   explicit_ty : Handle?,
 ) -> Handle? {
   match self.source_local_const_literal_context_type(explicit_ty) {

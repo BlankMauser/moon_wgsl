@@ -53,18 +53,18 @@ fn wgsl_ir_emit_named_expression_name_key(
 
 ///|
 priv struct WgslIrFunctionBodyWriterPlan {
-  materialized_expressions : @set.Set[Int]
-  temporary_initializer_expressions : @set.Set[Int]
-  elided_local_alias_targets : Map[Int, Handle]
-  local_variable_declarations : Array[Int]
+  materialized_expressions : @set.Set[Int32]
+  temporary_initializer_expressions : @set.Set[Int32]
+  elided_local_alias_targets : Map[Int32, Handle]
+  local_variable_declarations : Array[Int32]
   has_body_after_hoisted_declarations : Bool
-  implicit_expression_slots_before : Array[Int]
+  implicit_expression_slots_before : Array[Int32]
   body_emission : BodyEmissionPlanner
 }
 
 ///|
 priv struct WgslIrTemporaryIndexTrace {
-  final_index : Int
+  final_index : Int32
 }
 
 ///|
@@ -104,7 +104,7 @@ fn WgslIrFunctionBodyWriterPlan::from_function(
 fn WgslIrFunctionBodyWriterPlan::implicit_expression_slot_offset(
   self : WgslIrFunctionBodyWriterPlan,
   handle : Handle,
-) -> Int {
+) -> Int32 {
   match self.implicit_expression_slots_before.get(handle.index()) {
     Some(value) => value
     None => 0
@@ -114,7 +114,7 @@ fn WgslIrFunctionBodyWriterPlan::implicit_expression_slot_offset(
 ///|
 fn WgslIrFunctionBodyWriterPlan::local_declaration_order(
   self : WgslIrFunctionBodyWriterPlan,
-) -> Array[Int] {
+) -> Array[Int32] {
   self.local_variable_declarations
 }
 
@@ -138,10 +138,10 @@ fn WgslIrFunctionBodyWriterPlan::statement_plan(
 ///|
 fn wgsl_ir_writer_function_body_local_declarations(
   function : Function,
-  elided_local_alias_targets : Map[Int, Handle],
-) -> Array[Int] {
-  let order : Array[Int] = []
-  let seen : @set.Set[Int] = Set([])
+  elided_local_alias_targets : Map[Int32, Handle],
+) -> Array[Int32] {
+  let order : Array[Int32] = []
+  let seen : @set.Set[Int32] = Set([])
   wgsl_ir_writer_collect_body_local_declarations(
     function.body,
     function,
@@ -165,9 +165,9 @@ fn wgsl_ir_writer_function_body_local_declarations(
 fn wgsl_ir_writer_collect_body_local_declarations(
   block : Block,
   function : Function,
-  elided_local_alias_targets : Map[Int, Handle],
-  order : Array[Int],
-  seen : @set.Set[Int],
+  elided_local_alias_targets : Map[Int32, Handle],
+  order : Array[Int32],
+  seen : @set.Set[Int32],
 ) -> Unit {
   for statement in block.statements {
     match statement {
@@ -219,8 +219,8 @@ fn wgsl_ir_writer_collect_body_local_declarations(
 ///|
 fn wgsl_ir_writer_local_declaration_is_hoistable(
   function : Function,
-  elided_local_alias_targets : Map[Int, Handle],
-  index : Int,
+  elided_local_alias_targets : Map[Int32, Handle],
+  index : Int32,
 ) -> Bool {
   if elided_local_alias_targets.get(index) != None {
     return false
@@ -234,8 +234,8 @@ fn wgsl_ir_writer_local_declaration_is_hoistable(
 ///|
 fn wgsl_ir_writer_function_temporary_initializer_expression_indices(
   function : Function,
-) -> @set.Set[Int] {
-  let indices : @set.Set[Int] = Set([])
+) -> @set.Set[Int32] {
+  let indices : @set.Set[Int32] = Set([])
   for local_var in function.local_variables.items {
     if local_var.generated_temporary {
       match local_var.init {
@@ -250,7 +250,7 @@ fn wgsl_ir_writer_function_temporary_initializer_expression_indices(
 ///|
 fn wgsl_ir_writer_function_body_has_non_hoisted_statement(
   function : Function,
-  elided_local_alias_targets : Map[Int, Handle],
+  elided_local_alias_targets : Map[Int32, Handle],
 ) -> Bool {
   for statement in function.body.statements {
     if !wgsl_ir_statement_is_writer_elided_local_alias_declaration(
@@ -267,7 +267,7 @@ fn wgsl_ir_writer_function_body_has_non_hoisted_statement(
 
 ///|
 fn wgsl_ir_statement_is_writer_elided_local_alias_declaration(
-  elided_local_alias_targets : Map[Int, Handle],
+  elided_local_alias_targets : Map[Int32, Handle],
   statement : Statement,
 ) -> Bool {
   match statement {
@@ -412,7 +412,7 @@ fn wgsl_ir_writer_access_index_alias_suffix(
   shader_module : Module,
   function : Function,
   base : Handle,
-  index : Int,
+  index : Int32,
 ) -> String? {
   guard wgsl_ir_writer_alias_expression_is_vector(shader_module, function, base) else {
     return None
@@ -474,10 +474,10 @@ fn WgslIrFinalNamePlan::allocate_function_expression_temporary_names(
 fn wgsl_ir_writer_function_elided_local_alias_targets(
   shader_module : Module,
   function : Function,
-  materialized_expressions : @set.Set[Int],
+  materialized_expressions : @set.Set[Int32],
   projection_aliases : Bool,
-) -> Map[Int, Handle] {
-  let targets : Map[Int, Handle] = Map([])
+) -> Map[Int32, Handle] {
+  let targets : Map[Int32, Handle] = Map([])
   let mut changed = true
   while changed {
     changed = false
@@ -508,8 +508,8 @@ fn wgsl_ir_writer_function_elided_local_alias_targets(
 fn wgsl_ir_writer_local_alias_target_expression(
   function : Function,
   shader_module : Module,
-  materialized_expressions : @set.Set[Int],
-  known_targets : Map[Int, Handle],
+  materialized_expressions : @set.Set[Int32],
+  known_targets : Map[Int32, Handle],
   projection_aliases : Bool,
   local_handle : Handle,
 ) -> Handle? {
@@ -530,8 +530,8 @@ fn wgsl_ir_writer_local_alias_target_expression(
 fn wgsl_ir_writer_expression_alias_target(
   function : Function,
   shader_module : Module,
-  materialized_expressions : @set.Set[Int],
-  known_targets : Map[Int, Handle],
+  materialized_expressions : @set.Set[Int32],
+  known_targets : Map[Int32, Handle],
   projection_aliases : Bool,
   local_handle : Handle,
   expression_handle : Handle,
@@ -692,8 +692,8 @@ fn wgsl_ir_expression_graph_contains_local_variable(
 ///|
 fn wgsl_ir_writer_expression_projection_base_has_alias_target(
   function : Function,
-  materialized_expressions : @set.Set[Int],
-  known_targets : Map[Int, Handle],
+  materialized_expressions : @set.Set[Int32],
+  known_targets : Map[Int32, Handle],
   base : Handle,
 ) -> Bool {
   if materialized_expressions.contains(base.index()) {
@@ -826,8 +826,8 @@ fn wgsl_ir_writer_image_load_result_is_vector(
 ///|
 fn wgsl_ir_function_materialized_expression_indices(
   function : Function,
-) -> @set.Set[Int] {
-  let indices : @set.Set[Int] = Set([])
+) -> @set.Set[Int32] {
+  let indices : @set.Set[Int32] = Set([])
   for local_var in function.local_variables.items {
     if local_var.generated_temporary {
       match local_var.init {
@@ -852,7 +852,7 @@ fn wgsl_ir_function_materialized_expression_indices(
 ///|
 fn wgsl_ir_collect_statement_materialized_expression_indices(
   block : Block,
-  indices : @set.Set[Int],
+  indices : @set.Set[Int32],
 ) -> Unit {
   for statement in block.statements {
     match statement {
@@ -893,7 +893,7 @@ fn wgsl_ir_emit_expression_temporary_index(
   function : Function,
   function_plan : WgslIrFunctionWriterPlan,
   handle : Handle,
-) -> Int {
+) -> Int32 {
   wgsl_ir_emit_expression_temporary_index_trace(function, function_plan, handle).final_index
 }
 
@@ -947,8 +947,8 @@ fn wgsl_ir_emit_expression_temporary_index_trace(
 fn wgsl_ir_writer_function_implicit_expression_slots_before(
   shader_module : Module,
   function : Function,
-) -> Array[Int] {
-  let offsets : Array[Int] = []
+) -> Array[Int32] {
+  let offsets : Array[Int32] = []
   let mut offset = 0
   for index in 0..<function.expressions.items.length() {
     offsets.push(offset)
@@ -968,7 +968,7 @@ fn wgsl_ir_writer_compose_implicit_expression_slots(
   shader_module : Module,
   ty : Handle,
   components : Array[Handle],
-) -> Int {
+) -> Int32 {
   match shader_module.types.items.get(ty.index()) {
     Some(type_) =>
       match type_.inner {
@@ -1004,7 +1004,7 @@ fn wgsl_ir_emit_implicit_load_slot_offset(
   function : Function,
   function_plan : WgslIrFunctionWriterPlan,
   limit : Handle,
-) -> Int {
+) -> Int32 {
   let mut offset = 0
   for index in 0..<=limit.index() {
     let handle = Handle::Handle(index)
@@ -1045,8 +1045,8 @@ fn wgsl_ir_emit_expression_is_dynamic_pointer_access(
 fn wgsl_ir_emit_reused_resource_operand_slot_offset(
   function : Function,
   limit : Handle,
-) -> Int {
-  let seen : Map[Int, Int] = Map([])
+) -> Int32 {
+  let seen : Map[Int32, Int32] = Map([])
   let mut offset = 0
   for index in 0..<=limit.index() {
     match function.expressions.items.get(index) {
@@ -1071,10 +1071,10 @@ fn wgsl_ir_emit_reused_resource_operand_slot_offset(
 ///|
 fn wgsl_ir_emit_reused_resource_operand_slot(
   function : Function,
-  seen : Map[Int, Int],
-  sample_depth : Int,
+  seen : Map[Int32, Int32],
+  sample_depth : Int32,
   handle : Handle,
-) -> Int {
+) -> Int32 {
   guard wgsl_ir_emit_expression_is_global_resource(function, handle) else {
     return 0
   }
@@ -1092,7 +1092,7 @@ fn wgsl_ir_emit_reused_resource_operand_slot(
 fn wgsl_ir_function_expression_statement_depth(
   function : Function,
   handle : Handle,
-) -> Int {
+) -> Int32 {
   match wgsl_ir_block_expression_statement_depth(function.body, handle, 0) {
     Some(depth) => depth
     None => -1
@@ -1103,8 +1103,8 @@ fn wgsl_ir_function_expression_statement_depth(
 fn wgsl_ir_block_expression_statement_depth(
   block : Block,
   handle : Handle,
-  depth : Int,
-) -> Int? {
+  depth : Int32,
+) -> Int32? {
   for statement in block.statements {
     match wgsl_ir_statement_expression_depth(statement, handle, depth) {
       Some(found) => return Some(found)
@@ -1118,8 +1118,8 @@ fn wgsl_ir_block_expression_statement_depth(
 fn wgsl_ir_statement_expression_depth(
   statement : Statement,
   handle : Handle,
-  depth : Int,
-) -> Int? {
+  depth : Int32,
+) -> Int32? {
   match statement {
     Emit(range) =>
       if range.start.index() <= handle.index() &&

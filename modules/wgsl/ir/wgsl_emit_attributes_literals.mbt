@@ -248,7 +248,7 @@ fn wgsl_ir_shortest_large_fixed_f32_literal_text(
   guard exp_index >= 0 else { return None }
   let mantissa = scientific[0:exp_index].to_owned()
   let exponent_text = scientific[exp_index + 1:scientific.length()].to_owned()
-  let exponent : Int = @string.from_str(exponent_text) catch {
+  let exponent : Int32 = @string.from_str(exponent_text) catch {
     _ => return None
   }
   let negative = mantissa.has_prefix("-")
@@ -318,7 +318,7 @@ fn wgsl_ir_scientific_decimal_text(text : String) -> String? {
   guard exp_index >= 0 else { return None }
   let mantissa = text[0:exp_index].to_owned()
   let exponent_text = text[exp_index + 1:text.length()].to_owned()
-  let exponent : Int = @string.from_str(exponent_text) catch {
+  let exponent : Int32 = @string.from_str(exponent_text) catch {
     _ => return None
   }
   let negative = mantissa.has_prefix("-")
@@ -347,7 +347,7 @@ fn wgsl_ir_scientific_decimal_text(text : String) -> String? {
 }
 
 ///|
-fn wgsl_ir_find_scientific_exponent_index(text : String) -> Int {
+fn wgsl_ir_find_scientific_exponent_index(text : String) -> Int32 {
   for index in 0..<text.length() {
     let code = text.code_unit_at(index).to_int()
     if code == 101 || code == 69 {
@@ -370,7 +370,7 @@ fn wgsl_ir_decimal_digits_without_dot(text : String) -> String {
 }
 
 ///|
-fn wgsl_ir_repeat_ascii_zero(count : Int) -> String {
+fn wgsl_ir_repeat_ascii_zero(count : Int32) -> String {
   let out = StringBuilder()
   for _ in 0..<count {
     out.write_string("0")
@@ -381,7 +381,7 @@ fn wgsl_ir_repeat_ascii_zero(count : Int) -> String {
 ///|
 fn wgsl_ir_round_decimal_integer_to_significant_digits(
   digits : String,
-  keep : Int,
+  keep : Int32,
 ) -> String? {
   guard keep > 0 && keep <= digits.length() else { return None }
   let prefix = digits[0:keep].to_owned()
@@ -409,7 +409,7 @@ fn wgsl_ir_round_decimal_integer_to_significant_digits(
 
 ///|
 fn wgsl_ir_increment_decimal_digit_string(text : String) -> String {
-  let digits : Array[Int] = []
+  let digits : Array[Int32] = []
   for index in 0..<text.length() {
     digits.push(text.code_unit_at(index).to_int())
   }
@@ -441,7 +441,10 @@ fn wgsl_ir_f32_literal_round_trips(value : Float, text : String) -> Bool {
 }
 
 ///|
-fn wgsl_ir_round_fixed_decimal_text(text : String, precision : Int) -> String? {
+fn wgsl_ir_round_fixed_decimal_text(
+  text : String,
+  precision : Int32,
+) -> String? {
   let dot = wgsl_ir_find_ascii_char(text, 46)
   guard dot >= 0 else { return None }
   let negative = text.has_prefix("-")
@@ -484,7 +487,7 @@ fn wgsl_ir_round_fixed_decimal_text(text : String, precision : Int) -> String? {
 }
 
 ///|
-fn wgsl_ir_find_ascii_char(text : String, code : Int) -> Int {
+fn wgsl_ir_find_ascii_char(text : String, code : Int32) -> Int32 {
   for index in 0..<text.length() {
     if text.code_unit_at(index).to_int() == code {
       return index
@@ -512,7 +515,7 @@ fn wgsl_ir_parse_unsigned_decimal_int64(text : String) -> Int64? {
 ///|
 fn wgsl_ir_parse_fraction_prefix_int64(
   text : String,
-  precision : Int,
+  precision : Int32,
 ) -> Int64? {
   let mut value : Int64 = 0
   for index in 0..<precision {
@@ -529,7 +532,7 @@ fn wgsl_ir_parse_fraction_prefix_int64(
 }
 
 ///|
-fn wgsl_ir_pow10_int64(power : Int) -> Int64 {
+fn wgsl_ir_pow10_int64(power : Int32) -> Int64 {
   let mut value : Int64 = 1
   for _ in 0..<power {
     value = value * 10
@@ -538,7 +541,10 @@ fn wgsl_ir_pow10_int64(power : Int) -> Int64 {
 }
 
 ///|
-fn wgsl_ir_scaled_fixed_decimal_text(value : Int64, precision : Int) -> String {
+fn wgsl_ir_scaled_fixed_decimal_text(
+  value : Int64,
+  precision : Int32,
+) -> String {
   if precision == 0 {
     return "\{value}"
   }

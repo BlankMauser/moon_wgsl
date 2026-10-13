@@ -1,8 +1,13 @@
 ///|
 pub suberror ParseError {
-  UnexpectedToken(Token, (Int, Int), Array[TokenKind])
-  UnexpectedEndOfInput(Int, Array[TokenKind])
+  UnexpectedToken(Token, (Int32, Int32), Array[TokenKind])
+  UnexpectedEndOfInput(Int32, Array[TokenKind])
 } derive(Debug)
+
+///|
+#deprecated("Use Debug::to_repr instead")
+#doc(hidden)
+pub extend ParseError with Debug::{to_repr}
 
 ///|
 type YYObj = Error
@@ -39,14 +44,14 @@ priv suberror YYObj_String_ {
 type YYState = (YYSymbol) -> YYDecision
 
 ///|
-type YYAction = (Int, ArrayView[(YYObj, Int, Int)]) -> YYObj
+type YYAction = (Int32, ArrayView[(YYObj, Int32, Int32)]) -> YYObj
 
 ///|
 priv enum YYDecision {
   Accept
   Shift(YYState)
-  Reduce(Int, YYSymbol, YYAction)
-  ReduceNoLookahead(Int, YYSymbol, YYAction)
+  Reduce(Int32, YYSymbol, YYAction)
+  ReduceNoLookahead(Int32, YYSymbol, YYAction)
   Error
 }
 
@@ -66,9 +71,8 @@ priv enum YYSymbol {
   EOI
 }
 
-// Workaround for EOI unused warning
-
 ///|
+// Workaround for EOI unused warning
 fn init {
   match (EOI : YYSymbol) {
     EOI => ()
@@ -76,11 +80,13 @@ fn init {
   }
 }
 
+///|
 // file:///./parser.mbty
 // 22|    import_item_list             { $1 }
-
-///|
-fn yy_action_0(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_0(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Array_ImportParseNode_(_dollar1)
   YYObj_Array_ImportParseNode_(
     {
@@ -90,11 +96,13 @@ fn yy_action_0(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 23|    "{" import_item_list "}"     { $2 }
-
-///|
-fn yy_action_1(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_1(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj_Array_ImportParseNode_(_dollar2)
   YYObj_Array_ImportParseNode_(
     {
@@ -104,12 +112,14 @@ fn yy_action_1(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 34|    path_segments opt_alias
 // 35|                                 { { path_segments: $1, rename: $2, children: [] } }
-
-///|
-fn yy_action_2(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_2(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Array_String_(_dollar1)
   guard! _args[1].0 is YYObj_String_(_dollar2)
   YYObj_ImportParseNode(
@@ -120,11 +130,13 @@ fn yy_action_2(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 27|    import_item                  { [$1] }
-
-///|
-fn yy_action_3(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_3(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_ImportParseNode(_dollar1)
   YYObj_Array_ImportParseNode_(
     {
@@ -134,12 +146,14 @@ fn yy_action_3(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 28|    import_item_list "," import_item
 // 29|                                 { $1.push($3); $1 }
-
-///|
-fn yy_action_4(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_4(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Array_ImportParseNode_(_dollar1)
   guard! _args[2].0 is YYObj_ImportParseNode(_dollar3)
   YYObj_Array_ImportParseNode_(
@@ -151,11 +165,13 @@ fn yy_action_4(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 30|    import_item_list ","         { $1 }
-
-///|
-fn yy_action_5(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_5(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Array_ImportParseNode_(_dollar1)
   YYObj_Array_ImportParseNode_(
     {
@@ -165,12 +181,14 @@ fn yy_action_5(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 36|    path_segments "::" "{" import_item_list "}"
 // 37|                                 { { path_segments: $1, rename: None, children: $4 } }
-
-///|
-fn yy_action_6(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_6(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Array_String_(_dollar1)
   guard! _args[3].0 is YYObj_Array_ImportParseNode_(_dollar4)
   YYObj_ImportParseNode(
@@ -181,11 +199,13 @@ fn yy_action_6(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 42|    path_segments "::" IDENT     { $1.push($3); $1 }
-
-///|
-fn yy_action_7(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_7(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Array_String_(_dollar1)
   guard! _args[2].0 is YYObj_String(_dollar3)
   YYObj_Array_String_(
@@ -197,11 +217,13 @@ fn yy_action_7(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 47|    "as" IDENT                   { Some($2) }
-
-///|
-fn yy_action_8(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_8(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj_String(_dollar2)
   YYObj_String_(
     {
@@ -211,11 +233,13 @@ fn yy_action_8(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 46|                                 { None }
-
-///|
-fn yy_action_9(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_9(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_String_(
     {
       ()
@@ -224,11 +248,13 @@ fn yy_action_9(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 41|    IDENT                        { [$1] }
-
-///|
-fn yy_action_10(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_10(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_String(_dollar1)
   YYObj_Array_String_(
     {
@@ -241,8 +267,8 @@ fn yy_action_10(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
 ///|
 fn yy_input(
   token : Token,
-  _start_pos : Int,
-  _end_pos : Int,
+  _start_pos : Int32,
+  _end_pos : Int32,
 ) -> (YYSymbol, YYObj) {
   match token {
     IDENT(data) => (T_IDENT, YYObj_String(data))
@@ -254,6 +280,7 @@ fn yy_input(
   }
 }
 
+///|
 // [0, parse_import_tree → • import_item_list, $]
 // [1, parse_import_tree → • LEFT_BRACE import_item_list RIGHT_BRACE, $]
 // [2, import_item_list → • import_item, $ / COMMA]
@@ -264,8 +291,6 @@ fn yy_input(
 // [7, path_segments → • IDENT, $ / AS / DOUBLE_COLON / COMMA]
 // [8, path_segments → • path_segments DOUBLE_COLON IDENT, $ / AS / DOUBLE_COLON / COMMA]
 // [11, parse_import_tree_prime → • parse_import_tree, $]
-
-///|
 fn yy_state_0(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_parse_import_tree => Shift(yy_state_1)
@@ -278,27 +303,24 @@ fn yy_state_0(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [11, parse_import_tree_prime → parse_import_tree •, $]
-
 ///|
+// [11, parse_import_tree_prime → parse_import_tree •, $]
 fn yy_state_1(_lookahead : YYSymbol) -> YYDecision {
   Accept
 }
 
-// [7, path_segments → IDENT •, $ / AS / DOUBLE_COLON / COMMA / RIGHT_BRACE]
-
 ///|
+// [7, path_segments → IDENT •, $ / AS / DOUBLE_COLON / COMMA / RIGHT_BRACE]
 fn yy_state_2(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_path_segments, yy_action_10)
 }
 
+///|
 // [5, import_item → path_segments • opt_alias, $ / COMMA / RIGHT_BRACE]
 // [6, import_item → path_segments • DOUBLE_COLON LEFT_BRACE import_item_list RIGHT_BRACE, $ / COMMA / RIGHT_BRACE]
 // [8, path_segments → path_segments • DOUBLE_COLON IDENT, $ / AS / DOUBLE_COLON / COMMA / RIGHT_BRACE]
 // [9, opt_alias → •, $ / COMMA / RIGHT_BRACE]
 // [10, opt_alias → • AS IDENT, $ / COMMA / RIGHT_BRACE]
-
-///|
 fn yy_state_3(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_AS => Shift(yy_state_4)
@@ -309,9 +331,8 @@ fn yy_state_3(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [10, opt_alias → AS • IDENT, $ / COMMA / RIGHT_BRACE]
-
 ///|
+// [10, opt_alias → AS • IDENT, $ / COMMA / RIGHT_BRACE]
 fn yy_state_4(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_IDENT => Shift(yy_state_5)
@@ -319,17 +340,15 @@ fn yy_state_4(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [10, opt_alias → AS IDENT •, $ / COMMA / RIGHT_BRACE]
-
 ///|
+// [10, opt_alias → AS IDENT •, $ / COMMA / RIGHT_BRACE]
 fn yy_state_5(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_opt_alias, yy_action_8)
 }
 
+///|
 // [6, import_item → path_segments DOUBLE_COLON • LEFT_BRACE import_item_list RIGHT_BRACE, $ / COMMA / RIGHT_BRACE]
 // [8, path_segments → path_segments DOUBLE_COLON • IDENT, $ / AS / DOUBLE_COLON / COMMA / RIGHT_BRACE]
-
-///|
 fn yy_state_6(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_IDENT => Shift(yy_state_7)
@@ -338,13 +357,13 @@ fn yy_state_6(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [8, path_segments → path_segments DOUBLE_COLON IDENT •, $ / AS / DOUBLE_COLON / COMMA / RIGHT_BRACE]
-
 ///|
+// [8, path_segments → path_segments DOUBLE_COLON IDENT •, $ / AS / DOUBLE_COLON / COMMA / RIGHT_BRACE]
 fn yy_state_7(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_path_segments, yy_action_7)
 }
 
+///|
 // [2, import_item_list → • import_item, COMMA / RIGHT_BRACE]
 // [3, import_item_list → • import_item_list COMMA import_item, COMMA / RIGHT_BRACE]
 // [4, import_item_list → • import_item_list COMMA, COMMA / RIGHT_BRACE]
@@ -353,8 +372,6 @@ fn yy_state_7(_lookahead : YYSymbol) -> YYDecision {
 // [6, import_item → path_segments DOUBLE_COLON LEFT_BRACE • import_item_list RIGHT_BRACE, $ / COMMA / RIGHT_BRACE]
 // [7, path_segments → • IDENT, AS / DOUBLE_COLON / COMMA / RIGHT_BRACE]
 // [8, path_segments → • path_segments DOUBLE_COLON IDENT, AS / DOUBLE_COLON / COMMA / RIGHT_BRACE]
-
-///|
 fn yy_state_8(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_IDENT => Shift(yy_state_2)
@@ -365,11 +382,10 @@ fn yy_state_8(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [3, import_item_list → import_item_list • COMMA import_item, COMMA / RIGHT_BRACE]
 // [4, import_item_list → import_item_list • COMMA, COMMA / RIGHT_BRACE]
 // [6, import_item → path_segments DOUBLE_COLON LEFT_BRACE import_item_list • RIGHT_BRACE, $ / COMMA / RIGHT_BRACE]
-
-///|
 fn yy_state_9(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_RIGHT_BRACE => Shift(yy_state_10)
@@ -378,21 +394,19 @@ fn yy_state_9(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [6, import_item → path_segments DOUBLE_COLON LEFT_BRACE import_item_list RIGHT_BRACE •, $ / COMMA / RIGHT_BRACE]
-
 ///|
+// [6, import_item → path_segments DOUBLE_COLON LEFT_BRACE import_item_list RIGHT_BRACE •, $ / COMMA / RIGHT_BRACE]
 fn yy_state_10(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(5, NT_import_item, yy_action_6)
 }
 
+///|
 // [3, import_item_list → import_item_list COMMA • import_item, $ / COMMA / RIGHT_BRACE]
 // [4, import_item_list → import_item_list COMMA •, $ / COMMA / RIGHT_BRACE]
 // [5, import_item → • path_segments opt_alias, $ / COMMA / RIGHT_BRACE]
 // [6, import_item → • path_segments DOUBLE_COLON LEFT_BRACE import_item_list RIGHT_BRACE, $ / COMMA / RIGHT_BRACE]
 // [7, path_segments → • IDENT, $ / AS / DOUBLE_COLON / COMMA / RIGHT_BRACE]
 // [8, path_segments → • path_segments DOUBLE_COLON IDENT, $ / AS / DOUBLE_COLON / COMMA / RIGHT_BRACE]
-
-///|
 fn yy_state_11(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_IDENT => Shift(yy_state_2)
@@ -403,27 +417,25 @@ fn yy_state_11(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [3, import_item_list → import_item_list COMMA import_item •, $ / COMMA / RIGHT_BRACE]
-
 ///|
+// [3, import_item_list → import_item_list COMMA import_item •, $ / COMMA / RIGHT_BRACE]
 fn yy_state_12(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_import_item_list, yy_action_4)
 }
 
-// [2, import_item_list → import_item •, $ / COMMA / RIGHT_BRACE]
-
 ///|
+// [2, import_item_list → import_item •, $ / COMMA / RIGHT_BRACE]
 fn yy_state_13(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_import_item_list, yy_action_3)
 }
 
-// [5, import_item → path_segments opt_alias •, $ / COMMA / RIGHT_BRACE]
-
 ///|
+// [5, import_item → path_segments opt_alias •, $ / COMMA / RIGHT_BRACE]
 fn yy_state_14(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_import_item, yy_action_2)
 }
 
+///|
 // [1, parse_import_tree → LEFT_BRACE • import_item_list RIGHT_BRACE, $]
 // [2, import_item_list → • import_item, COMMA / RIGHT_BRACE]
 // [3, import_item_list → • import_item_list COMMA import_item, COMMA / RIGHT_BRACE]
@@ -432,8 +444,6 @@ fn yy_state_14(_lookahead : YYSymbol) -> YYDecision {
 // [6, import_item → • path_segments DOUBLE_COLON LEFT_BRACE import_item_list RIGHT_BRACE, COMMA / RIGHT_BRACE]
 // [7, path_segments → • IDENT, AS / DOUBLE_COLON / COMMA / RIGHT_BRACE]
 // [8, path_segments → • path_segments DOUBLE_COLON IDENT, AS / DOUBLE_COLON / COMMA / RIGHT_BRACE]
-
-///|
 fn yy_state_15(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_IDENT => Shift(yy_state_2)
@@ -444,11 +454,10 @@ fn yy_state_15(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [1, parse_import_tree → LEFT_BRACE import_item_list • RIGHT_BRACE, $]
 // [3, import_item_list → import_item_list • COMMA import_item, COMMA / RIGHT_BRACE]
 // [4, import_item_list → import_item_list • COMMA, COMMA / RIGHT_BRACE]
-
-///|
 fn yy_state_16(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_COMMA => Shift(yy_state_11)
@@ -457,18 +466,16 @@ fn yy_state_16(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [1, parse_import_tree → LEFT_BRACE import_item_list RIGHT_BRACE •, $]
-
 ///|
+// [1, parse_import_tree → LEFT_BRACE import_item_list RIGHT_BRACE •, $]
 fn yy_state_17(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_parse_import_tree, yy_action_1)
 }
 
+///|
 // [0, parse_import_tree → import_item_list •, $]
 // [3, import_item_list → import_item_list • COMMA import_item, $ / COMMA]
 // [4, import_item_list → import_item_list • COMMA, $ / COMMA]
-
-///|
 fn yy_state_18(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_COMMA => Shift(yy_state_11)
@@ -479,17 +486,17 @@ fn yy_state_18(_lookahead : YYSymbol) -> YYDecision {
 
 ///|
 fn[T] yy_parse(
-  tokens : Array[(Token, Int, Int)],
+  tokens : Array[(Token, Int32, Int32)],
   start : YYState,
   return_ : (YYObj) -> T,
-  initial_pos? : Int,
+  initial_pos? : Int32,
 ) -> T raise ParseError {
   let mut cursor = 0
-  let mut state_stack : @list.List[YYState] = @list.cons(start, @list.empty())
-  let data_stack : Array[(YYObj, Int, Int)] = []
-  let mut last_pos = initial_pos.unwrap_or(tokens[0].1)
+  let mut state_stack : @list.List[YYState] = @list.cons(start, List([]))
+  let data_stack : Array[(YYObj, Int32, Int32)] = []
+  let mut last_pos = initial_pos.unwrap_or_else(fn() { tokens[0].1 })
   let mut state = start
-  let mut lookahead : (YYSymbol, (YYObj, Int, Int), Token?)? = None
+  let mut lookahead : (YYSymbol, (YYObj, Int32, Int32), Token?)? = None
   let mut last_shifted_state_stack = state_stack
   while true {
     let decision = match state(EOI) {
@@ -565,7 +572,7 @@ fn[T] yy_parse(
 fn error(
   stack : @list.List[YYState],
   token : Token?,
-  loc : (Int, Int),
+  loc : (Int32, Int32),
 ) -> Unit raise ParseError {
   let expected = []
   fn try_add(symbol : YYSymbol, kind : TokenKind) {
@@ -615,8 +622,8 @@ fn error(
 
 ///|
 pub fn parse_import_tree(
-  tokens : Array[(Token, Int, Int)],
-  initial_pos? : Int,
+  tokens : Array[(Token, Int32, Int32)],
+  initial_pos? : Int32,
 ) -> Array[ImportParseNode] raise ParseError {
   yy_parse(
     tokens,

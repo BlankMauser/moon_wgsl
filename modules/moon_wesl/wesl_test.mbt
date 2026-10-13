@@ -14,9 +14,13 @@
 
 ///|
 test "wesl: module path from filesystem path follows Bevy semantics" {
-  let absolute = ModulePath::from_path("/shaders/custom_material.wesl")
-  let relative = ModulePath::from_path("../util.wesl")
-  let package_path = ModulePath::from_path("mgstudio/shaders/util.wesl")
+  let absolute = @moon_wesl.ModulePath::from_path(
+    "/shaders/custom_material.wesl",
+  )
+  let relative = @moon_wesl.ModulePath::from_path("../util.wesl")
+  let package_path = @moon_wesl.ModulePath::from_path(
+    "mgstudio/shaders/util.wesl",
+  )
 
   debug_inspect(
     absolute.to_string(),
@@ -28,8 +32,8 @@ test "wesl: module path from filesystem path follows Bevy semantics" {
 
 ///|
 test "wesl: module path join matches relative import semantics" {
-  let parent = try! parse_module_path("package::shaders")
-  let child = try! parse_module_path("super::util")
+  let parent = try! @moon_wesl.parse_module_path("package::shaders")
+  let child = try! @moon_wesl.parse_module_path("super::util")
 
   debug_inspect(
     parent.join_path(child).to_string(),
@@ -39,14 +43,16 @@ test "wesl: module path join matches relative import semantics" {
 
 ///|
 fn wesl_test_module_path_error_message(source : String) -> String {
-  let path = parse_module_path(source) catch { err => return err.message() }
+  let path = @moon_wesl.parse_module_path(source) catch {
+    err => return err.message()
+  }
   ignore(path)
   abort("\{source}: expected parse failure")
 }
 
 ///|
 test "wesl: module path parser rejects misplaced reserved origins" {
-  let valid = try! parse_module_path("super::super::util")
+  let valid = try! @moon_wesl.parse_module_path("super::super::util")
   debug_inspect(valid.to_string(), content="\"super::super::util\"")
   let cases = [
     ("package::self", "`self` must be a prefix of the module path"),
@@ -65,63 +71,73 @@ test "wesl: module path parser rejects misplaced reserved origins" {
 
 ///|
 test "wesl: escape mangler matches Bevy naming" {
-  let mangler = EscapeMangler::default()
-  let package_path = try! parse_module_path("package::bevy_pbr::lighting")
-  let slash_path = try! parse_module_path("bevy/pbr::lighting")
+  let mangler = @moon_wesl.EscapeMangler::default()
+  let package_path = try! @moon_wesl.parse_module_path(
+    "package::bevy_pbr::lighting",
+  )
+  let slash_path = try! @moon_wesl.parse_module_path("bevy/pbr::lighting")
 
   debug_inspect(
-    EscapeMangler::mangle(mangler, package_path, "item"),
+    @moon_wesl.EscapeMangler::mangle(mangler, package_path, "item"),
     content="\"package__1bevy_pbr_lighting_item\"",
   )
   debug_inspect(
-    EscapeMangler::mangle(mangler, slash_path, "item"),
+    @moon_wesl.EscapeMangler::mangle(mangler, slash_path, "item"),
     content="\"import_2_bevy_pbr_lighting_item\"",
   )
 }
 
 ///|
 test "wesl: mangler kind default is escape" {
-  let path = try! parse_module_path("package::bevy_pbr::lighting")
+  let path = try! @moon_wesl.parse_module_path("package::bevy_pbr::lighting")
 
   debug_inspect(
-    ManglerKind::default().mangle(path, "item"),
+    @moon_wesl.ManglerKind::default().mangle(path, "item"),
     content="\"package__1bevy_pbr_lighting_item\"",
   )
 }
 
 ///|
 test "wesl: mangler kind can unmangle reversible schemes" {
-  match ManglerKind::unmangle(Escape, "package__1bevy_pbr_lighting_item") {
+  match
+    @moon_wesl.ManglerKind::unmangle(Escape, "package__1bevy_pbr_lighting_item") {
     Some((path, item)) => {
       debug_inspect(path.to_string(), content="\"package::bevy_pbr::lighting\"")
       debug_inspect(item, content="\"item\"")
     }
     None => fail("expected escape unmangle")
   }
-  match ManglerKind::unmangle(Escape, "import_2_bevy_pbr_item") {
+  match @moon_wesl.ManglerKind::unmangle(Escape, "import_2_bevy_pbr_item") {
     Some((path, item)) => {
       debug_inspect(path.to_string(), content="\"bevy/pbr\"")
       debug_inspect(item, content="\"item\"")
     }
     None => fail("expected dependency unmangle")
   }
-  let unicode_path = try! parse_module_path("package::foo_bar")
-  let unicode_mangled = ManglerKind::mangle(Unicode, unicode_path, "make_vec")
-  match ManglerKind::unmangle(Unicode, unicode_mangled) {
+  let unicode_path = try! @moon_wesl.parse_module_path("package::foo_bar")
+  let unicode_mangled = @moon_wesl.ManglerKind::mangle(
+    Unicode,
+    unicode_path,
+    "make_vec",
+  )
+  match @moon_wesl.ManglerKind::unmangle(Unicode, unicode_mangled) {
     Some((path, item)) => {
       debug_inspect(path.to_string(), content="\"package::foo_bar\"")
       debug_inspect(item, content="\"make_vec\"")
     }
     None => fail("expected unicode unmangle")
   }
-  debug_inspect(ManglerKind::unmangle(Hash, "item_123") is None, content="true")
+  debug_inspect(
+    @moon_wesl.ManglerKind::unmangle(Hash, "item_123") is None,
+    content="true",
+  )
 }
 
 ///|
 test "wesl: default result mirrors upstream empty output" {
-  let result = CompileResult::default()
-  let source_map = BasicSourceMap::new()
-  let root_path = ModulePath::new_root()
+  let result = @moon_wesl.CompileResult::default()
+  let source_map = @moon_wesl.BasicSourceMap::new()
+  let root_path = @moon_wesl.ModulePath::new_root()
   source_map.add_source(root_path, Some("root.wesl"), "fn helper() {}\n")
   source_map.set_default_source("fn helper() {}\n")
   source_map.add_decl("package_helper", root_path, "helper")
@@ -143,11 +159,11 @@ test "wesl: default result mirrors upstream empty output" {
     content="Some(\"fn helper() {}\\n\")",
   )
   debug_inspect(
-    SourceMap::get_source(source_map, root_path),
+    @moon_wesl.SourceMap::get_source(source_map, root_path),
     content="Some(\"fn helper() {}\\n\")",
   )
   debug_inspect(
-    SourceMap::get_default_source(source_map),
+    @moon_wesl.SourceMap::get_default_source(source_map),
     content="Some(\"fn helper() {}\\n\")",
   )
   debug_inspect(
@@ -161,8 +177,8 @@ test "wesl: default result mirrors upstream empty output" {
     content="\"error: duplicate package::helper and unknown\"",
   )
   debug_inspect(
-    SourceMap::unmangle_text(
-      NoSourceMap::default(),
+    @moon_wesl.SourceMap::unmangle_text(
+      @moon_wesl.NoSourceMap::default(),
       "error: duplicate package_helper".to_string(),
     ),
     content="\"error: duplicate package_helper\"",
@@ -178,7 +194,7 @@ test "wesl: default result mirrors upstream empty output" {
 
 ///|
 test "wesl: public const eval returns upstream literal result" {
-  let result = eval_const(
+  let result = @moon_wesl.eval_const(
     "@const fn test() -> i32 {\n  return 1 + 2;\n}", "test()",
   )
   inspect(result.to_string(), content="3i")
@@ -186,7 +202,7 @@ test "wesl: public const eval returns upstream literal result" {
 
 ///|
 test "wesl: public const eval supports typed function parameters" {
-  let result = eval_const(
+  let result = @moon_wesl.eval_const(
     "@const fn add(base: u32, extra: u32) -> u32 {\n  return base + extra;\n}", "add(40u, 2u)",
   )
   inspect(result.to_string(), content="42u")
@@ -194,158 +210,203 @@ test "wesl: public const eval supports typed function parameters" {
 
 ///|
 test "wesl: eval_str evaluates standalone const expressions" {
-  inspect(eval_str("1 + 2").to_string(), content="3")
-  inspect(eval_str("1u + 2u").to_string(), content="3u")
-  inspect(eval_str("6u * 7u").to_string(), content="42u")
-  inspect(eval_str("5 % 2").to_string(), content="1")
-  inspect(eval_str("5u % 2u").to_string(), content="1u")
-  inspect(eval_str("5i % 2i").to_string(), content="1i")
-  inspect(eval_str("5.0 % 2.0").to_string(), content="1.0")
-  inspect(eval_str("-5 % 2").to_string(), content="-1")
-  inspect(eval_str("6 & 3").to_string(), content="2")
-  inspect(eval_str("4 | 1").to_string(), content="5")
-  inspect(eval_str("6 ^ 3").to_string(), content="5")
-  inspect(eval_str("1 << 3").to_string(), content="8")
-  inspect(eval_str("8 >> 1").to_string(), content="4")
-  inspect(eval_str("6u & 3u").to_string(), content="2u")
-  inspect(eval_str("1u << 3u").to_string(), content="8u")
-  inspect(eval_str("8i >> 1u").to_string(), content="4i")
-  inspect(eval_str("true & false").to_string(), content="false")
-  inspect(eval_str("true | false").to_string(), content="true")
-  inspect(eval_str("~0").to_string(), content="-1")
-  inspect(eval_str("~0u").to_string(), content="4294967295u")
-  inspect(eval_str("~0i").to_string(), content="-1i")
-  inspect(eval_str("countOneBits(0)").to_string(), content="0")
-  inspect(eval_str("countOneBits(7)").to_string(), content="3")
-  inspect(eval_str("countOneBits(-1)").to_string(), content="64")
-  inspect(eval_str("countOneBits(7u)").to_string(), content="3u")
-  inspect(eval_str("countOneBits(7i)").to_string(), content="3i")
-  inspect(eval_str("countOneBits(~0u)").to_string(), content="32u")
-  inspect(eval_str("countLeadingZeros(0)").to_string(), content="64")
-  inspect(eval_str("countLeadingZeros(-1)").to_string(), content="0")
-  inspect(eval_str("countLeadingZeros(1u)").to_string(), content="31u")
-  inspect(eval_str("countLeadingZeros(1i)").to_string(), content="31i")
-  inspect(eval_str("countLeadingZeros(~0u)").to_string(), content="0u")
-  inspect(eval_str("countTrailingZeros(0)").to_string(), content="64")
-  inspect(eval_str("countTrailingZeros(-8)").to_string(), content="3")
-  inspect(eval_str("countTrailingZeros(8u)").to_string(), content="3u")
-  inspect(eval_str("countTrailingZeros(8i)").to_string(), content="3i")
-  inspect(eval_str("countTrailingZeros(~0u)").to_string(), content="0u")
-  inspect(eval_str("min(1, 2)").to_string(), content="1")
-  inspect(eval_str("min(1, 2u)").to_string(), content="1u")
-  inspect(eval_str("max(1u, 2u)").to_string(), content="2u")
-  inspect(eval_str("min(1.0, 2)").to_string(), content="1.0")
-  inspect(eval_str("min(1f, 2)").to_string(), content="1f")
-  inspect(eval_str("abs(-3)").to_string(), content="3")
-  inspect(eval_str("abs(-3i)").to_string(), content="3i")
-  inspect(eval_str("abs(3u)").to_string(), content="3u")
-  inspect(eval_str("abs(-3.0)").to_string(), content="3.0")
-  inspect(eval_str("select(1, 2, true)").to_string(), content="2")
-  inspect(eval_str("select(1, 2, false)").to_string(), content="1")
-  inspect(eval_str("select(1u, 2u, true)").to_string(), content="2u")
-  inspect(eval_str("select(true, false, true)").to_string(), content="false")
-  inspect(eval_str("all(true)").to_string(), content="true")
-  inspect(eval_str("any(false)").to_string(), content="false")
-  inspect(eval_str("floor(1.9)").to_string(), content="1.0")
-  inspect(eval_str("ceil(1.1)").to_string(), content="2.0")
-  inspect(eval_str("round(1.5)").to_string(), content="2.0")
-  inspect(eval_str("trunc(1.9)").to_string(), content="1.0")
-  inspect(eval_str("fract(1.25)").to_string(), content="0.25")
-  inspect(eval_str("sqrt(4.0)").to_string(), content="2.0")
-  inspect(eval_str("inverseSqrt(4.0)").to_string(), content="0.5")
-  inspect(eval_str("floor(1f)").to_string(), content="1f")
-  inspect(eval_str("ceil(1.1f)").to_string(), content="2f")
-  inspect(eval_str("round(1.5f)").to_string(), content="2f")
-  inspect(eval_str("trunc(1.9f)").to_string(), content="1f")
-  inspect(eval_str("fract(1.25f)").to_string(), content="0.25f")
-  inspect(eval_str("sqrt(4f)").to_string(), content="2f")
-  inspect(eval_str("inverseSqrt(4f)").to_string(), content="0.5f")
-  inspect(eval_str("floor(1)").to_string(), content="1.0")
-  inspect(eval_str("sqrt(4)").to_string(), content="2.0")
-  inspect(eval_str("exp(1.0)").to_string(), content="2.718281828459045")
-  inspect(eval_str("exp2(3.0)").to_string(), content="8.0")
-  inspect(eval_str("log(1.0)").to_string(), content="0.0")
-  inspect(eval_str("log2(8.0)").to_string(), content="3.0")
-  inspect(eval_str("sin(0.0)").to_string(), content="0.0")
-  inspect(eval_str("cos(0.0)").to_string(), content="1.0")
-  inspect(eval_str("tan(0.0)").to_string(), content="0.0")
-  inspect(eval_str("asin(0.0)").to_string(), content="0.0")
-  inspect(eval_str("acos(1.0)").to_string(), content="0.0")
-  inspect(eval_str("atan(1.0)").to_string(), content="0.7853981633974483")
-  inspect(eval_str("sinh(0.0)").to_string(), content="0.0")
-  inspect(eval_str("cosh(0.0)").to_string(), content="1.0")
-  inspect(eval_str("tanh(0.0)").to_string(), content="0.0")
-  inspect(eval_str("pow(2.0, 3.0)").to_string(), content="8.0")
-  inspect(eval_str("atan2(1.0, 1.0)").to_string(), content="0.7853981633974483")
-  inspect(eval_str("radians(180.0)").to_string(), content="3.141592653589793")
-  inspect(eval_str("degrees(3.141592653589793)").to_string(), content="180.0")
-  inspect(eval_str("exp(1f)").to_string(), content="2.7182817f")
-  inspect(eval_str("pow(2f, 3)").to_string(), content="8f")
-  inspect(eval_str("atan2(1f, 1f)").to_string(), content="0.7853982f")
-  inspect(eval_str("sin(0)").to_string(), content="0.0")
-  inspect(eval_str("pow(2, 3)").to_string(), content="8.0")
-  inspect(eval_str("saturate(-0.5)").to_string(), content="0.0")
-  inspect(eval_str("saturate(0.5)").to_string(), content="0.5")
-  inspect(eval_str("saturate(2)").to_string(), content="1.0")
-  inspect(eval_str("saturate(0.25f)").to_string(), content="0.25f")
-  inspect(eval_str("saturate(2.5f)").to_string(), content="1f")
-  inspect(eval_str("ldexp(1.0, 2)").to_string(), content="4.0")
-  inspect(eval_str("ldexp(1.0, 2i)").to_string(), content="4f")
-  inspect(eval_str("ldexp(1, -1i)").to_string(), content="0.5f")
-  inspect(eval_str("ldexp(1.5, -1)").to_string(), content="0.75")
-  inspect(eval_str("ldexp(1.5f, -1i)").to_string(), content="0.75f")
-  inspect(eval_str("step(0.5, 0.25)").to_string(), content="0.0")
-  inspect(eval_str("step(0.5, 0.75)").to_string(), content="1.0")
-  inspect(eval_str("step(1f, 2f)").to_string(), content="1.0")
-  inspect(eval_str("mix(1.0, 3.0, 0.25)").to_string(), content="1.5")
-  inspect(eval_str("mix(1f, 3f, 0.25f)").to_string(), content="1.5f")
-  inspect(eval_str("mix(1, 3, 0.25f)").to_string(), content="1.5f")
-  inspect(eval_str("sign(-3)").to_string(), content="-1")
-  inspect(eval_str("sign(-3.0)").to_string(), content="-1.0")
-  inspect(eval_str("sign(0)").to_string(), content="0")
-  inspect(eval_str("sign(2u)").to_string(), content="1u")
+  inspect(@moon_wesl.eval_str("1 + 2").to_string(), content="3")
+  inspect(@moon_wesl.eval_str("1u + 2u").to_string(), content="3u")
+  inspect(@moon_wesl.eval_str("6u * 7u").to_string(), content="42u")
+  inspect(@moon_wesl.eval_str("5 % 2").to_string(), content="1")
+  inspect(@moon_wesl.eval_str("5u % 2u").to_string(), content="1u")
+  inspect(@moon_wesl.eval_str("5i % 2i").to_string(), content="1i")
+  inspect(@moon_wesl.eval_str("5.0 % 2.0").to_string(), content="1.0")
+  inspect(@moon_wesl.eval_str("-5 % 2").to_string(), content="-1")
+  inspect(@moon_wesl.eval_str("6 & 3").to_string(), content="2")
+  inspect(@moon_wesl.eval_str("4 | 1").to_string(), content="5")
+  inspect(@moon_wesl.eval_str("6 ^ 3").to_string(), content="5")
+  inspect(@moon_wesl.eval_str("1 << 3").to_string(), content="8")
+  inspect(@moon_wesl.eval_str("8 >> 1").to_string(), content="4")
+  inspect(@moon_wesl.eval_str("6u & 3u").to_string(), content="2u")
+  inspect(@moon_wesl.eval_str("1u << 3u").to_string(), content="8u")
+  inspect(@moon_wesl.eval_str("8i >> 1u").to_string(), content="4i")
+  inspect(@moon_wesl.eval_str("true & false").to_string(), content="false")
+  inspect(@moon_wesl.eval_str("true | false").to_string(), content="true")
+  inspect(@moon_wesl.eval_str("~0").to_string(), content="-1")
+  inspect(@moon_wesl.eval_str("~0u").to_string(), content="4294967295u")
+  inspect(@moon_wesl.eval_str("~0i").to_string(), content="-1i")
+  inspect(@moon_wesl.eval_str("countOneBits(0)").to_string(), content="0")
+  inspect(@moon_wesl.eval_str("countOneBits(7)").to_string(), content="3")
+  inspect(@moon_wesl.eval_str("countOneBits(-1)").to_string(), content="64")
+  inspect(@moon_wesl.eval_str("countOneBits(7u)").to_string(), content="3u")
+  inspect(@moon_wesl.eval_str("countOneBits(7i)").to_string(), content="3i")
+  inspect(@moon_wesl.eval_str("countOneBits(~0u)").to_string(), content="32u")
+  inspect(@moon_wesl.eval_str("countLeadingZeros(0)").to_string(), content="64")
+  inspect(@moon_wesl.eval_str("countLeadingZeros(-1)").to_string(), content="0")
   inspect(
-    eval_str("frexp(1.5)").to_string(),
+    @moon_wesl.eval_str("countLeadingZeros(1u)").to_string(),
+    content="31u",
+  )
+  inspect(
+    @moon_wesl.eval_str("countLeadingZeros(1i)").to_string(),
+    content="31i",
+  )
+  inspect(
+    @moon_wesl.eval_str("countLeadingZeros(~0u)").to_string(),
+    content="0u",
+  )
+  inspect(
+    @moon_wesl.eval_str("countTrailingZeros(0)").to_string(),
+    content="64",
+  )
+  inspect(
+    @moon_wesl.eval_str("countTrailingZeros(-8)").to_string(),
+    content="3",
+  )
+  inspect(
+    @moon_wesl.eval_str("countTrailingZeros(8u)").to_string(),
+    content="3u",
+  )
+  inspect(
+    @moon_wesl.eval_str("countTrailingZeros(8i)").to_string(),
+    content="3i",
+  )
+  inspect(
+    @moon_wesl.eval_str("countTrailingZeros(~0u)").to_string(),
+    content="0u",
+  )
+  inspect(@moon_wesl.eval_str("min(1, 2)").to_string(), content="1")
+  inspect(@moon_wesl.eval_str("min(1, 2u)").to_string(), content="1u")
+  inspect(@moon_wesl.eval_str("max(1u, 2u)").to_string(), content="2u")
+  inspect(@moon_wesl.eval_str("min(1.0, 2)").to_string(), content="1.0")
+  inspect(@moon_wesl.eval_str("min(1f, 2)").to_string(), content="1f")
+  inspect(@moon_wesl.eval_str("abs(-3)").to_string(), content="3")
+  inspect(@moon_wesl.eval_str("abs(-3i)").to_string(), content="3i")
+  inspect(@moon_wesl.eval_str("abs(3u)").to_string(), content="3u")
+  inspect(@moon_wesl.eval_str("abs(-3.0)").to_string(), content="3.0")
+  inspect(@moon_wesl.eval_str("select(1, 2, true)").to_string(), content="2")
+  inspect(@moon_wesl.eval_str("select(1, 2, false)").to_string(), content="1")
+  inspect(@moon_wesl.eval_str("select(1u, 2u, true)").to_string(), content="2u")
+  inspect(
+    @moon_wesl.eval_str("select(true, false, true)").to_string(),
+    content="false",
+  )
+  inspect(@moon_wesl.eval_str("all(true)").to_string(), content="true")
+  inspect(@moon_wesl.eval_str("any(false)").to_string(), content="false")
+  inspect(@moon_wesl.eval_str("floor(1.9)").to_string(), content="1.0")
+  inspect(@moon_wesl.eval_str("ceil(1.1)").to_string(), content="2.0")
+  inspect(@moon_wesl.eval_str("round(1.5)").to_string(), content="2.0")
+  inspect(@moon_wesl.eval_str("trunc(1.9)").to_string(), content="1.0")
+  inspect(@moon_wesl.eval_str("fract(1.25)").to_string(), content="0.25")
+  inspect(@moon_wesl.eval_str("sqrt(4.0)").to_string(), content="2.0")
+  inspect(@moon_wesl.eval_str("inverseSqrt(4.0)").to_string(), content="0.5")
+  inspect(@moon_wesl.eval_str("floor(1f)").to_string(), content="1f")
+  inspect(@moon_wesl.eval_str("ceil(1.1f)").to_string(), content="2f")
+  inspect(@moon_wesl.eval_str("round(1.5f)").to_string(), content="2f")
+  inspect(@moon_wesl.eval_str("trunc(1.9f)").to_string(), content="1f")
+  inspect(@moon_wesl.eval_str("fract(1.25f)").to_string(), content="0.25f")
+  inspect(@moon_wesl.eval_str("sqrt(4f)").to_string(), content="2f")
+  inspect(@moon_wesl.eval_str("inverseSqrt(4f)").to_string(), content="0.5f")
+  inspect(@moon_wesl.eval_str("floor(1)").to_string(), content="1.0")
+  inspect(@moon_wesl.eval_str("sqrt(4)").to_string(), content="2.0")
+  inspect(
+    @moon_wesl.eval_str("exp(1.0)").to_string(),
+    content="2.718281828459045",
+  )
+  inspect(@moon_wesl.eval_str("exp2(3.0)").to_string(), content="8.0")
+  inspect(@moon_wesl.eval_str("log(1.0)").to_string(), content="0.0")
+  inspect(@moon_wesl.eval_str("log2(8.0)").to_string(), content="3.0")
+  inspect(@moon_wesl.eval_str("sin(0.0)").to_string(), content="0.0")
+  inspect(@moon_wesl.eval_str("cos(0.0)").to_string(), content="1.0")
+  inspect(@moon_wesl.eval_str("tan(0.0)").to_string(), content="0.0")
+  inspect(@moon_wesl.eval_str("asin(0.0)").to_string(), content="0.0")
+  inspect(@moon_wesl.eval_str("acos(1.0)").to_string(), content="0.0")
+  inspect(
+    @moon_wesl.eval_str("atan(1.0)").to_string(),
+    content="0.7853981633974483",
+  )
+  inspect(@moon_wesl.eval_str("sinh(0.0)").to_string(), content="0.0")
+  inspect(@moon_wesl.eval_str("cosh(0.0)").to_string(), content="1.0")
+  inspect(@moon_wesl.eval_str("tanh(0.0)").to_string(), content="0.0")
+  inspect(@moon_wesl.eval_str("pow(2.0, 3.0)").to_string(), content="8.0")
+  inspect(
+    @moon_wesl.eval_str("atan2(1.0, 1.0)").to_string(),
+    content="0.7853981633974483",
+  )
+  inspect(
+    @moon_wesl.eval_str("radians(180.0)").to_string(),
+    content="3.141592653589793",
+  )
+  inspect(
+    @moon_wesl.eval_str("degrees(3.141592653589793)").to_string(),
+    content="180.0",
+  )
+  inspect(@moon_wesl.eval_str("exp(1f)").to_string(), content="2.7182817f")
+  inspect(@moon_wesl.eval_str("pow(2f, 3)").to_string(), content="8f")
+  inspect(
+    @moon_wesl.eval_str("atan2(1f, 1f)").to_string(),
+    content="0.7853982f",
+  )
+  inspect(@moon_wesl.eval_str("sin(0)").to_string(), content="0.0")
+  inspect(@moon_wesl.eval_str("pow(2, 3)").to_string(), content="8.0")
+  inspect(@moon_wesl.eval_str("saturate(-0.5)").to_string(), content="0.0")
+  inspect(@moon_wesl.eval_str("saturate(0.5)").to_string(), content="0.5")
+  inspect(@moon_wesl.eval_str("saturate(2)").to_string(), content="1.0")
+  inspect(@moon_wesl.eval_str("saturate(0.25f)").to_string(), content="0.25f")
+  inspect(@moon_wesl.eval_str("saturate(2.5f)").to_string(), content="1f")
+  inspect(@moon_wesl.eval_str("ldexp(1.0, 2)").to_string(), content="4.0")
+  inspect(@moon_wesl.eval_str("ldexp(1.0, 2i)").to_string(), content="4f")
+  inspect(@moon_wesl.eval_str("ldexp(1, -1i)").to_string(), content="0.5f")
+  inspect(@moon_wesl.eval_str("ldexp(1.5, -1)").to_string(), content="0.75")
+  inspect(@moon_wesl.eval_str("ldexp(1.5f, -1i)").to_string(), content="0.75f")
+  inspect(@moon_wesl.eval_str("step(0.5, 0.25)").to_string(), content="0.0")
+  inspect(@moon_wesl.eval_str("step(0.5, 0.75)").to_string(), content="1.0")
+  inspect(@moon_wesl.eval_str("step(1f, 2f)").to_string(), content="1.0")
+  inspect(@moon_wesl.eval_str("mix(1.0, 3.0, 0.25)").to_string(), content="1.5")
+  inspect(@moon_wesl.eval_str("mix(1f, 3f, 0.25f)").to_string(), content="1.5f")
+  inspect(@moon_wesl.eval_str("mix(1, 3, 0.25f)").to_string(), content="1.5f")
+  inspect(@moon_wesl.eval_str("sign(-3)").to_string(), content="-1")
+  inspect(@moon_wesl.eval_str("sign(-3.0)").to_string(), content="-1.0")
+  inspect(@moon_wesl.eval_str("sign(0)").to_string(), content="0")
+  inspect(@moon_wesl.eval_str("sign(2u)").to_string(), content="1u")
+  inspect(
+    @moon_wesl.eval_str("frexp(1.5)").to_string(),
     content="__frexp_result_abstract(0.75, 1)",
   )
   inspect(
-    eval_str("frexp(-1.5)").to_string(),
+    @moon_wesl.eval_str("frexp(-1.5)").to_string(),
     content="__frexp_result_abstract(-0.75, 1)",
   )
   inspect(
-    eval_str("frexp(0.0)").to_string(),
+    @moon_wesl.eval_str("frexp(0.0)").to_string(),
     content="__frexp_result_abstract(0.0, 0)",
   )
   inspect(
-    eval_str("frexp(4.0)").to_string(),
+    @moon_wesl.eval_str("frexp(4.0)").to_string(),
     content="__frexp_result_abstract(0.5, 3)",
   )
   inspect(
-    eval_str("frexp(1.5f)").to_string(),
+    @moon_wesl.eval_str("frexp(1.5f)").to_string(),
     content="__frexp_result_f32(0.75f, 1i)",
   )
   inspect(
-    eval_str("frexp(0f)").to_string(),
+    @moon_wesl.eval_str("frexp(0f)").to_string(),
     content="__frexp_result_f32(0f, 0i)",
   )
-  inspect(eval_str("1.0 + 2.0").to_string(), content="3.0")
-  inspect(eval_str("true").to_string(), content="true")
-  inspect(eval_str("false").to_string(), content="false")
-  inspect(eval_str("!true").to_string(), content="false")
-  inspect(eval_str("1 == 1").to_string(), content="true")
-  inspect(eval_str("1 != 2").to_string(), content="true")
-  inspect(eval_str("1 < 2").to_string(), content="true")
-  inspect(eval_str("2 <= 2").to_string(), content="true")
-  inspect(eval_str("3 > 2").to_string(), content="true")
-  inspect(eval_str("3 >= 4").to_string(), content="false")
-  inspect(eval_str("true && false").to_string(), content="false")
-  inspect(eval_str("true || false").to_string(), content="true")
-  inspect(eval_str("(1 < 2) && !false").to_string(), content="true")
+  inspect(@moon_wesl.eval_str("1.0 + 2.0").to_string(), content="3.0")
+  inspect(@moon_wesl.eval_str("true").to_string(), content="true")
+  inspect(@moon_wesl.eval_str("false").to_string(), content="false")
+  inspect(@moon_wesl.eval_str("!true").to_string(), content="false")
+  inspect(@moon_wesl.eval_str("1 == 1").to_string(), content="true")
+  inspect(@moon_wesl.eval_str("1 != 2").to_string(), content="true")
+  inspect(@moon_wesl.eval_str("1 < 2").to_string(), content="true")
+  inspect(@moon_wesl.eval_str("2 <= 2").to_string(), content="true")
+  inspect(@moon_wesl.eval_str("3 > 2").to_string(), content="true")
+  inspect(@moon_wesl.eval_str("3 >= 4").to_string(), content="false")
+  inspect(@moon_wesl.eval_str("true && false").to_string(), content="false")
+  inspect(@moon_wesl.eval_str("true || false").to_string(), content="true")
+  inspect(@moon_wesl.eval_str("(1 < 2) && !false").to_string(), content="true")
 }
 
 ///|
 test "wesl: eval result exposes scalar memory buffers" {
-  let i32_buffer = eval_str("42i").to_buffer()
+  let i32_buffer = @moon_wesl.eval_str("42i").to_buffer()
   match i32_buffer {
     Some(buffer) =>
       debug_inspect(
@@ -356,7 +417,7 @@ test "wesl: eval result exposes scalar memory buffers" {
       )
     None => fail("expected i32 buffer")
   }
-  let u32_buffer = eval_str("42u").to_buffer()
+  let u32_buffer = @moon_wesl.eval_str("42u").to_buffer()
   match u32_buffer {
     Some(buffer) =>
       debug_inspect(
@@ -367,7 +428,7 @@ test "wesl: eval result exposes scalar memory buffers" {
       )
     None => fail("expected u32 buffer")
   }
-  let f32_buffer = eval_str("1.0f").to_buffer()
+  let f32_buffer = @moon_wesl.eval_str("1.0f").to_buffer()
   match f32_buffer {
     Some(buffer) =>
       debug_inspect(
@@ -382,11 +443,11 @@ test "wesl: eval result exposes scalar memory buffers" {
 
 ///|
 test "wesl: eval result rejects non-storable buffers" {
-  match eval_str("true").to_buffer() {
+  match @moon_wesl.eval_str("true").to_buffer() {
     Some(_) => fail("expected bool to be non-storable")
     None => ()
   }
-  match eval_str("42").to_buffer() {
+  match @moon_wesl.eval_str("42").to_buffer() {
     Some(_) => fail("expected abstract int to be non-storable")
     None => ()
   }
@@ -394,7 +455,7 @@ test "wesl: eval result rejects non-storable buffers" {
 
 ///|
 test "wesl: eval result exposes vector memory buffers" {
-  let result = eval_str("vec3<u32>(1u, 2u, 3u)")
+  let result = @moon_wesl.eval_str("vec3<u32>(1u, 2u, 3u)")
   inspect(result.to_string(), content="vec3<u32>(1u, 2u, 3u)")
   match result.to_buffer() {
     Some(buffer) =>
@@ -424,40 +485,40 @@ test "wesl: eval result exposes vector memory buffers" {
 ///|
 test "wesl: const eval applies vector operators and builtins component-wise" {
   inspect(
-    eval_str("vec3<u32>(1u, 2u, 3u) + 1u").to_string(),
+    @moon_wesl.eval_str("vec3<u32>(1u, 2u, 3u) + 1u").to_string(),
     content="vec3<u32>(2u, 3u, 4u)",
   )
   inspect(
-    eval_str("vec3<i32>(5i, -2i, 7i) - vec3<i32>(1i, 2i, 3i)").to_string(),
+    @moon_wesl.eval_str("vec3<i32>(5i, -2i, 7i) - vec3<i32>(1i, 2i, 3i)").to_string(),
     content="vec3<i32>(4i, -4i, 4i)",
   )
   inspect(
-    eval_str("abs(vec3<i32>(-1i, 0i, 2i))").to_string(),
+    @moon_wesl.eval_str("abs(vec3<i32>(-1i, 0i, 2i))").to_string(),
     content="vec3<i32>(1i, 0i, 2i)",
   )
   inspect(
-    eval_str("clamp(vec3<u32>(0u, 5u, 9u), 2u, 6u)").to_string(),
+    @moon_wesl.eval_str("clamp(vec3<u32>(0u, 5u, 9u), 2u, 6u)").to_string(),
     content="vec3<u32>(2u, 5u, 6u)",
   )
   inspect(
-    eval_str(
+    @moon_wesl.eval_str(
       "select(vec2<u32>(1u, 2u), vec2<u32>(3u, 4u), vec2<bool>(false, true))",
     ).to_string(),
     content="vec2<u32>(1u, 4u)",
   )
   inspect(
-    eval_str("all(vec3<bool>(true, true, false))").to_string(),
+    @moon_wesl.eval_str("all(vec3<bool>(true, true, false))").to_string(),
     content="false",
   )
   inspect(
-    eval_str("any(vec3<bool>(false, false, true))").to_string(),
+    @moon_wesl.eval_str("any(vec3<bool>(false, false, true))").to_string(),
     content="true",
   )
 }
 
 ///|
 test "wesl: eval_str reports known unimplemented builtins like upstream" {
-  let result = try eval_str("fma(2.0, 0.5, 0.5)") catch {
+  let result = try @moon_wesl.eval_str("fma(2.0, 0.5, 0.5)") catch {
     err => Err(err)
   } noraise {
     value => Ok(value)
@@ -470,7 +531,7 @@ test "wesl: eval_str reports known unimplemented builtins like upstream" {
         content="true",
       )
   }
-  let arity_result = try eval_str("fma(1.0, 2.0)") catch {
+  let arity_result = try @moon_wesl.eval_str("fma(1.0, 2.0)") catch {
     err => Err(err)
   } noraise {
     value => Ok(value)
@@ -491,33 +552,40 @@ test "wesl: eval_str reports known unimplemented builtins like upstream" {
 
 ///|
 test "wesl: compile result eval uses compiled const functions" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@const\nfn test() -> u32 {\n  let base = 40u;\n  return base + 2u;\n}\n",
   )
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    keep: Some(["test"]),
-  })
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), keep: Some(["test"]), },
+  )
 
   inspect(compiled.eval("test()").to_string(), content="42u")
 }
 
 ///|
 test "wesl: compile result exec runs simple entrypoint" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "const BASE: i32 = 40i;\n@compute @workgroup_size(1)\nfn main() -> i32 {\n  return BASE + 2i;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
-  let exec = compiled.exec("main", Inputs::new_zero_initialized(), [], [])
+  let exec = compiled.exec(
+    "main",
+    @moon_wesl.Inputs::new_zero_initialized(),
+    [],
+    [],
+  )
 
   match exec.return_value() {
     Some(value) => inspect(value, content="42i")
@@ -538,19 +606,19 @@ test "wesl: compile result exec runs simple entrypoint" {
 
 ///|
 test "wesl: compile result exec passes scalar builtin inputs" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@compute @workgroup_size(1)\nfn main(@builtin(vertex_index) vertex_index: u32) -> u32 {\n  return vertex_index + 1u;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
-  let inputs = Inputs::{
-    ..Inputs::new_zero_initialized(),
+  let inputs = @moon_wesl.Inputs::{
+    ..@moon_wesl.Inputs::new_zero_initialized(),
     vertex_index: Some(41),
   }
   let exec = compiled.exec("main", inputs, [], [])
@@ -572,19 +640,19 @@ test "wesl: compile result exec passes scalar builtin inputs" {
 
 ///|
 test "wesl: compile result exec passes vector builtin inputs" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@compute @workgroup_size(1)\nfn main(@builtin(global_invocation_id) id: vec3<u32>) -> vec3<u32> {\n  return id;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
-  let inputs = Inputs::{
-    ..Inputs::new_zero_initialized(),
+  let inputs = @moon_wesl.Inputs::{
+    ..@moon_wesl.Inputs::new_zero_initialized(),
     global_invocation_id: Some([3, 4, 5]),
   }
   let exec = compiled.exec("main", inputs, [], [])
@@ -619,19 +687,19 @@ test "wesl: compile result exec passes vector builtin inputs" {
 
 ///|
 test "wesl: compile result exec passes extended builtin inputs" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@compute @workgroup_size(1)\nfn main(@builtin(subgroup_id) subgroup_id: u32, @builtin(num_subgroups) num_subgroups: u32, @builtin(primitive_index) primitive_index: u32, @builtin(view_index) view_index: u32) -> u32 {\n  return subgroup_id + num_subgroups + primitive_index + view_index;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
-  let inputs = Inputs::{
-    ..Inputs::new_zero_initialized(),
+  let inputs = @moon_wesl.Inputs::{
+    ..@moon_wesl.Inputs::new_zero_initialized(),
     subgroup_id: Some(1),
     num_subgroups: Some(2),
     primitive_index: Some(4),
@@ -646,19 +714,19 @@ test "wesl: compile result exec passes extended builtin inputs" {
 
 ///|
 test "wesl: compile result exec passes user-defined scalar location inputs" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@vertex\nfn main(@location(0) color: u32) -> u32 {\n  return color + 1u;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
-  let inputs = Inputs::{
-    ..Inputs::new_zero_initialized(),
+  let inputs = @moon_wesl.Inputs::{
+    ..@moon_wesl.Inputs::new_zero_initialized(),
     user_defined: [{ location: 0, value: U32(41), }],
   }
   let exec = compiled.exec("main", inputs, [], [])
@@ -670,19 +738,19 @@ test "wesl: compile result exec passes user-defined scalar location inputs" {
 
 ///|
 test "wesl: compile result exec passes user-defined vector location inputs" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@vertex\nfn main(@location(1) uv: vec2<f32>) -> vec2<f32> {\n  return uv;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
-  let inputs = Inputs::{
-    ..Inputs::new_zero_initialized(),
+  let inputs = @moon_wesl.Inputs::{
+    ..@moon_wesl.Inputs::new_zero_initialized(),
     user_defined: [{ location: 1, value: F32Vector([1.0, 2.0]), }],
   }
   let exec = compiled.exec("main", inputs, [], [])
@@ -704,19 +772,19 @@ test "wesl: compile result exec passes user-defined vector location inputs" {
 
 ///|
 test "wesl: compile result exec builds struct entrypoint inputs" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "struct VertexInput {\n  @builtin(vertex_index) index: u32,\n  @location(0) color: u32,\n}\n\n@vertex\nfn main(input: VertexInput) -> VertexInput {\n  return input;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
-  let inputs = Inputs::{
-    ..Inputs::new_zero_initialized(),
+  let inputs = @moon_wesl.Inputs::{
+    ..@moon_wesl.Inputs::new_zero_initialized(),
     vertex_index: Some(7),
     user_defined: [{ location: 0, value: U32(35), }],
   }
@@ -742,19 +810,19 @@ test "wesl: compile result exec builds struct entrypoint inputs" {
 
 ///|
 test "wesl: compile result exec reads struct entrypoint fields" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "struct VertexInput {\n  @builtin(vertex_index) index: u32,\n  @location(0) color: u32,\n}\n\n@vertex\nfn main(input: VertexInput) -> u32 {\n  return input.index + input.color;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
-  let inputs = Inputs::{
-    ..Inputs::new_zero_initialized(),
+  let inputs = @moon_wesl.Inputs::{
+    ..@moon_wesl.Inputs::new_zero_initialized(),
     vertex_index: Some(7),
     user_defined: [{ location: 0, value: U32(35), }],
   }
@@ -767,19 +835,19 @@ test "wesl: compile result exec reads struct entrypoint fields" {
 
 ///|
 test "wesl: compile result exec evaluates vector swizzles" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@vertex\nfn main(@location(0) uv: vec3<f32>) -> vec2<f32> {\n  return uv.yx;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
-  let inputs = Inputs::{
-    ..Inputs::new_zero_initialized(),
+  let inputs = @moon_wesl.Inputs::{
+    ..@moon_wesl.Inputs::new_zero_initialized(),
     user_defined: [{ location: 0, value: F32Vector([1.0, 2.0, 3.0]), }],
   }
   let exec = compiled.exec("main", inputs, [], [])
@@ -801,19 +869,19 @@ test "wesl: compile result exec evaluates vector swizzles" {
 
 ///|
 test "wesl: compile result exec evaluates vector dynamic indexing" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@compute @workgroup_size(1)\nfn main(@location(0) value: vec3<f32>, @builtin(local_invocation_index) index: u32) -> f32 {\n  return value[index];\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
-  let inputs = Inputs::{
-    ..Inputs::new_zero_initialized(),
+  let inputs = @moon_wesl.Inputs::{
+    ..@moon_wesl.Inputs::new_zero_initialized(),
     local_invocation_index: Some(2),
     user_defined: [{ location: 0, value: F32Vector([1.0, 2.0, 3.0]), }],
   }
@@ -832,20 +900,23 @@ test "wesl: compile result exec evaluates vector dynamic indexing" {
 
 ///|
 test "wesl: compile result exec evaluates if else control flow" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@compute @workgroup_size(1)\nfn main(@builtin(local_invocation_index) index: u32) -> u32 {\n  if (index == 0u) {\n    return 1u;\n  } else {\n    return index + 1u;\n  }\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let first = compiled.exec(
     "main",
-    { ..Inputs::new_zero_initialized(), local_invocation_index: Some(0), },
+    {
+      ..@moon_wesl.Inputs::new_zero_initialized(),
+      local_invocation_index: Some(0),
+    },
     [],
     [],
   )
@@ -855,7 +926,10 @@ test "wesl: compile result exec evaluates if else control flow" {
   }
   let second = compiled.exec(
     "main",
-    { ..Inputs::new_zero_initialized(), local_invocation_index: Some(41), },
+    {
+      ..@moon_wesl.Inputs::new_zero_initialized(),
+      local_invocation_index: Some(41),
+    },
     [],
     [],
   )
@@ -867,20 +941,23 @@ test "wesl: compile result exec evaluates if else control flow" {
 
 ///|
 test "wesl: compile result exec evaluates while break continue control flow" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@compute @workgroup_size(1)\nfn main(@builtin(local_invocation_index) limit: u32) -> u32 {\n  var i: u32 = 0u;\n  var sum: u32 = 0u;\n  while (i < limit) {\n    i = i + 1u;\n    if (i == 2u) {\n      continue;\n    }\n    if (i == 5u) {\n      break;\n    }\n    sum = sum + i;\n  }\n  return sum;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let exec = compiled.exec(
     "main",
-    { ..Inputs::new_zero_initialized(), local_invocation_index: Some(10), },
+    {
+      ..@moon_wesl.Inputs::new_zero_initialized(),
+      local_invocation_index: Some(10),
+    },
     [],
     [],
   )
@@ -902,20 +979,23 @@ test "wesl: compile result exec evaluates while break continue control flow" {
 
 ///|
 test "wesl: compile result exec evaluates for loop control flow" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@compute @workgroup_size(1)\nfn main(@builtin(local_invocation_index) limit: u32) -> u32 {\n  var sum: u32 = 0u;\n  for (var i: u32 = 0u; i < limit; i++) {\n    if (i == 2u) {\n      continue;\n    }\n    if (i == 5u) {\n      break;\n    }\n    sum = sum + i;\n  }\n  return sum;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let exec = compiled.exec(
     "main",
-    { ..Inputs::new_zero_initialized(), local_invocation_index: Some(10), },
+    {
+      ..@moon_wesl.Inputs::new_zero_initialized(),
+      local_invocation_index: Some(10),
+    },
     [],
     [],
   )
@@ -937,18 +1017,23 @@ test "wesl: compile result exec evaluates for loop control flow" {
 
 ///|
 test "wesl: compile result exec runs for update after continue" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@compute @workgroup_size(1)\nfn main() -> u32 {\n  var sum: u32 = 0u;\n  for (var i: u32 = 0u; i < 4u; i = i + 1u) {\n    if (i < 3u) {\n      continue;\n    }\n    sum = sum + i;\n  }\n  return sum;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
-  let exec = compiled.exec("main", Inputs::new_zero_initialized(), [], [])
+  let exec = compiled.exec(
+    "main",
+    @moon_wesl.Inputs::new_zero_initialized(),
+    [],
+    [],
+  )
   match exec.return_value() {
     Some(value) => inspect(value, content="3u")
     None => fail("expected for continue update return")
@@ -957,18 +1042,23 @@ test "wesl: compile result exec runs for update after continue" {
 
 ///|
 test "wesl: compile result exec evaluates loop break continue control flow" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@compute @workgroup_size(1)\nfn main() -> u32 {\n  var i: u32 = 0u;\n  var sum: u32 = 0u;\n  loop {\n    i++;\n    if (i == 2u) {\n      continue;\n    }\n    if (i == 5u) {\n      break;\n    }\n    sum += i;\n  }\n  return sum;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
-  let exec = compiled.exec("main", Inputs::new_zero_initialized(), [], [])
+  let exec = compiled.exec(
+    "main",
+    @moon_wesl.Inputs::new_zero_initialized(),
+    [],
+    [],
+  )
   match exec.return_value() {
     Some(value) => inspect(value, content="8u")
     None => fail("expected loop return")
@@ -977,18 +1067,23 @@ test "wesl: compile result exec evaluates loop break continue control flow" {
 
 ///|
 test "wesl: compile result exec evaluates loop continuing break-if" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@compute @workgroup_size(1)\nfn main() -> u32 {\n  var i: u32 = 0u;\n  var sum: u32 = 0u;\n  loop {\n    i += 1u;\n    if (i == 2u) {\n      continue;\n    }\n    sum += i;\n    continuing {\n      break if i == 5u;\n    }\n  }\n  return sum;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
-  let exec = compiled.exec("main", Inputs::new_zero_initialized(), [], [])
+  let exec = compiled.exec(
+    "main",
+    @moon_wesl.Inputs::new_zero_initialized(),
+    [],
+    [],
+  )
   match exec.return_value() {
     Some(value) => inspect(value, content="13u")
     None => fail("expected loop continuing return")
@@ -997,20 +1092,23 @@ test "wesl: compile result exec evaluates loop continuing break-if" {
 
 ///|
 test "wesl: compile result exec evaluates switch cases and default" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@compute @workgroup_size(1)\nfn main(@builtin(local_invocation_index) selector: u32) -> u32 {\n  switch selector {\n    case 0u: {\n      return 10u;\n    }\n    case 1u, 2u: {\n      return 20u;\n    }\n    default: {\n      return 30u;\n    }\n  }\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let first = compiled.exec(
     "main",
-    { ..Inputs::new_zero_initialized(), local_invocation_index: Some(2), },
+    {
+      ..@moon_wesl.Inputs::new_zero_initialized(),
+      local_invocation_index: Some(2),
+    },
     [],
     [],
   )
@@ -1020,7 +1118,10 @@ test "wesl: compile result exec evaluates switch cases and default" {
   }
   let second = compiled.exec(
     "main",
-    { ..Inputs::new_zero_initialized(), local_invocation_index: Some(7), },
+    {
+      ..@moon_wesl.Inputs::new_zero_initialized(),
+      local_invocation_index: Some(7),
+    },
     [],
     [],
   )
@@ -1032,18 +1133,23 @@ test "wesl: compile result exec evaluates switch cases and default" {
 
 ///|
 test "wesl: compile result exec keeps switch break scoped" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@compute @workgroup_size(1)\nfn main() -> u32 {\n  var i: u32 = 0u;\n  var sum: u32 = 0u;\n  loop {\n    i++;\n    switch i {\n      case 1u: {\n        sum += 10u;\n        break;\n      }\n      case 2u, 3u: {\n        continue;\n      }\n      case 4u: {\n        break;\n      }\n      default: {\n        sum += 1u;\n      }\n    }\n    if (i == 4u) {\n      break;\n    }\n  }\n  return sum + i;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
-  let exec = compiled.exec("main", Inputs::new_zero_initialized(), [], [])
+  let exec = compiled.exec(
+    "main",
+    @moon_wesl.Inputs::new_zero_initialized(),
+    [],
+    [],
+  )
   match exec.return_value() {
     Some(value) => inspect(value, content="14u")
     None => fail("expected scoped switch break return")
@@ -1052,18 +1158,23 @@ test "wesl: compile result exec keeps switch break scoped" {
 
 ///|
 test "wesl: compile result exec rejects non-storable return buffers" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@compute @workgroup_size(1)\nfn main() -> bool {\n  return true;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
-  let exec = compiled.exec("main", Inputs::new_zero_initialized(), [], [])
+  let exec = compiled.exec(
+    "main",
+    @moon_wesl.Inputs::new_zero_initialized(),
+    [],
+    [],
+  )
 
   debug_inspect(exec.return_value(), content="Some(\"true\")")
   inspect(exec.to_buffer() is None, content="true")
@@ -1071,27 +1182,35 @@ test "wesl: compile result exec rejects non-storable return buffers" {
 
 ///|
 test "wesl: compile result exec applies override values" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "override SCALE: u32 = 2u;\n@compute @workgroup_size(1)\nfn main() -> u32 {\n  return SCALE + 1u;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
 
-  let default_exec = compiled.exec("main", Inputs::new_zero_initialized(), [], [])
+  let default_exec = compiled.exec(
+    "main",
+    @moon_wesl.Inputs::new_zero_initialized(),
+    [],
+    [],
+  )
   match default_exec.return_value() {
     Some(value) => inspect(value, content="3u")
     None => fail("expected default override return")
   }
 
-  let overridden = compiled.exec("main", Inputs::new_zero_initialized(), [], [
-    { name: "SCALE", value: "41u", },
-  ])
+  let overridden = compiled.exec(
+    "main",
+    @moon_wesl.Inputs::new_zero_initialized(),
+    [],
+    [{ name: "SCALE", value: "41u", }],
+  )
   match overridden.return_value() {
     Some(value) => inspect(value, content="42u")
     None => fail("expected overridden return")
@@ -1110,19 +1229,19 @@ test "wesl: compile result exec applies override values" {
 
 ///|
 test "wesl: compile result exec rejects uninitialized overrides" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "override SCALE: u32;\n@compute @workgroup_size(1)\nfn main() -> u32 {\n  return SCALE;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let exec = try
-    compiled.exec("main", Inputs::new_zero_initialized(), [], [])
+    compiled.exec("main", @moon_wesl.Inputs::new_zero_initialized(), [], [])
   catch {
     err => Err(err)
   } noraise {
@@ -1137,20 +1256,20 @@ test "wesl: compile result exec rejects uninitialized overrides" {
 
 ///|
 test "wesl: compile result exec reads scalar resource buffers" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@group(0) @binding(0) var<uniform> DATA: u32;\n@compute @workgroup_size(1)\nfn main() -> u32 {\n  return DATA + 1u;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let exec = compiled.exec(
     "main",
-    Inputs::new_zero_initialized(),
+    @moon_wesl.Inputs::new_zero_initialized(),
     [
       {
         group: 0,
@@ -1191,20 +1310,20 @@ test "wesl: compile result exec reads scalar resource buffers" {
 
 ///|
 test "wesl: compile result exec writes scalar storage resources" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@group(0) @binding(0) var<storage, read_write> DATA: u32;\n@compute @workgroup_size(1)\nfn main() -> u32 {\n  DATA += 1u;\n  return DATA;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let exec = compiled.exec(
     "main",
-    Inputs::new_zero_initialized(),
+    @moon_wesl.Inputs::new_zero_initialized(),
     [
       {
         group: 0,
@@ -1233,20 +1352,20 @@ test "wesl: compile result exec writes scalar storage resources" {
 
 ///|
 test "wesl: compile result exec writes void entrypoint storage resources" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@group(0) @binding(0) var<storage, read_write> DATA: u32;\n@compute @workgroup_size(1)\nfn main() {\n  DATA += 1u;\n  return;\n  DATA += 10u;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let exec = compiled.exec(
     "main",
-    Inputs::new_zero_initialized(),
+    @moon_wesl.Inputs::new_zero_initialized(),
     [
       {
         group: 0,
@@ -1275,20 +1394,20 @@ test "wesl: compile result exec writes void entrypoint storage resources" {
 
 ///|
 test "wesl: compile result exec increments struct storage fields" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "struct Data {\n  a: u32,\n  b: u32,\n}\n\n@group(0) @binding(0) var<storage, read_write> DATA: Data;\n@compute @workgroup_size(1)\nfn main() {\n  DATA.a++;\n  DATA.b--;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let exec = compiled.exec(
     "main",
-    Inputs::new_zero_initialized(),
+    @moon_wesl.Inputs::new_zero_initialized(),
     [
       {
         group: 0,
@@ -1315,20 +1434,20 @@ test "wesl: compile result exec increments struct storage fields" {
 
 ///|
 test "wesl: compile result exec increments vector storage components" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@group(0) @binding(0) var<storage, read_write> DATA: vec4<u32>;\n@compute @workgroup_size(1)\nfn main() {\n  DATA.x++;\n  DATA.w--;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let exec = compiled.exec(
     "main",
-    Inputs::new_zero_initialized(),
+    @moon_wesl.Inputs::new_zero_initialized(),
     [
       {
         group: 0,
@@ -1373,16 +1492,16 @@ test "wesl: compile result exec increments vector storage components" {
 
 ///|
 test "wesl: compile result exec reads vector resource buffers" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@group(0) @binding(0) var<uniform> DATA: vec4<f32>;\n@compute @workgroup_size(1)\nfn main() -> vec4<f32> {\n  return DATA + vec4<f32>(1.0f);\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let input = Bytes::from_array([
     b'\x00', b'\x00', b'\x80', b'\x3F', b'\x00', b'\x00', b'\x00', b'\x40', b'\x00',
@@ -1390,7 +1509,7 @@ test "wesl: compile result exec reads vector resource buffers" {
   ])
   let exec = compiled.exec(
     "main",
-    Inputs::new_zero_initialized(),
+    @moon_wesl.Inputs::new_zero_initialized(),
     [{ group: 0, binding: 0, kind: "uniform", data: input, }],
     [],
   )
@@ -1429,16 +1548,16 @@ test "wesl: compile result exec reads vector resource buffers" {
 
 ///|
 test "wesl: compile result exec reads struct resource buffers" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "struct Data {\n  a: u32,\n  b: vec3<f32>,\n  c: u32,\n}\n\n@group(0) @binding(0) var<uniform> DATA: Data;\n@compute @workgroup_size(1)\nfn main() -> Data {\n  return DATA;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let input = Bytes::from_array([
     b'\x2A', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00',
@@ -1448,7 +1567,7 @@ test "wesl: compile result exec reads struct resource buffers" {
   ])
   let exec = compiled.exec(
     "main",
-    Inputs::new_zero_initialized(),
+    @moon_wesl.Inputs::new_zero_initialized(),
     [{ group: 0, binding: 0, kind: "uniform", data: input, }],
     [],
   )
@@ -1506,16 +1625,16 @@ test "wesl: compile result exec reads struct resource buffers" {
 
 ///|
 test "wesl: struct resource layout honors member align and size attributes" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "struct Data {\n  a: u32,\n  @align(16) @size(16) b: u32,\n  c: u32,\n}\n\n@group(0) @binding(0) var<uniform> DATA: Data;\n@compute @workgroup_size(1)\nfn main() -> Data {\n  return DATA;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let input = Bytes::from_array([
     b'\x01', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00',
@@ -1525,7 +1644,7 @@ test "wesl: struct resource layout honors member align and size attributes" {
   ])
   let exec = compiled.exec(
     "main",
-    Inputs::new_zero_initialized(),
+    @moon_wesl.Inputs::new_zero_initialized(),
     [{ group: 0, binding: 0, kind: "uniform", data: input, }],
     [],
   )
@@ -1580,16 +1699,16 @@ test "wesl: struct resource layout honors member align and size attributes" {
 
 ///|
 test "wesl: compile result exec reads array resource buffers with stride padding" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@group(0) @binding(0) var<uniform> DATA: array<vec3<f32>, 2>;\n@compute @workgroup_size(1)\nfn main() -> array<vec3<f32>, 2> {\n  return DATA;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let input = Bytes::from_array([
     b'\x00', b'\x00', b'\x80', b'\x3F', b'\x00', b'\x00', b'\x00', b'\x40', b'\x00',
@@ -1599,7 +1718,7 @@ test "wesl: compile result exec reads array resource buffers with stride padding
   ])
   let exec = compiled.exec(
     "main",
-    Inputs::new_zero_initialized(),
+    @moon_wesl.Inputs::new_zero_initialized(),
     [{ group: 0, binding: 0, kind: "uniform", data: input, }],
     [],
   )
@@ -1654,16 +1773,16 @@ test "wesl: compile result exec reads array resource buffers with stride padding
 
 ///|
 test "wesl: compile result exec indexes storage array resources" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@group(0) @binding(0) var<storage> DATA: array<u32, 4>;\n@compute @workgroup_size(1)\nfn main(@builtin(local_invocation_index) index: u32) -> u32 {\n  return DATA[index] + 1u;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let input = Bytes::from_array([
     b'\x0A', b'\x00', b'\x00', b'\x00', b'\x14', b'\x00', b'\x00', b'\x00', b'\x1E',
@@ -1671,7 +1790,10 @@ test "wesl: compile result exec indexes storage array resources" {
   ])
   let exec = compiled.exec(
     "main",
-    { ..Inputs::new_zero_initialized(), local_invocation_index: Some(2), },
+    {
+      ..@moon_wesl.Inputs::new_zero_initialized(),
+      local_invocation_index: Some(2),
+    },
     [{ group: 0, binding: 0, kind: "storage", data: input, }],
     [],
   )
@@ -1683,16 +1805,16 @@ test "wesl: compile result exec indexes storage array resources" {
 
 ///|
 test "wesl: compile result exec writes storage array elements" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@group(0) @binding(0) var<storage, read_write> DATA: array<u32, 4>;\n@compute @workgroup_size(1)\nfn main(@builtin(local_invocation_index) index: u32) -> u32 {\n  DATA[index] += 5u;\n  return DATA[index];\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let input = Bytes::from_array([
     b'\x0A', b'\x00', b'\x00', b'\x00', b'\x14', b'\x00', b'\x00', b'\x00', b'\x1E',
@@ -1700,7 +1822,10 @@ test "wesl: compile result exec writes storage array elements" {
   ])
   let exec = compiled.exec(
     "main",
-    { ..Inputs::new_zero_initialized(), local_invocation_index: Some(2), },
+    {
+      ..@moon_wesl.Inputs::new_zero_initialized(),
+      local_invocation_index: Some(2),
+    },
     [{ group: 0, binding: 0, kind: "storage", data: input, }],
     [],
   )
@@ -1739,16 +1864,16 @@ test "wesl: compile result exec writes storage array elements" {
 
 ///|
 test "wesl: compile result exec increments indexed storage in for update" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@group(0) @binding(0) var<storage, read_write> DATA: array<u32, 4>;\n@compute @workgroup_size(1)\nfn main() {\n  for (var i: u32 = 0u; i < 3u; DATA[i]++) {\n    i++;\n  }\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let input = Bytes::from_array([
     b'\x0A', b'\x00', b'\x00', b'\x00', b'\x14', b'\x00', b'\x00', b'\x00', b'\x1E',
@@ -1756,7 +1881,7 @@ test "wesl: compile result exec increments indexed storage in for update" {
   ])
   let exec = compiled.exec(
     "main",
-    Inputs::new_zero_initialized(),
+    @moon_wesl.Inputs::new_zero_initialized(),
     [{ group: 0, binding: 0, kind: "storage", data: input, }],
     [],
   )
@@ -1791,16 +1916,16 @@ test "wesl: compile result exec increments indexed storage in for update" {
 
 ///|
 test "wesl: compile result exec evaluates runtime array length" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@group(0) @binding(0) var<storage> DATA: array<u32>;\n@compute @workgroup_size(1)\nfn main() -> u32 {\n  return arrayLength(&DATA);\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let input = Bytes::from_array([
     b'\x0A', b'\x00', b'\x00', b'\x00', b'\x14', b'\x00', b'\x00', b'\x00', b'\x1E',
@@ -1808,7 +1933,7 @@ test "wesl: compile result exec evaluates runtime array length" {
   ])
   let exec = compiled.exec(
     "main",
-    Inputs::new_zero_initialized(),
+    @moon_wesl.Inputs::new_zero_initialized(),
     [{ group: 0, binding: 0, kind: "storage", data: input, }],
     [],
   )
@@ -1830,16 +1955,16 @@ test "wesl: compile result exec evaluates runtime array length" {
 
 ///|
 test "wesl: compile result exec evaluates struct runtime array length" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "struct Data {\n  header: u32,\n  values: array<u32>,\n}\n\n@group(0) @binding(0) var<storage> DATA: Data;\n@compute @workgroup_size(1)\nfn main() -> u32 {\n  return DATA.header + arrayLength(&DATA.values);\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let input = Bytes::from_array([
     b'\x05', b'\x00', b'\x00', b'\x00', b'\x0A', b'\x00', b'\x00', b'\x00', b'\x14',
@@ -1847,7 +1972,7 @@ test "wesl: compile result exec evaluates struct runtime array length" {
   ])
   let exec = compiled.exec(
     "main",
-    Inputs::new_zero_initialized(),
+    @moon_wesl.Inputs::new_zero_initialized(),
     [{ group: 0, binding: 0, kind: "storage", data: input, }],
     [],
   )
@@ -1859,16 +1984,16 @@ test "wesl: compile result exec evaluates struct runtime array length" {
 
 ///|
 test "wesl: compile result exec reads matrix resource buffers as padded columns" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@group(0) @binding(0) var<uniform> DATA: mat3x3<f32>;\n@compute @workgroup_size(1)\nfn main() -> mat3x3<f32> {\n  return DATA;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let input = Bytes::from_array([
     b'\x00', b'\x00', b'\x80', b'\x3F', b'\x00', b'\x00', b'\x00', b'\x40', b'\x00',
@@ -1880,7 +2005,7 @@ test "wesl: compile result exec reads matrix resource buffers as padded columns"
   ])
   let exec = compiled.exec(
     "main",
-    Inputs::new_zero_initialized(),
+    @moon_wesl.Inputs::new_zero_initialized(),
     [{ group: 0, binding: 0, kind: "uniform", data: input, }],
     [],
   )
@@ -1951,21 +2076,21 @@ test "wesl: compile result exec reads matrix resource buffers as padded columns"
 
 ///|
 test "wesl: compile result exec rejects incompatible scalar resource buffers" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@group(0) @binding(0) var<uniform> DATA: u32;\n@compute @workgroup_size(1)\nfn main() -> u32 {\n  return DATA;\n}\n",
   )
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let exec = try
     compiled.exec(
       "main",
-      Inputs::new_zero_initialized(),
+      @moon_wesl.Inputs::new_zero_initialized(),
       [
         {
           group: 0,
@@ -1989,72 +2114,83 @@ test "wesl: compile result exec rejects incompatible scalar resource buffers" {
 
 ///|
 test "wesl: compile result returns WGSL text" {
-  let resolver = VirtualResolver::new()
-  let root = ModulePath::from_path("/artifact")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root = @moon_wesl.ModulePath::from_path("/artifact")
   resolver.add_module(root, "fn artifact() {}\n")
-  let result = Wesl::new_barebones()
+  let result = @moon_wesl.Wesl::new_barebones()
     .set_custom_resolver(resolver)
-    .set_options({ ..CompileOptions::default(), strip: false, })
+    .set_options({ ..@moon_wesl.CompileOptions::default(), strip: false, })
     .compile(root)
   inspect(result.to_string().contains("fn artifact() {}"), content="true")
 }
 
 ///|
 test "wesl: compile result eval sees global const context" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "const BASE: u32 = 40u;\n\n@const\nfn add_two() -> u32 {\n  return BASE + 2u;\n}\n",
   )
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    keep: Some(["BASE", "add_two"]),
-  })
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), keep: Some(["BASE", "add_two"]), },
+  )
 
   inspect(compiled.eval("BASE + add_two()").to_string(), content="82u")
 }
 
 ///|
 test "wesl: compile result eval passes arguments into const functions" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "const BASE: u32 = 40u;\n\n@const\nfn add(base: u32, extra: u32) -> u32 {\n  return base + extra;\n}\n",
   )
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    keep: Some(["BASE", "add"]),
-  })
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), keep: Some(["BASE", "add"]), },
+  )
 
   inspect(compiled.eval("add(BASE, 2u)").to_string(), content="42u")
 }
 
 ///|
 test "wesl: compile result eval handles multiplied global constants" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "const PI: f32 = 3.0;\nconst TAU: f32 = PI * 2.0;\n",
   )
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    keep: Some(["PI", "TAU"]),
-  })
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), keep: Some(["PI", "TAU"]), },
+  )
 
   inspect(compiled.eval("TAU").to_string(), content="6f")
 }
 
 ///|
 test "wesl: compile result eval handles bool global constants" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "const FLAG: bool = true;\nconst DISABLED: bool = !FLAG;\nconst HAS_SIZE: bool = 2u >= 2u;\nconst SIZE: u32 = 2u;\n",
   )
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    keep: Some(["FLAG", "DISABLED", "HAS_SIZE", "SIZE"]),
-  })
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    {
+      ..@moon_wesl.CompileOptions::default(),
+      keep: Some(["FLAG", "DISABLED", "HAS_SIZE", "SIZE"]),
+    },
+  )
 
   inspect(compiled.eval("FLAG").to_string(), content="true")
   inspect(compiled.eval("DISABLED").to_string(), content="false")
@@ -2064,26 +2200,35 @@ test "wesl: compile result eval handles bool global constants" {
 
 ///|
 test "wesl: feature default and bool conversion match upstream" {
-  debug_inspect(Feature::default(), content="Disable")
-  debug_inspect(Feature::from_bool(true), content="Enable")
-  debug_inspect(Feature::from_bool(false), content="Disable")
+  debug_inspect(@moon_wesl.Feature::default(), content="Disable")
+  debug_inspect(@moon_wesl.Feature::from_bool(true), content="Enable")
+  debug_inspect(@moon_wesl.Feature::from_bool(false), content="Disable")
 }
 
 ///|
 test "wesl: compile resolves imports and conditional translation" {
-  let resolver = VirtualResolver::new()
-  let util_path = ModulePath::from_path("/shaders/util")
-  let root_path = ModulePath::from_path("/shaders/custom_material")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let util_path = @moon_wesl.ModulePath::from_path("/shaders/util")
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/custom_material")
   resolver.add_module(
     util_path, "fn make_polka_dots(v: f32) -> f32 {\n  @if(PARTY_MODE) {\n    return v * 2.0;\n  } @else {\n    return v;\n  }\n}\n",
   )
   resolver.add_module(
     root_path, "import super::util::make_polka_dots;\n@fragment\nfn fragment(v: f32) -> f32 {\n  return make_polka_dots(v);\n}\n",
   )
-  let features = Features::default()
+  let features = @moon_wesl.Features::default()
   features.set_feature("PARTY_MODE", Enable)
-  let options = { ..CompileOptions::default(), lower: true, features, }
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), options)
+  let options = {
+    ..@moon_wesl.CompileOptions::default(),
+    lower: true,
+    features,
+  }
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    options,
+  )
   let compiled_text = compiled.to_string()
 
   debug_inspect(compiled_text.contains("@fragment"), content="true")
@@ -2096,17 +2241,17 @@ test "wesl: compile resolves imports and conditional translation" {
 
 ///|
 test "wesl: missing imported module stays resolver-backed" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "import super::missing::make_it;\n@fragment\nfn fragment() -> f32 {\n  return make_it();\n}\n",
   )
   let result = try
-    compile(
+    @moon_wesl.compile(
       root_path,
       resolver,
-      EscapeMangler::default(),
-      CompileOptions::default(),
+      @moon_wesl.EscapeMangler::default(),
+      @moon_wesl.CompileOptions::default(),
     )
   catch {
     err => Err(err)
@@ -2125,32 +2270,36 @@ test "wesl: missing imported module stays resolver-backed" {
 
 ///|
 test "wesl: lazy strip does not load unused imports" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "import super::missing::unused_helper;\n@fragment\nfn fragment() -> f32 {\n  return 1.0;\n}\n",
   )
 
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    lower: true,
-  })
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), lower: true, },
+  )
 
   debug_inspect(compiled.to_string().contains("return 1.0;"), content="true")
 }
 
 ///|
 test "wesl: strip keeps entrypoints and their transitive dependencies only" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "fn helper_unused() -> f32 {\n  return 5.0;\n}\n\nfn helper_used() -> f32 {\n  return 7.0;\n}\n\n@fragment\nfn fragment() -> f32 {\n  return helper_used();\n}\n",
   )
 
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    lower: true,
-  })
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), lower: true, },
+  )
   let compiled_text = compiled.to_string()
 
   debug_inspect(compiled_text.contains("helper_unused"), content="false")
@@ -2160,17 +2309,17 @@ test "wesl: strip keeps entrypoints and their transitive dependencies only" {
 
 ///|
 test "wesl: strip keeps declarations referenced by attribute expressions" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "const GROUP_SIZE = 64;\n\nfn helper_unused() -> u32 {\n  return 1u;\n}\n\n@compute\n@workgroup_size(GROUP_SIZE)\nfn main() {\n  return;\n}\n",
   )
 
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let compiled_text = compiled.to_string()
 
@@ -2184,16 +2333,18 @@ test "wesl: strip keeps declarations referenced by attribute expressions" {
 
 ///|
 test "wesl: lowering removes aliases and global const declarations" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "alias Scalar = f32;\nconst SCALE = 2.0;\n\nfn helper(v: Scalar) -> Scalar {\n  return v * SCALE;\n}\n\n@fragment\nfn fragment() -> f32 {\n  return helper(1.0);\n}\n",
   )
 
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    lower: true,
-  })
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), lower: true, },
+  )
   let compiled_text = compiled.to_string()
 
   debug_inspect(compiled_text.contains("alias Scalar"), content="false")
@@ -2203,16 +2354,18 @@ test "wesl: lowering removes aliases and global const declarations" {
 
 ///|
 test "wesl: lowering resolves forward transitive aliases" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "alias A = B;\nalias B = i32;\n\n@compute @workgroup_size(1)\nfn main() {\n  let x: A = 1i;\n}\n",
   )
 
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    lower: true,
-  })
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), lower: true, },
+  )
   let compiled_text = compiled.to_string()
 
   debug_inspect(compiled_text.contains("alias A"), content="false")
@@ -2222,16 +2375,18 @@ test "wesl: lowering resolves forward transitive aliases" {
 
 ///|
 test "wesl: lowering resolves forward transitive constants" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "const OFFSET = BASE + 1i;\nconst BASE = 1i;\n\n@compute @workgroup_size(1)\nfn main() {\n  let x = OFFSET;\n}\n",
   )
 
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    lower: true,
-  })
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), lower: true, },
+  )
   let compiled_text = compiled.to_string()
 
   debug_inspect(compiled_text.contains("const OFFSET"), content="false")
@@ -2242,16 +2397,18 @@ test "wesl: lowering resolves forward transitive constants" {
 
 ///|
 test "wesl: lowering preserves local names that shadow constants" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "const SCALE = 2.0;\n\nfn helper(SCALE: f32) -> f32 {\n  return SCALE;\n}\n\n@fragment\nfn fragment() -> f32 {\n  return helper(1.0);\n}\n",
   )
 
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    lower: true,
-  })
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), lower: true, },
+  )
   let compiled_text = compiled.to_string()
 
   debug_inspect(compiled_text.contains("const SCALE"), content="false")
@@ -2261,9 +2418,9 @@ test "wesl: lowering preserves local names that shadow constants" {
 
 ///|
 test "wesl: grouped imports expand and local aliases resolve correctly" {
-  let resolver = VirtualResolver::new()
-  let util_path = ModulePath::from_path("/shaders/util")
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let util_path = @moon_wesl.ModulePath::from_path("/shaders/util")
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     util_path, "fn make_value() -> f32 {\n  return 3.0;\n}\n\nfn helper_unused() -> f32 {\n  return 5.0;\n}\n",
   )
@@ -2271,10 +2428,12 @@ test "wesl: grouped imports expand and local aliases resolve correctly" {
     root_path, "import super::util::{make_value as renamed_value, helper_unused};\n@fragment\nfn fragment() -> f32 {\n  return renamed_value();\n}\n",
   )
 
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    lower: true,
-  })
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), lower: true, },
+  )
   let compiled_text = compiled.to_string()
 
   debug_inspect(
@@ -2287,17 +2446,19 @@ test "wesl: grouped imports expand and local aliases resolve correctly" {
 
 ///|
 test "wesl: parse errors include module and line context" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "import super::util::make_value\n@fragment\nfn fragment() -> f32 {\n  return 1.0;\n}\n",
   )
 
   let result = try
-    compile(root_path, resolver, EscapeMangler::default(), {
-      ..CompileOptions::default(),
-      lower: true,
-    })
+    @moon_wesl.compile(
+      root_path,
+      resolver,
+      @moon_wesl.EscapeMangler::default(),
+      { ..@moon_wesl.CompileOptions::default(), lower: true, },
+    )
   catch {
     err => Err(err)
   } noraise {
@@ -2318,18 +2479,18 @@ test "wesl: parse errors include module and line context" {
 
 ///|
 test "wesl: duplicate declarations include module and line context" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "fn helper() -> f32 {\n  return 1.0;\n}\n\nfn helper() -> f32 {\n  return 2.0;\n}\n",
   )
 
   let result = try
-    compile(
+    @moon_wesl.compile(
       root_path,
       resolver,
-      EscapeMangler::default(),
-      CompileOptions::default(),
+      @moon_wesl.EscapeMangler::default(),
+      @moon_wesl.CompileOptions::default(),
     )
   catch {
     err => Err(err)
@@ -2348,17 +2509,18 @@ test "wesl: duplicate declarations include module and line context" {
 
 ///|
 test "wesl: lowering preserves non-lowered declaration kinds" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "struct Payload {\n  value: f32,\n}\n\noverride SCALE: f32 = 2.0;\n\n@fragment\nfn fragment() -> f32 {\n  return 1.0;\n}\n",
   )
 
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    lower: true,
-    strip: false,
-  })
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), lower: true, strip: false, },
+  )
   let compiled_text = compiled.to_string()
 
   debug_inspect(compiled_text.contains("struct Payload"), content="true")
@@ -2367,16 +2529,18 @@ test "wesl: lowering preserves non-lowered declaration kinds" {
 
 ///|
 test "wesl: parser handles attribute arguments and generic var declarations" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@group(0)\n@binding(1)\nvar<uniform> DATA: f32;\n\n@fragment\nfn fragment() -> f32 {\n  return DATA;\n}\n",
   )
 
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    strip: false,
-  })
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), strip: false, },
+  )
   let compiled_text = compiled.to_string()
 
   debug_inspect(compiled_text.contains("@group(0)"), content="true")
@@ -2386,12 +2550,12 @@ test "wesl: parser handles attribute arguments and generic var declarations" {
 
 ///|
 test "wesl: parser classifies global directives" {
-  let unit = parse_translation_unit(
-    ModulePath::from_path("/shaders/root"),
+  let unit = @moon_wesl.parse_translation_unit(
+    @moon_wesl.ModulePath::from_path("/shaders/root"),
     "enable f16;\nrequires readonly_and_readwrite_storage_textures;\ndiagnostic(error, derivative_uniformity);\n",
     true,
   )
-  let headers : Array[GlobalDeclarationHeader] = []
+  let headers : Array[@moon_wesl.GlobalDeclarationHeader] = []
   for declaration in unit.global_declarations {
     headers.push(declaration.header)
   }
@@ -2412,10 +2576,10 @@ test "wesl: parser classifies global directives" {
 
 ///|
 test "wesl: nested grouped imports resolve through syntax tree flattening" {
-  let resolver = VirtualResolver::new()
-  let util_path = ModulePath::from_path("/shaders/util")
-  let bridge_path = ModulePath::from_path("/shaders/bridge")
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let util_path = @moon_wesl.ModulePath::from_path("/shaders/util")
+  let bridge_path = @moon_wesl.ModulePath::from_path("/shaders/bridge")
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     util_path, "fn make_value() -> f32 {\n  return 3.0;\n}\n\nfn helper_unused() -> f32 {\n  return 5.0;\n}\n",
   )
@@ -2424,10 +2588,12 @@ test "wesl: nested grouped imports resolve through syntax tree flattening" {
     root_path, "import super::{util::{make_value as renamed_value, helper_unused}, bridge::helper};\n@fragment\nfn fragment() -> f32 {\n  return renamed_value() + helper();\n}\n",
   )
 
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    lower: true,
-  })
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), lower: true, },
+  )
   let compiled_text = compiled.to_string()
 
   debug_inspect(
@@ -2441,20 +2607,22 @@ test "wesl: nested grouped imports resolve through syntax tree flattening" {
 
 ///|
 test "wesl: published imports can be re-exported across modules" {
-  let resolver = VirtualResolver::new()
-  let util_path = ModulePath::from_path("/shaders/util")
-  let bridge_path = ModulePath::from_path("/shaders/bridge")
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let util_path = @moon_wesl.ModulePath::from_path("/shaders/util")
+  let bridge_path = @moon_wesl.ModulePath::from_path("/shaders/bridge")
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(util_path, "fn make_value() -> f32 {\n  return 3.0;\n}\n")
   resolver.add_module(bridge_path, "@publish import super::util::make_value;\n")
   resolver.add_module(
     root_path, "import super::bridge::make_value;\n@fragment\nfn fragment() -> f32 {\n  return make_value();\n}\n",
   )
 
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    lower: true,
-  })
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), lower: true, },
+  )
   let compiled_text = compiled.to_string()
 
   debug_inspect(
@@ -2469,10 +2637,10 @@ test "wesl: published imports can be re-exported across modules" {
 
 ///|
 test "wesl: private imports cannot be re-exported" {
-  let resolver = VirtualResolver::new()
-  let util_path = ModulePath::from_path("/shaders/util")
-  let bridge_path = ModulePath::from_path("/shaders/bridge")
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let util_path = @moon_wesl.ModulePath::from_path("/shaders/util")
+  let bridge_path = @moon_wesl.ModulePath::from_path("/shaders/bridge")
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(util_path, "fn make_value() -> f32 {\n  return 3.0;\n}\n")
   resolver.add_module(bridge_path, "import super::util::make_value;\n")
   resolver.add_module(
@@ -2480,10 +2648,12 @@ test "wesl: private imports cannot be re-exported" {
   )
 
   let result = try
-    compile(root_path, resolver, EscapeMangler::default(), {
-      ..CompileOptions::default(),
-      lower: true,
-    })
+    @moon_wesl.compile(
+      root_path,
+      resolver,
+      @moon_wesl.EscapeMangler::default(),
+      { ..@moon_wesl.CompileOptions::default(), lower: true, },
+    )
   catch {
     err => Err(err)
   } noraise {
@@ -2501,18 +2671,20 @@ test "wesl: private imports cannot be re-exported" {
 
 ///|
 test "wesl: missing conditional feature can be configured as an error" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@if(EXPERIMENTAL_SHADER)\nfn enabled() -> f32 {\n  return 1.0;\n}\n@else\nfn disabled() -> f32 {\n  return 0.0;\n}\n",
   )
 
-  let features = { ..Features::default(), default: Error, }
+  let features = { ..@moon_wesl.Features::default(), default: Error, }
   let result = try
-    compile(root_path, resolver, EscapeMangler::default(), {
-      ..CompileOptions::default(),
-      features,
-    })
+    @moon_wesl.compile(
+      root_path,
+      resolver,
+      @moon_wesl.EscapeMangler::default(),
+      { ..@moon_wesl.CompileOptions::default(), features, },
+    )
   catch {
     err => Err(err)
   } noraise {
@@ -2530,19 +2702,24 @@ test "wesl: missing conditional feature can be configured as an error" {
 
 ///|
 test "wesl: keep conditional feature preserves unresolved attributes" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@if(EXPERIMENTAL_SHADER)\nfn enabled() -> f32 {\n  return 1.0;\n}\n@else\nfn disabled() -> f32 {\n  return 0.0;\n}\n",
   )
 
-  let features = { ..Features::default(), default: Keep, }
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    strip: false,
-    validate: false,
-    features,
-  })
+  let features = { ..@moon_wesl.Features::default(), default: Keep, }
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    {
+      ..@moon_wesl.CompileOptions::default(),
+      strip: false,
+      validate: false,
+      features,
+    },
+  )
   let compiled_text = compiled.to_string()
 
   debug_inspect(
@@ -2556,15 +2733,15 @@ test "wesl: keep conditional feature preserves unresolved attributes" {
 
 ///|
 test "wesl: conditional expression parser rejects malformed expressions" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(root_path, "@if(true &&)\nfn bad() {}\n")
   let result = try
-    compile(
+    @moon_wesl.compile(
       root_path,
       resolver,
-      EscapeMangler::default(),
-      CompileOptions::default(),
+      @moon_wesl.EscapeMangler::default(),
+      @moon_wesl.CompileOptions::default(),
     )
   catch {
     err => Err(err)
@@ -2583,19 +2760,20 @@ test "wesl: conditional expression parser rejects malformed expressions" {
 
 ///|
 test "wesl: conditional translation handles top-level elif chains" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@if(FIRST)\nfn selected() -> f32 {\n  return 1.0;\n}\n@elif(SECOND)\nfn selected() -> f32 {\n  return 2.0;\n}\n@else\nfn selected() -> f32 {\n  return 3.0;\n}\n\n@fragment\nfn fragment() -> f32 {\n  return selected();\n}\n",
   )
 
-  let features = Features::default()
+  let features = @moon_wesl.Features::default()
   features.set_feature("SECOND", Enable)
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    strip: false,
-    features,
-  })
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), strip: false, features, },
+  )
   let compiled_text = compiled.to_string()
 
   debug_inspect(compiled_text.contains("return 1.0;"), content="false")
@@ -2606,16 +2784,18 @@ test "wesl: conditional translation handles top-level elif chains" {
 
 ///|
 test "wesl: validate option controls semantic validation pass" {
-  let root_path = ModulePath::from_path("/shaders/root")
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   let source = "const m: mat2x2<i32> = mat2x2(1, 0, 0, 0);\n"
 
-  let failing_resolver = VirtualResolver::new()
+  let failing_resolver = @moon_wesl.VirtualResolver::new()
   failing_resolver.add_module(root_path, source)
   let failing = try
-    compile(root_path, failing_resolver, EscapeMangler::default(), {
-      ..CompileOptions::default(),
-      strip: false,
-    })
+    @moon_wesl.compile(
+      root_path,
+      failing_resolver,
+      @moon_wesl.EscapeMangler::default(),
+      { ..@moon_wesl.CompileOptions::default(), strip: false, },
+    )
   catch {
     err => Err(err)
   } noraise {
@@ -2631,13 +2811,13 @@ test "wesl: validate option controls semantic validation pass" {
     _ => fail("expected matrix validation error")
   }
 
-  let passing_resolver = VirtualResolver::new()
+  let passing_resolver = @moon_wesl.VirtualResolver::new()
   passing_resolver.add_module(root_path, source)
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
     passing_resolver,
-    EscapeMangler::default(),
-    { ..CompileOptions::default(), strip: false, validate: false, },
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), strip: false, validate: false, },
   )
 
   debug_inspect(compiled.to_string().contains("mat2x2<i32>"), content="true")
@@ -2645,17 +2825,19 @@ test "wesl: validate option controls semantic validation pass" {
 
 ///|
 test "wesl: validation checks matrix templates through AST type expressions" {
-  let root_path = ModulePath::from_path("/shaders/root")
-  let resolver = VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
   resolver.add_module(
     root_path, "fn main() {\n  var m: array<mat2x2<i32>, 1>;\n}\n",
   )
 
   let result = try
-    compile(root_path, resolver, EscapeMangler::default(), {
-      ..CompileOptions::default(),
-      strip: false,
-    })
+    @moon_wesl.compile(
+      root_path,
+      resolver,
+      @moon_wesl.EscapeMangler::default(),
+      { ..@moon_wesl.CompileOptions::default(), strip: false, },
+    )
   catch {
     err => Err(err)
   } noraise {
@@ -2674,15 +2856,17 @@ test "wesl: validation checks matrix templates through AST type expressions" {
 
 ///|
 test "wesl: validation checks matrix constructors through AST calls" {
-  let root_path = ModulePath::from_path("/shaders/root")
-  let resolver = VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
   resolver.add_module(root_path, "const m = mat2x2(1i, 0.0, 0.0, 0.0);\n")
 
   let result = try
-    compile(root_path, resolver, EscapeMangler::default(), {
-      ..CompileOptions::default(),
-      strip: false,
-    })
+    @moon_wesl.compile(
+      root_path,
+      resolver,
+      @moon_wesl.EscapeMangler::default(),
+      { ..@moon_wesl.CompileOptions::default(), strip: false, },
+    )
   catch {
     err => Err(err)
   } noraise {
@@ -2697,17 +2881,19 @@ test "wesl: validation checks matrix constructors through AST calls" {
 
 ///|
 test "wesl: validation checks matrix assignments through AST lhs scopes" {
-  let root_path = ModulePath::from_path("/shaders/root")
-  let resolver = VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
   resolver.add_module(
     root_path, "fn main() {\n  var m = mat2x2(0.0, 0.0, 0.0, 0.0);\n  m[0] = vec2(1i, 0.0);\n}\n",
   )
 
   let result = try
-    compile(root_path, resolver, EscapeMangler::default(), {
-      ..CompileOptions::default(),
-      strip: false,
-    })
+    @moon_wesl.compile(
+      root_path,
+      resolver,
+      @moon_wesl.EscapeMangler::default(),
+      { ..@moon_wesl.CompileOptions::default(), strip: false, },
+    )
   catch {
     err => Err(err)
   } noraise {
@@ -2722,13 +2908,13 @@ test "wesl: validation checks matrix assignments through AST lhs scopes" {
 
 ///|
 test "wesl: public validate_wesl rejects duplicate declarations" {
-  let root_path = ModulePath::from_path("/shaders/root")
-  let unit = parse_translation_unit(
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
+  let unit = @moon_wesl.parse_translation_unit(
     root_path, "fn make() -> i32 { return 1i; }\nfn make() -> i32 { return 2i; }\n",
     true,
   )
 
-  try validate_wesl(unit) catch {
+  try @moon_wesl.validate_wesl(unit) catch {
     Validate(Duplicate(name)) => debug_inspect(name, content="\"make\"")
     _ => fail("expected duplicate declaration validation error")
   } noraise {
@@ -2738,23 +2924,23 @@ test "wesl: public validate_wesl rejects duplicate declarations" {
 
 ///|
 test "wesl: public validate_wesl skips conditional duplicate declarations" {
-  let root_path = ModulePath::from_path("/shaders/root")
-  let unit = parse_translation_unit(
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
+  let unit = @moon_wesl.parse_translation_unit(
     root_path, "@if(FEATURE)\nfn make() -> i32 { return 1i; }\nfn make() -> i32 { return 2i; }\n",
     true,
   )
 
-  validate_wesl(unit)
+  @moon_wesl.validate_wesl(unit)
 }
 
 ///|
 test "wesl: public validate_wesl rejects cyclic declarations" {
-  let root_path = ModulePath::from_path("/shaders/root")
-  let unit = parse_translation_unit(
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
+  let unit = @moon_wesl.parse_translation_unit(
     root_path, "alias A = B;\nalias B = A;\n", true,
   )
 
-  try validate_wesl(unit) catch {
+  try @moon_wesl.validate_wesl(unit) catch {
     Validate(Cycle(name, _)) =>
       debug_inspect(name.contains("A") || name.contains("B"), content="true")
     _ => fail("expected cyclic declaration validation error")
@@ -2765,17 +2951,19 @@ test "wesl: public validate_wesl rejects cyclic declarations" {
 
 ///|
 test "wesl: compile delegates user function arity validation to WGSL Core" {
-  let root_path = ModulePath::from_path("/shaders/root")
-  let resolver = VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
   resolver.add_module(
     root_path, "fn takes_one(value: i32) -> i32 { return value; }\nfn main() { let value = takes_one(1i, 2i); }\n",
   )
 
   try
-    compile(root_path, resolver, EscapeMangler::default(), {
-      ..CompileOptions::default(),
-      strip: false,
-    })
+    @moon_wesl.compile(
+      root_path,
+      resolver,
+      @moon_wesl.EscapeMangler::default(),
+      { ..@moon_wesl.CompileOptions::default(), strip: false, },
+    )
   catch {
     Validation(message) =>
       debug_inspect(message.contains("takes_one"), content="true")
@@ -2787,31 +2975,35 @@ test "wesl: compile delegates user function arity validation to WGSL Core" {
 
 ///|
 test "wesl: compile accepts WGSL builtin calls through WGSL Core" {
-  let root_path = ModulePath::from_path("/shaders/root")
-  let resolver = VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
   resolver.add_module(
     root_path, "fn main() { let value = sin(0.0); let position = vec4<f32>(value); }\n",
   )
 
   ignore(
-    compile(root_path, resolver, EscapeMangler::default(), {
-      ..CompileOptions::default(),
-      strip: false,
-    }),
+    @moon_wesl.compile(
+      root_path,
+      resolver,
+      @moon_wesl.EscapeMangler::default(),
+      { ..@moon_wesl.CompileOptions::default(), strip: false, },
+    ),
   )
 }
 
 ///|
 test "wesl: compile delegates unknown types to WGSL Core" {
-  let root_path = ModulePath::from_path("/shaders/root")
-  let resolver = VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
   resolver.add_module(root_path, "const value: MissingType = 1i;\n")
 
   let result = try
-    compile(root_path, resolver, EscapeMangler::default(), {
-      ..CompileOptions::default(),
-      strip: false,
-    })
+    @moon_wesl.compile(
+      root_path,
+      resolver,
+      @moon_wesl.EscapeMangler::default(),
+      { ..@moon_wesl.CompileOptions::default(), strip: false, },
+    )
   catch {
     err => Err(err)
   } noraise {
@@ -2827,17 +3019,19 @@ test "wesl: compile delegates unknown types to WGSL Core" {
 
 ///|
 test "wesl: compile validate runs assembled WGSL call checks" {
-  let root_path = ModulePath::from_path("/shaders/root")
-  let resolver = VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
   resolver.add_module(
     root_path, "const value = 1i;\n@compute @workgroup_size(1)\nfn main() {\n  let out = value();\n}\n",
   )
 
   let result = try
-    compile(root_path, resolver, EscapeMangler::default(), {
-      ..CompileOptions::default(),
-      strip: false,
-    })
+    @moon_wesl.compile(
+      root_path,
+      resolver,
+      @moon_wesl.EscapeMangler::default(),
+      { ..@moon_wesl.CompileOptions::default(), strip: false, },
+    )
   catch {
     err => Err(err)
   } noraise {
@@ -2853,9 +3047,9 @@ test "wesl: compile validate runs assembled WGSL call checks" {
 
 ///|
 test "wesl: compile validation rejects invalid imported call statements" {
-  let root_path = ModulePath::from_path("/shaders/root")
-  let util_path = ModulePath::from_path("/shaders/util")
-  let resolver = VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
+  let util_path = @moon_wesl.ModulePath::from_path("/shaders/util")
+  let resolver = @moon_wesl.VirtualResolver::new()
   resolver.add_module(
     root_path, "import super::util::foo;\n@compute @workgroup_size(1)\nfn main() {\n  foo();\n}\n",
   )
@@ -2864,10 +3058,12 @@ test "wesl: compile validation rejects invalid imported call statements" {
   )
 
   try
-    compile(root_path, resolver, EscapeMangler::default(), {
-      ..CompileOptions::default(),
-      keep_root: true,
-    })
+    @moon_wesl.compile(
+      root_path,
+      resolver,
+      @moon_wesl.EscapeMangler::default(),
+      { ..@moon_wesl.CompileOptions::default(), keep_root: true, },
+    )
   catch {
     Validation(message) =>
       debug_inspect(message.contains("expected 1, got 0"), content="true")
@@ -2879,42 +3075,48 @@ test "wesl: compile validation rejects invalid imported call statements" {
 
 ///|
 test "wesl: WGSL Core accepts storage texture formats" {
-  let root_path = ModulePath::from_path("/shaders/root")
-  let resolver = VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
   resolver.add_module(
     root_path, "@group(0) @binding(0) var input: texture_storage_2d<r32float, read>;\n",
   )
 
   ignore(
-    compile(root_path, resolver, EscapeMangler::default(), {
-      ..CompileOptions::default(),
-      strip: false,
-    }),
+    @moon_wesl.compile(
+      root_path,
+      resolver,
+      @moon_wesl.EscapeMangler::default(),
+      { ..@moon_wesl.CompileOptions::default(), strip: false, },
+    ),
   )
 }
 
 ///|
 test "wesl: compile options expose lazy resolution control" {
-  let options = CompileOptions::default()
+  let options = @moon_wesl.CompileOptions::default()
 
   debug_inspect(options.lazy_resolution, content="true")
   debug_inspect(
-    ({ ..options, lazy_resolution: false, } : CompileOptions).lazy_resolution,
+    ({ ..options, lazy_resolution: false, } : @moon_wesl.CompileOptions).lazy_resolution,
     content="false",
   )
 }
 
 ///|
 test "wesl: facade compile uses custom resolver and sourcemap option" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@compute @workgroup_size(1)\nfn main() {\n}\n",
   )
 
-  let compiled = Wesl::new_barebones()
+  let compiled = @moon_wesl.Wesl::new_barebones()
     .set_custom_resolver(resolver)
-    .set_options({ ..CompileOptions::default(), strip: false, validate: false, })
+    .set_options({
+      ..@moon_wesl.CompileOptions::default(),
+      strip: false,
+      validate: false,
+    })
     .use_sourcemap(true)
     .compile(root_path)
 
@@ -2943,19 +3145,19 @@ test "wesl: facade compile uses custom resolver and sourcemap option" {
 
 ///|
 test "wesl: compile sourcemap unmangles imported diagnostics" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
-  let util_path = ModulePath::from_path("/shaders/util")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
+  let util_path = @moon_wesl.ModulePath::from_path("/shaders/util")
   resolver.add_module(
     root_path, "import super::util::make_value;\n@compute @workgroup_size(1)\nfn main() {\n  let value = make_value();\n}\n",
   )
   resolver.add_module(util_path, "fn make_value() -> i32 {\n  return 1i;\n}\n")
 
-  let compiled = compile_sourcemap(
+  let compiled = @moon_wesl.compile_sourcemap(
     root_path,
     resolver,
-    EscapeMangler::default(),
-    CompileOptions::default(),
+    @moon_wesl.EscapeMangler::default(),
+    @moon_wesl.CompileOptions::default(),
   )
   let mangled = "package_shaders_util__1make_value"
   match compiled.sourcemap {
@@ -2977,9 +3179,9 @@ test "wesl: compile sourcemap unmangles imported diagnostics" {
 
 ///|
 test "wesl: diagnostic renders source origin and snippets" {
-  let root_path = ModulePath::from_path("/shaders/root")
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   let source = "fn ok() {}\nfn bad() {\n  return;\n}\n"
-  let diagnostic = WeslCompileError::Validation("bad return")
+  let diagnostic = @moon_wesl.WeslCompileError::Validation("bad return")
     .diagnostic()
     .with_module_path(root_path, Some("root.wesl"))
     .with_source(source)
@@ -3000,16 +3202,16 @@ test "wesl: diagnostic renders source origin and snippets" {
 
 ///|
 test "wesl: diagnostic compile path attaches resolver source context" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(root_path, "fn bad() {\n  var m: mat2x2<i32>;\n}\n")
 
   let result = try
-    compile_sourcemap_diagnostic(
+    @moon_wesl.compile_sourcemap_diagnostic(
       root_path,
       resolver,
-      EscapeMangler::default(),
-      { ..CompileOptions::default(), strip: false, },
+      @moon_wesl.EscapeMangler::default(),
+      { ..@moon_wesl.CompileOptions::default(), strip: false, },
     )
   catch {
     err => Err(err)
@@ -3042,12 +3244,12 @@ test "wesl: diagnostic compile path attaches resolver source context" {
 
 ///|
 test "wesl: source mapper records resolver sources and mangled declarations" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
-  let util_path = ModulePath::from_path("/shaders/util")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
+  let util_path = @moon_wesl.ModulePath::from_path("/shaders/util")
   resolver.add_module(root_path, "import super::util::make_value;\n")
   resolver.add_module(util_path, "fn make_value() -> f32 {\n  return 1.0;\n}\n")
-  let mapper = SourceMapper::new(root_path, resolver, Escape)
+  let mapper = @moon_wesl.SourceMapper::new(root_path, resolver, Escape)
 
   let root_source = mapper.resolve_source(root_path)
   let mangled = mapper.mangle(util_path, "make_value")
@@ -3074,17 +3276,17 @@ test "wesl: source mapper records resolver sources and mangled declarations" {
 
 ///|
 test "wesl: facade can select hash mangler" {
-  let resolver = VirtualResolver::new()
-  let util_path = ModulePath::from_path("/shaders/util")
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let util_path = @moon_wesl.ModulePath::from_path("/shaders/util")
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(util_path, "fn make_value() -> f32 {\n  return 3.0;\n}\n")
   resolver.add_module(
     root_path, "import super::util::make_value;\n@fragment\nfn fragment() -> f32 {\n  return make_value();\n}\n",
   )
 
-  let compiled = Wesl::new_barebones()
+  let compiled = @moon_wesl.Wesl::new_barebones()
     .set_custom_resolver(resolver)
-    .set_options({ ..CompileOptions::default(), lower: true, })
+    .set_options({ ..@moon_wesl.CompileOptions::default(), lower: true, })
     .set_mangler(Hash)
     .compile(root_path)
   let compiled_text = compiled.to_string()
@@ -3098,8 +3300,8 @@ test "wesl: facade can select hash mangler" {
 
 ///|
 test "wesl: standard facade compiles registered modules" {
-  let root = ModulePath::from_path("/main")
-  let compiled = Wesl::new()
+  let root = @moon_wesl.ModulePath::from_path("/main")
+  let compiled = @moon_wesl.Wesl::new()
     .add_module(root, "@fragment\nfn fragment() -> i32 { return 7; }\n")
     .compile(root)
     .to_string()
@@ -3109,15 +3311,19 @@ test "wesl: standard facade compiles registered modules" {
 
 ///|
 test "wesl: facade can set features in bulk and expose resolver" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@if(A)\nfn a() -> f32 {\n  return 1.0;\n}\n@if(B)\nfn b() -> f32 {\n  return 2.0;\n}\n@fragment\nfn fragment() -> f32 {\n  return a() + b();\n}\n",
   )
 
-  let wesl = Wesl::new_barebones()
+  let wesl = @moon_wesl.Wesl::new_barebones()
     .set_custom_resolver(resolver)
-    .set_options({ ..CompileOptions::default(), strip: false, validate: false, })
+    .set_options({
+      ..@moon_wesl.CompileOptions::default(),
+      strip: false,
+      validate: false,
+    })
     .set_features([("A", Enable), ("B", Enable)])
   let compiled = wesl.compile(root_path)
   let returned_resolver = wesl.resolver()
@@ -3131,25 +3337,25 @@ test "wesl: facade can set features in bulk and expose resolver" {
 
 ///|
 test "wesl: facade standard resolver can add packages and constants" {
-  let root = CodegenModule::new("demo", "fn root() {}\n")
+  let root = @moon_wesl.CodegenModule::new("demo", "fn root() {}\n")
   root.add_submodule(
-    CodegenModule::new(
+    @moon_wesl.CodegenModule::new(
       "shader", "@fragment\nfn fragment() -> f32 {\n  return 1.0;\n}\n",
     ),
   )
-  let compiled_pkg = Wesl::new()
-    .add_package(CodegenPkg::new("demo_crate", root))
+  let compiled_pkg = @moon_wesl.Wesl::new()
+    .add_package(@moon_wesl.CodegenPkg::new("demo_crate", root))
     .use_stripping(false)
     .use_lower(false)
-    .compile(try! parse_module_path("demo::shader"))
+    .compile(try! @moon_wesl.parse_module_path("demo::shader"))
 
   debug_inspect(compiled_pkg.to_string().contains("@fragment"), content="true")
 
-  let compiled_constants = Wesl::new()
+  let compiled_constants = @moon_wesl.Wesl::new()
     .add_constant("PI", 3.141592653589793)
     .use_stripping(false)
     .use_lower(false)
-    .compile(try! parse_module_path("constants"))
+    .compile(try! @moon_wesl.parse_module_path("constants"))
 
   debug_inspect(
     compiled_constants.to_string().contains("const PI = 3.141592653589793"),
@@ -3159,8 +3365,8 @@ test "wesl: facade standard resolver can add packages and constants" {
 
 ///|
 test "wesl: resolver exposes display name and registered modules" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(root_path, "fn helper() {}\n")
 
   debug_inspect(
@@ -3173,7 +3379,9 @@ test "wesl: resolver exposes display name and registered modules" {
 ///|
 test "wesl: no resolver error matches upstream context" {
   let result = try
-    NoResolver::new().resolve_source(ModulePath::new_root())
+    @moon_wesl.NoResolver::new().resolve_source(
+      @moon_wesl.ModulePath::new_root(),
+    )
   catch {
     err => Err(err)
   } noraise {
@@ -3192,28 +3400,35 @@ test "wesl: no resolver error matches upstream context" {
 
 ///|
 test "wesl: resolver defaults match upstream constructors" {
-  let root_path = ModulePath::new_root()
+  let root_path = @moon_wesl.ModulePath::new_root()
   let no_resolver_result = try
-    NoResolver::default().resolve_source(root_path)
+    @moon_wesl.NoResolver::default().resolve_source(root_path)
   catch {
     err => Err(err)
   } noraise {
     value => Ok(value)
   }
   let pkg_result = try
-    PkgResolver::default().resolve_source(try! parse_module_path("demo"))
+    @moon_wesl.PkgResolver::default().resolve_source(
+      try! @moon_wesl.parse_module_path("demo"),
+    )
   catch {
     err => Err(err)
   } noraise {
     value => Ok(value)
   }
-  let router_result = try Router::default().resolve_source(root_path) catch {
+  let router_result = try
+    @moon_wesl.Router::default().resolve_source(root_path)
+  catch {
     err => Err(err)
   } noraise {
     value => Ok(value)
   }
 
-  debug_inspect(VirtualResolver::default().modules().length(), content="0")
+  debug_inspect(
+    @moon_wesl.VirtualResolver::default().modules().length(),
+    content="0",
+  )
   match no_resolver_result {
     Err(ModuleNotFound(_, context)) =>
       debug_inspect(
@@ -3236,17 +3451,19 @@ test "wesl: resolver defaults match upstream constructors" {
 
 ///|
 test "wesl: virtual resolver accepts translation units" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
-  let unit = parse_translation_unit(
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
+  let unit = @moon_wesl.parse_translation_unit(
     root_path, "fn helper() -> f32 {\n  return 1.0;\n}\n", true,
   )
   resolver.add_translation_unit(root_path, unit)
 
-  let compiled = compile(root_path, resolver, EscapeMangler::default(), {
-    ..CompileOptions::default(),
-    strip: false,
-  })
+  let compiled = @moon_wesl.compile(
+    root_path,
+    resolver,
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), strip: false, },
+  )
 
   debug_inspect(compiled.to_string().contains("fn helper()"), content="true")
 }
@@ -3323,17 +3540,17 @@ impl ModulePreprocessor for ConditionalAppendPreprocessor with fn preprocess_mod
 
 ///|
 test "wesl: preprocessor can transform resolved translation units" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@fragment\nfn fragment() -> f32 {\n  return injected();\n}\n",
   )
 
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
-    Preprocessor::new(resolver, AppendDeclPreprocessor::{ }),
-    EscapeMangler::default(),
-    { ..CompileOptions::default(), condcomp: false, strip: false, },
+    @moon_wesl.Preprocessor::new(resolver, AppendDeclPreprocessor::{ }),
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), condcomp: false, strip: false, },
   )
   let compiled_text = compiled.to_string()
 
@@ -3343,19 +3560,19 @@ test "wesl: preprocessor can transform resolved translation units" {
 
 ///|
 test "wesl: conditional translation runs after custom module preprocessing" {
-  let resolver = VirtualResolver::new()
-  let root_path = ModulePath::from_path("/shaders/root")
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root_path = @moon_wesl.ModulePath::from_path("/shaders/root")
   resolver.add_module(
     root_path, "@fragment\nfn fragment() -> f32 {\n  return injected();\n}\n",
   )
 
-  let features = Features::default()
+  let features = @moon_wesl.Features::default()
   features.set_feature("EXTRA", Enable)
-  let compiled = compile(
+  let compiled = @moon_wesl.compile(
     root_path,
-    Preprocessor::new(resolver, ConditionalAppendPreprocessor::{ }),
-    EscapeMangler::default(),
-    { ..CompileOptions::default(), strip: false, features, },
+    @moon_wesl.Preprocessor::new(resolver, ConditionalAppendPreprocessor::{ }),
+    @moon_wesl.EscapeMangler::default(),
+    { ..@moon_wesl.CompileOptions::default(), strip: false, features, },
   )
   let compiled_text = compiled.to_string()
 
@@ -3365,9 +3582,9 @@ test "wesl: conditional translation runs after custom module preprocessing" {
 
 ///|
 test "wesl: standard resolver exposes constants package" {
-  let resolver = StandardResolver::new()
+  let resolver = @moon_wesl.StandardResolver::new()
   resolver.add_constant("PI", 3.141592653589793)
-  let constants_path = try! parse_module_path("constants")
+  let constants_path = try! @moon_wesl.parse_module_path("constants")
 
   let source = resolver.resolve_source(constants_path)
   debug_inspect(source.contains("const PI = 3.141592653589793"), content="true")
@@ -3375,71 +3592,79 @@ test "wesl: standard resolver exposes constants package" {
 
 ///|
 test "wesl: package resolver reads codegen modules" {
-  let root = CodegenModule::new("demo", "fn root() {}\n")
-  root.add_submodule(CodegenModule::new("util", "fn util() {}\n"))
-  let resolver = PkgResolver::new()
-  resolver.add_package(CodegenPkg::new("demo_crate", root))
+  let root = @moon_wesl.CodegenModule::new("demo", "fn root() {}\n")
+  root.add_submodule(@moon_wesl.CodegenModule::new("util", "fn util() {}\n"))
+  let resolver = @moon_wesl.PkgResolver::new()
+  resolver.add_package(@moon_wesl.CodegenPkg::new("demo_crate", root))
 
   debug_inspect(
-    resolver.resolve_source(try! parse_module_path("demo")),
+    resolver.resolve_source(try! @moon_wesl.parse_module_path("demo")),
     content="\"fn root() {}\\n\"",
   )
   debug_inspect(
-    resolver.resolve_source(try! parse_module_path("demo::util")),
+    resolver.resolve_source(try! @moon_wesl.parse_module_path("demo::util")),
     content="\"fn util() {}\\n\"",
   )
   debug_inspect(
-    resolver.display_name(try! parse_module_path("demo::util")),
+    resolver.display_name(try! @moon_wesl.parse_module_path("demo::util")),
     content="Some(\"demo::util\")",
   )
 }
 
 ///|
 test "wesl: package builder constructs in-memory artifacts" {
-  let root = CodegenModule::new(
+  let root = @moon_wesl.CodegenModule::new(
     "shaders", "fn root_value() -> f32 {\n  return 1.0;\n}\n",
   )
   root.add_submodule(
-    CodegenModule::new("util", "fn make_value() -> f32 {\n  return 2.0;\n}\n"),
+    @moon_wesl.CodegenModule::new(
+      "util", "fn make_value() -> f32 {\n  return 2.0;\n}\n",
+    ),
   )
-  let nested = CodegenModule::new("nested", "")
+  let nested = @moon_wesl.CodegenModule::new("nested", "")
   nested.add_submodule(
-    CodegenModule::new(
+    @moon_wesl.CodegenModule::new(
       "math", "fn triple(value: f32) -> f32 {\n  return value * 3.0;\n}\n",
     ),
   )
   root.add_submodule(nested)
-  let pkg = PkgBuilder::new("demo-crate").build(root).validate()
+  let pkg = @moon_wesl.PkgBuilder::new("demo-crate").build(root).validate()
   let artifact = pkg.codegen()
   debug_inspect(artifact.contains("CodegenPkg::"), content="true")
   debug_inspect(artifact.contains("demo_crate"), content="true")
   let codegen_pkg = pkg.to_codegen_pkg()
-  let resolver = PkgResolver::new()
+  let resolver = @moon_wesl.PkgResolver::new()
   resolver.add_package(codegen_pkg)
 
   debug_inspect(
-    resolver.resolve_source(try! parse_module_path("demo_crate")),
+    resolver.resolve_source(try! @moon_wesl.parse_module_path("demo_crate")),
     content="\"fn root_value() -> f32 {\\n  return 1.0;\\n}\\n\"",
   )
   debug_inspect(
-    resolver.resolve_source(try! parse_module_path("demo_crate::util")),
+    resolver.resolve_source(
+      try! @moon_wesl.parse_module_path("demo_crate::util"),
+    ),
     content="\"fn make_value() -> f32 {\\n  return 2.0;\\n}\\n\"",
   )
   debug_inspect(
-    resolver.resolve_source(try! parse_module_path("demo_crate::nested::math")),
+    resolver.resolve_source(
+      try! @moon_wesl.parse_module_path("demo_crate::nested::math"),
+    ),
     content="\"fn triple(value: f32) -> f32 {\\n  return value * 3.0;\\n}\\n\"",
   )
 }
 
 ///|
 test "wesl: in-memory package artifacts compile through standard resolver" {
-  let pkg_root = CodegenModule::new("lib", "")
+  let pkg_root = @moon_wesl.CodegenModule::new("lib", "")
   pkg_root.add_submodule(
-    CodegenModule::new("util", "fn make_value() -> f32 {\n  return 4.0;\n}\n"),
+    @moon_wesl.CodegenModule::new(
+      "util", "fn make_value() -> f32 {\n  return 4.0;\n}\n",
+    ),
   )
-  let pkg = PkgBuilder::new("shader-lib").build(pkg_root).validate()
-  let app_root = ModulePath::from_path("/app/root")
-  let compiled = Wesl::new()
+  let pkg = @moon_wesl.PkgBuilder::new("shader-lib").build(pkg_root).validate()
+  let app_root = @moon_wesl.ModulePath::from_path("/app/root")
+  let compiled = @moon_wesl.Wesl::new()
     .add_package(pkg.to_codegen_pkg())
     .add_module(
       app_root, "import shader_lib::util::make_value;\n@fragment\nfn fragment() -> f32 {\n  return make_value();\n}\n",
@@ -3447,9 +3672,9 @@ test "wesl: in-memory package artifacts compile through standard resolver" {
     .use_lower(true)
     .compile(app_root)
   let compiled_text = compiled.to_string()
-  let expected = ManglerKind::mangle(
+  let expected = @moon_wesl.ManglerKind::mangle(
     Escape,
-    try! parse_module_path("shader_lib::util"),
+    try! @moon_wesl.parse_module_path("shader_lib::util"),
     "make_value",
   )
 
@@ -3459,71 +3684,85 @@ test "wesl: in-memory package artifacts compile through standard resolver" {
 
 ///|
 test "wesl: standard resolver delegates package imports to codegen resolver" {
-  let root = CodegenModule::new("demo", "fn root() {}\n")
-  root.add_submodule(CodegenModule::new("util", "fn util() {}\n"))
-  let resolver = StandardResolver::new()
-  resolver.add_package(CodegenPkg::new("demo_crate", root))
+  let root = @moon_wesl.CodegenModule::new("demo", "fn root() {}\n")
+  root.add_submodule(@moon_wesl.CodegenModule::new("util", "fn util() {}\n"))
+  let resolver = @moon_wesl.StandardResolver::new()
+  resolver.add_package(@moon_wesl.CodegenPkg::new("demo_crate", root))
 
   debug_inspect(
-    resolver.resolve_source(try! parse_module_path("demo::util")),
+    resolver.resolve_source(try! @moon_wesl.parse_module_path("demo::util")),
     content="\"fn util() {}\\n\"",
   )
 }
 
 ///|
 test "wesl: router dispatches to longest matching mount" {
-  let router = Router::new()
-  let package_path = try! parse_module_path("package")
-  let bar_path = try! parse_module_path("package::bar")
+  let router = @moon_wesl.Router::new()
+  let package_path = try! @moon_wesl.parse_module_path("package")
+  let bar_path = try! @moon_wesl.parse_module_path("package::bar")
 
-  let base = VirtualResolver::new()
-  base.add_module(ModulePath::new_root(), "fn root() {}\n")
-  base.add_module(ModulePath::new(Absolute, ["foo"]), "fn foo() {}\n")
-  base.add_module(ModulePath::new(Absolute, ["bar"]), "fn base_bar() {}\n")
+  let base = @moon_wesl.VirtualResolver::new()
+  base.add_module(@moon_wesl.ModulePath::new_root(), "fn root() {}\n")
+  base.add_module(
+    @moon_wesl.ModulePath::new(Absolute, ["foo"]),
+    "fn foo() {}\n",
+  )
+  base.add_module(
+    @moon_wesl.ModulePath::new(Absolute, ["bar"]),
+    "fn base_bar() {}\n",
+  )
   router.mount_resolver(package_path, base)
 
-  let nested = VirtualResolver::new()
-  nested.add_module(ModulePath::new_root(), "fn nested_root() {}\n")
-  nested.add_module(ModulePath::new(Absolute, ["baz"]), "fn baz() {}\n")
+  let nested = @moon_wesl.VirtualResolver::new()
+  nested.add_module(@moon_wesl.ModulePath::new_root(), "fn nested_root() {}\n")
+  nested.add_module(
+    @moon_wesl.ModulePath::new(Absolute, ["baz"]),
+    "fn baz() {}\n",
+  )
   router.mount_resolver(bar_path, nested)
 
-  let fallback = VirtualResolver::new()
+  let fallback = @moon_wesl.VirtualResolver::new()
   fallback.add_module(
-    ModulePath::new(Absolute, ["external"]),
+    @moon_wesl.ModulePath::new(Absolute, ["external"]),
     "fn external() {}\n",
   )
   router.mount_fallback_resolver(fallback)
 
   debug_inspect(
-    router.resolve_source(try! parse_module_path("package::foo")),
+    router.resolve_source(try! @moon_wesl.parse_module_path("package::foo")),
     content="\"fn foo() {}\\n\"",
   )
   debug_inspect(
-    router.resolve_source(try! parse_module_path("package::bar")),
+    router.resolve_source(try! @moon_wesl.parse_module_path("package::bar")),
     content="\"fn nested_root() {}\\n\"",
   )
   debug_inspect(
-    router.resolve_source(try! parse_module_path("package::bar::baz")),
+    router.resolve_source(
+      try! @moon_wesl.parse_module_path("package::bar::baz"),
+    ),
     content="\"fn baz() {}\\n\"",
   )
   debug_inspect(
-    router.resolve_source(try! parse_module_path("foo::external")),
+    router.resolve_source(try! @moon_wesl.parse_module_path("foo::external")),
     content="\"fn external() {}\\n\"",
   )
 }
 
 ///|
 test "wesl: router can mount package resolver" {
-  let root = CodegenModule::new("demo", "fn root() {}\n")
-  root.add_submodule(CodegenModule::new("util", "fn util() {}\n"))
-  let pkg_resolver = PkgResolver::new()
-  pkg_resolver.add_package(CodegenPkg::new("demo_crate", root))
+  let root = @moon_wesl.CodegenModule::new("demo", "fn root() {}\n")
+  root.add_submodule(@moon_wesl.CodegenModule::new("util", "fn util() {}\n"))
+  let pkg_resolver = @moon_wesl.PkgResolver::new()
+  pkg_resolver.add_package(@moon_wesl.CodegenPkg::new("demo_crate", root))
 
-  let router = Router::new()
-  router.mount_pkg_resolver(try! parse_module_path("demo"), pkg_resolver)
+  let router = @moon_wesl.Router::new()
+  router.mount_pkg_resolver(
+    try! @moon_wesl.parse_module_path("demo"),
+    pkg_resolver,
+  )
 
   debug_inspect(
-    router.resolve_source(try! parse_module_path("demo::util")),
+    router.resolve_source(try! @moon_wesl.parse_module_path("demo::util")),
     content="\"fn util() {}\\n\"",
   )
 }

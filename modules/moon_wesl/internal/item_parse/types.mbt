@@ -14,13 +14,13 @@
 
 ///|
 pub(all) struct TopLevelItemSpan {
-  start_offset : Int
-  end_offset : Int
+  start_offset : Int32
+  end_offset : Int32
 } derive(Eq, Debug)
 
 ///|
 pub(all) struct TopLevelItemDiagnostic {
-  offset : Int
+  offset : Int32
   incomplete : Bool
 } derive(Eq, Debug)
 
@@ -32,12 +32,12 @@ pub(all) enum TopLevelItemParseResult {
 
 ///|
 priv enum TopLevelItemLexResult {
-  Lexed(Array[(Token, Int, Int)])
+  Lexed(Array[(Token, Int32, Int32)])
   LexFailed(TopLevelItemDiagnostic)
 }
 
 ///|
-fn item_parse_skip_line_comment(source : String, index : Int) -> Int {
+fn item_parse_skip_line_comment(source : String, index : Int32) -> Int32 {
   let mut cursor = index
   while cursor < source.length() && source.code_unit_at(cursor).to_int() != 10 {
     cursor += 1
@@ -46,7 +46,10 @@ fn item_parse_skip_line_comment(source : String, index : Int) -> Int {
 }
 
 ///|
-fn item_parse_skip_block_comment(source : String, index : Int) -> (Int, Bool) {
+fn item_parse_skip_block_comment(
+  source : String,
+  index : Int32,
+) -> (Int32, Bool) {
   let mut cursor = index
   let mut depth = 1
   while cursor + 1 < source.length() {
@@ -71,7 +74,7 @@ fn item_parse_skip_block_comment(source : String, index : Int) -> (Int, Bool) {
 }
 
 ///|
-fn item_parse_skip_trivia(source : String, index : Int) -> (Int, Bool) {
+fn item_parse_skip_trivia(source : String, index : Int32) -> (Int32, Bool) {
   let mut cursor = index
   while cursor < source.length() {
     let code = source.code_unit_at(cursor).to_int()
@@ -101,18 +104,18 @@ fn item_parse_skip_trivia(source : String, index : Int) -> (Int, Bool) {
 
 ///|
 fn item_parse_push_item(
-  tokens : Array[(Token, Int, Int)],
-  start_offset : Int,
-  end_offset : Int,
+  tokens : Array[(Token, Int32, Int32)],
+  start_offset : Int32,
+  end_offset : Int32,
 ) -> Unit {
   tokens.push((ITEM({ start_offset, end_offset, }), start_offset, end_offset))
 }
 
 ///|
 fn item_parse_lex(source : String) -> TopLevelItemLexResult {
-  let tokens : Array[(Token, Int, Int)] = []
+  let tokens : Array[(Token, Int32, Int32)] = []
   let mut index = 0
-  let mut item_start : Int? = None
+  let mut item_start : Int32? = None
   let mut paren_depth = 0
   let mut bracket_depth = 0
   let mut brace_depth = 0

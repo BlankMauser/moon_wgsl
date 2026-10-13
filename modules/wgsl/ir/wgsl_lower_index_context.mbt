@@ -51,7 +51,7 @@ fn WgslIrLowerer::static_index_for_access_index(
   base_handle : Handle,
   index : @ast.WgslExprNode,
   function : Function,
-) -> Int? raise WgslIrLowerError {
+) -> Int32? raise WgslIrLowerError {
   guard self.static_index_value_from_expr_node(index) is Some(static_index) else {
     return None
   }
@@ -91,7 +91,7 @@ fn WgslIrLowerer::static_index_for_access_index(
 fn WgslIrLowerer::static_index_value_from_expr_node(
   self : WgslIrLowerer,
   index : @ast.WgslExprNode,
-) -> Int? raise WgslIrLowerError {
+) -> Int32? raise WgslIrLowerError {
   match wgsl_ir_int_literal_from_expr_node(index) {
     Some(static_index) => return Some(static_index)
     None => ()

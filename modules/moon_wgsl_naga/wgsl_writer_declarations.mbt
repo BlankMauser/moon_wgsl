@@ -26,38 +26,38 @@ priv struct WgslIrWriterArena {
 
 ///|
 priv struct WgslIrWriterTypeSlot {
-  source_index : Int
+  source_index : Int32
   item : Type
 }
 
 ///|
 priv struct WgslIrWriterConstantSlot {
-  source_index : Int
+  source_index : Int32
   item : Constant
 }
 
 ///|
 priv struct WgslIrWriterOverrideSlot {
-  source_index : Int
+  source_index : Int32
   item : Override
 }
 
 ///|
 priv struct WgslIrWriterGlobalVariableSlot {
-  source_index : Int
+  source_index : Int32
   item : GlobalVariable
 }
 
 ///|
 priv struct WgslIrWriterFunctionSlot {
-  source_index : Int
+  source_index : Int32
   item : Function
   function_plan : WgslIrFunctionWriterPlan
 }
 
 ///|
 priv struct WgslIrWriterEntryPointSlot {
-  source_index : Int
+  source_index : Int32
   item : EntryPoint
   function_plan : WgslIrFunctionWriterPlan
 }
@@ -78,7 +78,7 @@ priv struct WgslIrWriterDeclarationArena {
 
 ///|
 priv struct WgslIrWriterDeclarationSlot {
-  source_index : Int
+  source_index : Int32
 }
 
 ///|
@@ -284,8 +284,8 @@ fn WgslIrWriterPlanner::runtime_declaration_arena(
 ///|
 fn WgslIrWriterPlanner::runtime_function_order(
   self : WgslIrWriterPlanner,
-) -> Array[Int] {
-  let order : Array[Int] = []
+) -> Array[Int32] {
+  let order : Array[Int32] = []
   for index in 0..<self.shader_module.functions.items.length() {
     if self.runtime_function_order_should_include(index, order) {
       order.push(index)
@@ -297,8 +297,8 @@ fn WgslIrWriterPlanner::runtime_function_order(
 ///|
 fn WgslIrWriterPlanner::runtime_function_order_should_include(
   self : WgslIrWriterPlanner,
-  index : Int,
-  emitted : Array[Int],
+  index : Int32,
+  emitted : Array[Int32],
 ) -> Bool {
   if emitted.contains(index) {
     return false
@@ -315,7 +315,7 @@ fn WgslIrWriterPlanner::runtime_function_order_should_include(
 
 ///|
 fn wgsl_ir_writer_compat_declaration_slots(
-  source_order : Array[Int],
+  source_order : Array[Int32],
 ) -> Array[WgslIrWriterDeclarationSlot] {
   let slots : Array[WgslIrWriterDeclarationSlot] = []
   for source_index in source_order {
@@ -325,8 +325,8 @@ fn wgsl_ir_writer_compat_declaration_slots(
 }
 
 ///|
-fn wgsl_ir_source_order_indices(length : Int) -> Array[Int] {
-  let order : Array[Int] = []
+fn wgsl_ir_source_order_indices(length : Int32) -> Array[Int32] {
+  let order : Array[Int32] = []
   for index in 0..<length {
     order.push(index)
   }

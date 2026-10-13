@@ -1,14 +1,14 @@
 ///|
 pub struct WgslTokenReplacement {
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
   priv replacement : String
 }
 
 ///|
 pub fn WgslTokenReplacement::WgslTokenReplacement(
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
   replacement : String,
 ) -> WgslTokenReplacement {
   { start, end, replacement, }
@@ -228,8 +228,8 @@ pub fn tokenize_wgsl_absolute_source(source : String) -> Array[WgslToken] {
 ///|
 pub fn tokenize_wgsl_absolute_fragment(
   source : String,
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
 ) -> Array[WgslToken] {
   let tokens : Array[WgslToken] = []
   if start < 0 || end_ < start || end_ > source.length() {

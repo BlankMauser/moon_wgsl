@@ -14,7 +14,7 @@
 
 ///|
 pub(all) struct ExpressionParseDiagnostic {
-  offset : Int
+  offset : Int32
   incomplete : Bool
   message : String?
 } derive(Eq, Debug)
@@ -133,12 +133,12 @@ pub fn ExpressionParseNode::apply_postfix(
 
 ///|
 priv enum ExpressionLexResult {
-  Lexed(Array[(Token, Int, Int)])
+  Lexed(Array[(Token, Int32, Int32)])
   LexFailed(ExpressionParseDiagnostic)
 }
 
 ///|
-fn expression_parse_is_identifier_start(code : Int) -> Bool {
+fn expression_parse_is_identifier_start(code : Int32) -> Bool {
   (code >= 65 && code <= 90) ||
   (code >= 97 && code <= 122) ||
   code == 95 ||
@@ -146,24 +146,24 @@ fn expression_parse_is_identifier_start(code : Int) -> Bool {
 }
 
 ///|
-fn expression_parse_is_identifier_char(code : Int) -> Bool {
+fn expression_parse_is_identifier_char(code : Int32) -> Bool {
   expression_parse_is_identifier_start(code) || (code >= 48 && code <= 57)
 }
 
 ///|
-fn expression_parse_is_digit(code : Int) -> Bool {
+fn expression_parse_is_digit(code : Int32) -> Bool {
   code >= 48 && code <= 57
 }
 
 ///|
-fn expression_parse_is_hex_digit(code : Int) -> Bool {
+fn expression_parse_is_hex_digit(code : Int32) -> Bool {
   expression_parse_is_digit(code) ||
   (code >= 65 && code <= 70) ||
   (code >= 97 && code <= 102)
 }
 
 ///|
-fn expression_parse_skip_line_comment(source : String, index : Int) -> Int {
+fn expression_parse_skip_line_comment(source : String, index : Int32) -> Int32 {
   let mut cursor = index
   while cursor < source.length() && source.code_unit_at(cursor).to_int() != 10 {
     cursor += 1
@@ -174,8 +174,8 @@ fn expression_parse_skip_line_comment(source : String, index : Int) -> Int {
 ///|
 fn expression_parse_skip_block_comment(
   source : String,
-  index : Int,
-) -> (Int, Bool) {
+  index : Int32,
+) -> (Int32, Bool) {
   let mut cursor = index
   let mut depth = 1
   while cursor + 1 < source.length() {
@@ -200,7 +200,7 @@ fn expression_parse_skip_block_comment(
 }
 
 ///|
-fn expression_parse_number_end(source : String, start : Int) -> (Int, Bool) {
+fn expression_parse_number_end(source : String, start : Int32) -> (Int32, Bool) {
   let mut index = start
   let mut is_hex = false
   let mut has_dot = false
@@ -275,7 +275,10 @@ fn expression_parse_number_end(source : String, start : Int) -> (Int, Bool) {
 }
 
 ///|
-fn expression_parse_template_end_if_call(source : String, start : Int) -> Int? {
+fn expression_parse_template_end_if_call(
+  source : String,
+  start : Int32,
+) -> Int32? {
   let mut index = start + 1
   let mut depth = 1
   while index < source.length() {
@@ -307,18 +310,18 @@ fn expression_parse_template_end_if_call(source : String, start : Int) -> Int? {
 
 ///|
 fn expression_parse_push_operator(
-  tokens : Array[(Token, Int, Int)],
+  tokens : Array[(Token, Int32, Int32)],
   token : Token,
-  start : Int,
-  width : Int,
-) -> Int {
+  start : Int32,
+  width : Int32,
+) -> Int32 {
   tokens.push((token, start, start + width))
   start + width
 }
 
 ///|
 fn expression_parse_lex(source : String) -> ExpressionLexResult {
-  let tokens : Array[(Token, Int, Int)] = []
+  let tokens : Array[(Token, Int32, Int32)] = []
   let mut index = 0
   let mut template_allowed = false
   while index < source.length() {

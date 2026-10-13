@@ -24,13 +24,13 @@ fn WgslIrFinalNamePlan::empty() -> WgslIrFinalNamePlan {
 
 ///|
 priv struct WgslIrWriterNamer {
-  unique : Map[String, Int]
+  unique : Map[String, Int32]
 }
 
 ///|
 priv enum WgslIrEmitFunctionOrigin {
-  UserFunction(Int)
-  EntryPointFunction(Int)
+  UserFunction(Int32)
+  EntryPointFunction(Int32)
 }
 
 ///|
@@ -159,7 +159,7 @@ fn sanitize_wgsl_ir_writer_identifier_base(raw : String) -> String {
 }
 
 ///|
-fn wgsl_ir_ascii_is_digit(code : Int) -> Bool {
+fn wgsl_ir_ascii_is_digit(code : Int32) -> Bool {
   code >= 48 && code <= 57
 }
 
@@ -202,12 +202,12 @@ fn WgslIrWriterNamer::local_call_or(
 }
 
 ///|
-fn wgsl_ir_emit_name_key(kind : String, index : Int) -> String {
+fn wgsl_ir_emit_name_key(kind : String, index : Int32) -> String {
   "\{kind}:\{index}"
 }
 
 ///|
-fn wgsl_ir_emit_name_key2(kind : String, a : Int, b : Int) -> String {
+fn wgsl_ir_emit_name_key2(kind : String, a : Int32, b : Int32) -> String {
   "\{kind}:\{a}:\{b}"
 }
 

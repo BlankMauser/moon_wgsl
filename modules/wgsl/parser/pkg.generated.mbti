@@ -38,7 +38,6 @@ pub suberror ParseError {
   UnexpectedToken(Token, (Int, Int), Array[TokenKind])
   UnexpectedEndOfInput(Int, Array[TokenKind])
 } derive(@debug.Debug)
-pub fn ParseError::to_repr(Self) -> @debug.Repr
 
 pub suberror WgslParseError {
   UnparsedDeclaration(String, Int)
@@ -79,7 +78,6 @@ pub(all) enum Token {
   EOF
 } derive(@debug.Debug)
 pub fn Token::kind(Self) -> TokenKind
-pub fn Token::to_repr(Self) -> @debug.Repr
 
 pub(all) enum TokenKind {
   TK_STMT
@@ -113,9 +111,6 @@ pub(all) enum TokenKind {
   TK_SEMI
   TK_EOF
 }
-pub fn TokenKind::output(Self, &Logger) -> Unit
-pub fn TokenKind::to_repr(Self) -> @debug.Repr
-pub fn TokenKind::to_string(Self) -> String
 pub impl Show for TokenKind
 pub impl @debug.Debug for TokenKind
 

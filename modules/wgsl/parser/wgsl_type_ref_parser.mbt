@@ -1,5 +1,5 @@
 ///|
-fn parse_wgsl_type_ref_text(text : String, base : Int) -> WgslTypeRef? {
+fn parse_wgsl_type_ref_text(text : String, base : Int32) -> WgslTypeRef? {
   let cleaned = replace_comments(text)
   let (trimmed, local_start, _) = wgsl_trim_fragment_bounds(
     cleaned,
@@ -46,12 +46,12 @@ pub fn parse_wgsl_type_ref(text : String) -> WgslTypeRef? {
 }
 
 ///|
-fn wgsl_type_ref_space(code : Int) -> Bool {
+fn wgsl_type_ref_space(code : Int32) -> Bool {
   wgsl_blankspace_code_point(code)
 }
 
 ///|
-fn wgsl_type_ref_delimiter(code : Int) -> Bool {
+fn wgsl_type_ref_delimiter(code : Int32) -> Bool {
   code == 60 || code == 62 || code == 44
 }
 
@@ -86,7 +86,7 @@ fn wgsl_type_atom_kind(text : String) -> WgslTypeAtomKind {
 }
 
 ///|
-fn wgsl_type_ref_top_level_template_start(source : String) -> Int? {
+fn wgsl_type_ref_top_level_template_start(source : String) -> Int32? {
   let mut paren = 0
   let mut bracket = 0
   let mut brace = 0
@@ -107,7 +107,10 @@ fn wgsl_type_ref_top_level_template_start(source : String) -> Int? {
 }
 
 ///|
-fn wgsl_type_ref_matching_template_end(source : String, lt_index : Int) -> Int? {
+fn wgsl_type_ref_matching_template_end(
+  source : String,
+  lt_index : Int32,
+) -> Int32? {
   let mut angle = 0
   let mut paren = 0
   let mut bracket = 0
@@ -183,8 +186,8 @@ fn wgsl_template_arg_has_top_level_expression_operator(text : String) -> Bool {
 ///|
 fn wgsl_template_argument_list_is_well_formed(
   source : String,
-  inner_start : Int,
-  inner_end : Int,
+  inner_start : Int32,
+  inner_end : Int32,
 ) -> Bool {
   let mut angle = 0
   let mut paren = 0
@@ -220,8 +223,8 @@ fn wgsl_template_argument_list_is_well_formed(
 ///|
 fn split_wgsl_template_argument_fragments(
   source : String,
-  inner_start : Int,
-  inner_end : Int,
+  inner_start : Int32,
+  inner_end : Int32,
 ) -> Array[WgslTextFragment] {
   let fragments : Array[WgslTextFragment] = []
   let mut angle = 0
@@ -279,7 +282,7 @@ fn split_wgsl_template_argument_fragments(
 ///|
 fn parse_wgsl_type_template_argument(
   fragment : WgslTextFragment,
-  source_start : Int,
+  source_start : Int32,
 ) -> WgslTypeArgument? {
   let absolute_start = source_start + fragment.start
   if !wgsl_template_arg_has_top_level_expression_operator(fragment.text) {
@@ -297,9 +300,9 @@ fn parse_wgsl_type_template_argument(
 ///|
 fn parse_wgsl_type_template_arguments(
   source : String,
-  source_start : Int,
-  lt_index : Int,
-  gt_index : Int,
+  source_start : Int32,
+  lt_index : Int32,
+  gt_index : Int32,
 ) -> Array[WgslTypeArgument] {
   let arguments : Array[WgslTypeArgument] = []
   for
@@ -319,9 +322,9 @@ fn parse_wgsl_type_template_arguments(
 ///|
 fn tokenize_wgsl_type_ref(
   source : String,
-  source_start : Int,
-) -> Array[(Token, Int, Int)] {
-  let tokens : Array[(Token, Int, Int)] = []
+  source_start : Int32,
+) -> Array[(Token, Int32, Int32)] {
+  let tokens : Array[(Token, Int32, Int32)] = []
   match wgsl_type_ref_top_level_template_start(source) {
     Some(lt_index) if lt_index > 0 =>
       match wgsl_type_ref_matching_template_end(source, lt_index) {
@@ -443,8 +446,8 @@ fn parse_wgsl_type_ref_fragment(fragment : WgslTextFragment) -> WgslTypeRef? {
 ///|
 priv struct WgslTemplateListFragment {
   text : String
-  start : Int
-  consumed : Int
+  start : Int32
+  consumed : Int32
 }
 
 ///|

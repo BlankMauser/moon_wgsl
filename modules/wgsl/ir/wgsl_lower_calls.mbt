@@ -141,12 +141,12 @@ fn WgslIrLowerer::push_user_function_call_emit_ranges(
   self : WgslIrLowerer,
   block : Block,
   function : Function,
-  expression_mark : Int,
+  expression_mark : Int32,
   callee : Handle,
   arguments : Array[Handle],
   end : Handle,
 ) -> Unit {
-  let suppressed : @set.Set[Int] = Set([])
+  let suppressed : @set.Set[Int32] = Set([])
   match self.shader_module.functions.items.get(callee.index()) {
     Some(callee_function) =>
       for index in 0..<arguments.length() {
@@ -171,7 +171,7 @@ fn WgslIrLowerer::push_user_function_call_emit_ranges(
 fn wgsl_ir_collect_pointer_call_lvalue_emit_suppression(
   function : Function,
   handle : Handle,
-  suppressed : @set.Set[Int],
+  suppressed : @set.Set[Int32],
 ) -> Unit {
   if suppressed.contains(handle.index()) {
     return
@@ -255,7 +255,7 @@ fn WgslIrLowerer::lower_user_function_call_arguments(
 fn WgslIrLowerer::callee_parameter_is_pointer(
   self : WgslIrLowerer,
   callee_function : Function,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   match callee_function.arguments.get(index) {
     Some(parameter) => self.lowerer_type_is_pointer(parameter.ty)
@@ -285,7 +285,7 @@ fn WgslIrLowerer::lower_user_function_call_argument_at(
   self : WgslIrLowerer,
   argument : @ast.WgslExprNode,
   callee_function : Function,
-  index : Int,
+  index : Int32,
   function : Function,
   scope : WgslIrFunctionScope,
 ) -> Handle raise WgslIrLowerError {
@@ -747,7 +747,7 @@ priv enum WgslIrTextureOffsetPlan {
     String,
     Array[@ast.WgslExprNode],
     Array[Handle],
-    Int
+    Int32
   )
   FinishTemplatedTextureOffsetConstructor(Handle, Array[Handle])
 }
@@ -852,8 +852,8 @@ fn WgslIrLowerer::lower_texture_trailing_args(
   function : Function,
   scope : WgslIrFunctionScope,
   image : Handle,
-  base_count : Int,
-  trailing_count : Int,
+  base_count : Int32,
+  trailing_count : Int32,
   callee : String,
 ) -> WgslIrTextureTrailingArgs raise WgslIrLowerError {
   let arrayed = self.image_expression_is_arrayed(function, image)
@@ -987,10 +987,10 @@ fn WgslIrLowerer::texture_offset_index_from_image_type(
   self : WgslIrLowerer,
   arguments : Array[@ast.WgslExprNode],
   image_ty : Handle,
-  base_count : Int,
-  trailing_count : Int,
+  base_count : Int32,
+  trailing_count : Int32,
   callee : String,
-) -> Int? raise WgslIrLowerError {
+) -> Int32? raise WgslIrLowerError {
   let arrayed = self.image_type_handle_is_arrayed(image_ty)
   let remaining = arguments.length() - base_count
   guard remaining >= trailing_count else {
@@ -1023,7 +1023,7 @@ fn WgslIrLowerer::texture_offset_index_from_image_type(
 fn WgslIrLowerer::predeclare_texture_coordinate_root(
   self : WgslIrLowerer,
   arguments : Array[@ast.WgslExprNode],
-  coordinate_index : Int,
+  coordinate_index : Int32,
   function : Function,
   scope : WgslIrFunctionScope,
 ) -> Unit raise WgslIrLowerError {
@@ -1040,7 +1040,7 @@ fn WgslIrLowerer::predeclare_texture_coordinate_root(
 fn WgslIrLowerer::lower_texture_coordinate_before_image_if_needed(
   self : WgslIrLowerer,
   arguments : Array[@ast.WgslExprNode],
-  coordinate_index : Int,
+  coordinate_index : Int32,
   function : Function,
   scope : WgslIrFunctionScope,
 ) -> Handle? raise WgslIrLowerError {

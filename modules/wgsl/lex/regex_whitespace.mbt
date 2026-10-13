@@ -1,5 +1,5 @@
 ///|
-pub fn wgsl_regex_whitespace_code_point(code_point : Int) -> Bool {
+pub fn wgsl_regex_whitespace_code_point(code_point : Int32) -> Bool {
   (code_point >= 0x09 && code_point <= 0x0D) ||
   code_point == 0x20 ||
   code_point == 0x85 ||
@@ -14,7 +14,7 @@ pub fn wgsl_regex_whitespace_code_point(code_point : Int) -> Bool {
 }
 
 ///|
-pub fn wgsl_regex_whitespace_width(text : String, index : Int) -> Int {
+pub fn wgsl_regex_whitespace_width(text : String, index : Int32) -> Int32 {
   match wgsl_code_point_at(text, index) {
     Some((code_point, width)) if wgsl_regex_whitespace_code_point(code_point) =>
       width
@@ -23,7 +23,7 @@ pub fn wgsl_regex_whitespace_width(text : String, index : Int) -> Int {
 }
 
 ///|
-pub fn wgsl_regex_skip_whitespace(text : String, start : Int) -> Int {
+pub fn wgsl_regex_skip_whitespace(text : String, start : Int32) -> Int32 {
   let mut index = start
   while index < text.length() {
     let width = wgsl_regex_whitespace_width(text, index)

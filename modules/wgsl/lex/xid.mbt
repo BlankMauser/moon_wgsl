@@ -1,5 +1,5 @@
 ///|
-let wgsl_xid_start_ranges : Array[(Int, Int)] = [
+let wgsl_xid_start_ranges : Array[(Int32, Int32)] = [
   (65, 90),
   (97, 122),
   (170, 170),
@@ -694,7 +694,7 @@ let wgsl_xid_start_ranges : Array[(Int, Int)] = [
 ]
 
 ///|
-let wgsl_xid_continue_ranges : Array[(Int, Int)] = [
+let wgsl_xid_continue_ranges : Array[(Int32, Int32)] = [
   (48, 57),
   (65, 90),
   (95, 95),
@@ -1505,8 +1505,8 @@ let wgsl_xid_continue_ranges : Array[(Int, Int)] = [
 
 ///|
 fn wgsl_xid_range_contains(
-  ranges : Array[(Int, Int)],
-  code_point : Int,
+  ranges : Array[(Int32, Int32)],
+  code_point : Int32,
 ) -> Bool {
   let mut low = 0
   let mut high = ranges.length()
@@ -1525,11 +1525,11 @@ fn wgsl_xid_range_contains(
 }
 
 ///|
-pub fn wgsl_xid_start_code_point(code_point : Int) -> Bool {
+pub fn wgsl_xid_start_code_point(code_point : Int32) -> Bool {
   wgsl_xid_range_contains(wgsl_xid_start_ranges, code_point)
 }
 
 ///|
-pub fn wgsl_xid_continue_code_point(code_point : Int) -> Bool {
+pub fn wgsl_xid_continue_code_point(code_point : Int32) -> Bool {
   wgsl_xid_range_contains(wgsl_xid_continue_ranges, code_point)
 }

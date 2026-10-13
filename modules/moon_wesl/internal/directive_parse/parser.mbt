@@ -1,8 +1,13 @@
 ///|
 pub suberror ParseError {
-  UnexpectedToken(Token, (Int, Int), Array[TokenKind])
-  UnexpectedEndOfInput(Int, Array[TokenKind])
+  UnexpectedToken(Token, (Int32, Int32), Array[TokenKind])
+  UnexpectedEndOfInput(Int32, Array[TokenKind])
 } derive(Debug)
+
+///|
+#deprecated("Use Debug::to_repr instead")
+#doc(hidden)
+pub extend ParseError with Debug::{to_repr}
 
 ///|
 type YYObj = Error
@@ -34,14 +39,14 @@ priv suberror YYObj_DirectiveParseNode {
 type YYState = (YYSymbol) -> YYDecision
 
 ///|
-type YYAction = (Int, ArrayView[(YYObj, Int, Int)]) -> YYObj
+type YYAction = (Int32, ArrayView[(YYObj, Int32, Int32)]) -> YYObj
 
 ///|
 priv enum YYDecision {
   Accept
   Shift(YYState)
-  Reduce(Int, YYSymbol, YYAction)
-  ReduceNoLookahead(Int, YYSymbol, YYAction)
+  Reduce(Int32, YYSymbol, YYAction)
+  ReduceNoLookahead(Int32, YYSymbol, YYAction)
   Error
 }
 
@@ -61,9 +66,8 @@ priv enum YYSymbol {
   EOI
 }
 
-// Workaround for EOI unused warning
-
 ///|
+// Workaround for EOI unused warning
 fn init {
   match (EOI : YYSymbol) {
     EOI => ()
@@ -71,12 +75,14 @@ fn init {
   }
 }
 
+///|
 // file:///./parser.mbty
 // 21|    "enable" item_list opt_semi
 // 22|                                 { { kind: Enable, arguments: $2 } }
-
-///|
-fn yy_action_0(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_0(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj_Array_String_(_dollar2)
   YYObj_DirectiveParseNode(
     {
@@ -86,12 +92,14 @@ fn yy_action_0(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 23|    "requires" item_list opt_semi
 // 24|                                 { { kind: Requires, arguments: $2 } }
-
-///|
-fn yy_action_1(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_1(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj_Array_String_(_dollar2)
   YYObj_DirectiveParseNode(
     {
@@ -101,12 +109,14 @@ fn yy_action_1(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 25|    "diagnostic" "(" item_list ")" opt_semi
 // 26|                                 { { kind: Diagnostic, arguments: $3 } }
-
-///|
-fn yy_action_2(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_2(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[2].0 is YYObj_Array_String_(_dollar3)
   YYObj_DirectiveParseNode(
     {
@@ -116,11 +126,13 @@ fn yy_action_2(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 36|    ";"                          { () }
-
-///|
-fn yy_action_3(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_3(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -129,11 +141,13 @@ fn yy_action_3(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 35|                                 { () }
-
-///|
-fn yy_action_4(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_4(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -142,11 +156,13 @@ fn yy_action_4(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 31|    item_list "," ITEM           { $1.push($3); $1 }
-
-///|
-fn yy_action_5(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_5(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Array_String_(_dollar1)
   guard! _args[2].0 is YYObj_String(_dollar3)
   YYObj_Array_String_(
@@ -158,11 +174,13 @@ fn yy_action_5(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./parser.mbty
 // 30|    ITEM                         { [$1] }
-
-///|
-fn yy_action_6(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_6(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_String(_dollar1)
   YYObj_Array_String_(
     {
@@ -175,8 +193,8 @@ fn yy_action_6(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
 ///|
 fn yy_input(
   token : Token,
-  _start_pos : Int,
-  _end_pos : Int,
+  _start_pos : Int32,
+  _end_pos : Int32,
 ) -> (YYSymbol, YYObj) {
   match token {
     ITEM(data) => (T_ITEM, YYObj_String(data))
@@ -190,12 +208,11 @@ fn yy_input(
   }
 }
 
+///|
 // [0, parse_directive → • ENABLE item_list opt_semi, $]
 // [1, parse_directive → • REQUIRES item_list opt_semi, $]
 // [2, parse_directive → • DIAGNOSTIC LEFT_PAREN item_list RIGHT_PAREN opt_semi, $]
 // [7, parse_directive_prime → • parse_directive, $]
-
-///|
 fn yy_state_0(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_parse_directive => Shift(yy_state_1)
@@ -206,16 +223,14 @@ fn yy_state_0(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [7, parse_directive_prime → parse_directive •, $]
-
 ///|
+// [7, parse_directive_prime → parse_directive •, $]
 fn yy_state_1(_lookahead : YYSymbol) -> YYDecision {
   Accept
 }
 
-// [2, parse_directive → DIAGNOSTIC • LEFT_PAREN item_list RIGHT_PAREN opt_semi, $]
-
 ///|
+// [2, parse_directive → DIAGNOSTIC • LEFT_PAREN item_list RIGHT_PAREN opt_semi, $]
 fn yy_state_2(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_LEFT_PAREN => Shift(yy_state_3)
@@ -223,11 +238,10 @@ fn yy_state_2(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [2, parse_directive → DIAGNOSTIC LEFT_PAREN • item_list RIGHT_PAREN opt_semi, $]
 // [3, item_list → • ITEM, RIGHT_PAREN / COMMA]
 // [4, item_list → • item_list COMMA ITEM, RIGHT_PAREN / COMMA]
-
-///|
 fn yy_state_3(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_ITEM => Shift(yy_state_4)
@@ -236,17 +250,15 @@ fn yy_state_3(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [3, item_list → ITEM •, $ / RIGHT_PAREN / COMMA / SEMI]
-
 ///|
+// [3, item_list → ITEM •, $ / RIGHT_PAREN / COMMA / SEMI]
 fn yy_state_4(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_item_list, yy_action_6)
 }
 
+///|
 // [2, parse_directive → DIAGNOSTIC LEFT_PAREN item_list • RIGHT_PAREN opt_semi, $]
 // [4, item_list → item_list • COMMA ITEM, RIGHT_PAREN / COMMA]
-
-///|
 fn yy_state_5(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_COMMA => Shift(yy_state_6)
@@ -255,9 +267,8 @@ fn yy_state_5(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [4, item_list → item_list COMMA • ITEM, $ / RIGHT_PAREN / COMMA / SEMI]
-
 ///|
+// [4, item_list → item_list COMMA • ITEM, $ / RIGHT_PAREN / COMMA / SEMI]
 fn yy_state_6(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_ITEM => Shift(yy_state_7)
@@ -265,18 +276,16 @@ fn yy_state_6(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [4, item_list → item_list COMMA ITEM •, $ / RIGHT_PAREN / COMMA / SEMI]
-
 ///|
+// [4, item_list → item_list COMMA ITEM •, $ / RIGHT_PAREN / COMMA / SEMI]
 fn yy_state_7(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_item_list, yy_action_5)
 }
 
+///|
 // [2, parse_directive → DIAGNOSTIC LEFT_PAREN item_list RIGHT_PAREN • opt_semi, $]
 // [5, opt_semi → •, $]
 // [6, opt_semi → • SEMI, $]
-
-///|
 fn yy_state_8(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_SEMI => Shift(yy_state_9)
@@ -286,25 +295,22 @@ fn yy_state_8(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [6, opt_semi → SEMI •, $]
-
 ///|
+// [6, opt_semi → SEMI •, $]
 fn yy_state_9(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_opt_semi, yy_action_3)
 }
 
-// [2, parse_directive → DIAGNOSTIC LEFT_PAREN item_list RIGHT_PAREN opt_semi •, $]
-
 ///|
+// [2, parse_directive → DIAGNOSTIC LEFT_PAREN item_list RIGHT_PAREN opt_semi •, $]
 fn yy_state_10(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(5, NT_parse_directive, yy_action_2)
 }
 
+///|
 // [1, parse_directive → REQUIRES • item_list opt_semi, $]
 // [3, item_list → • ITEM, $ / COMMA / SEMI]
 // [4, item_list → • item_list COMMA ITEM, $ / COMMA / SEMI]
-
-///|
 fn yy_state_11(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_ITEM => Shift(yy_state_4)
@@ -313,12 +319,11 @@ fn yy_state_11(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [1, parse_directive → REQUIRES item_list • opt_semi, $]
 // [4, item_list → item_list • COMMA ITEM, $ / COMMA / SEMI]
 // [5, opt_semi → •, $]
 // [6, opt_semi → • SEMI, $]
-
-///|
 fn yy_state_12(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_COMMA => Shift(yy_state_6)
@@ -329,18 +334,16 @@ fn yy_state_12(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [1, parse_directive → REQUIRES item_list opt_semi •, $]
-
 ///|
+// [1, parse_directive → REQUIRES item_list opt_semi •, $]
 fn yy_state_13(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_parse_directive, yy_action_1)
 }
 
+///|
 // [0, parse_directive → ENABLE • item_list opt_semi, $]
 // [3, item_list → • ITEM, $ / COMMA / SEMI]
 // [4, item_list → • item_list COMMA ITEM, $ / COMMA / SEMI]
-
-///|
 fn yy_state_14(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_ITEM => Shift(yy_state_4)
@@ -349,12 +352,11 @@ fn yy_state_14(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [0, parse_directive → ENABLE item_list • opt_semi, $]
 // [4, item_list → item_list • COMMA ITEM, $ / COMMA / SEMI]
 // [5, opt_semi → •, $]
 // [6, opt_semi → • SEMI, $]
-
-///|
 fn yy_state_15(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_COMMA => Shift(yy_state_6)
@@ -365,26 +367,25 @@ fn yy_state_15(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [0, parse_directive → ENABLE item_list opt_semi •, $]
-
 ///|
+// [0, parse_directive → ENABLE item_list opt_semi •, $]
 fn yy_state_16(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_parse_directive, yy_action_0)
 }
 
 ///|
 fn[T] yy_parse(
-  tokens : Array[(Token, Int, Int)],
+  tokens : Array[(Token, Int32, Int32)],
   start : YYState,
   return_ : (YYObj) -> T,
-  initial_pos? : Int,
+  initial_pos? : Int32,
 ) -> T raise ParseError {
   let mut cursor = 0
-  let mut state_stack : @list.List[YYState] = @list.cons(start, @list.empty())
-  let data_stack : Array[(YYObj, Int, Int)] = []
-  let mut last_pos = initial_pos.unwrap_or(tokens[0].1)
+  let mut state_stack : @list.List[YYState] = @list.cons(start, List([]))
+  let data_stack : Array[(YYObj, Int32, Int32)] = []
+  let mut last_pos = initial_pos.unwrap_or_else(fn() { tokens[0].1 })
   let mut state = start
-  let mut lookahead : (YYSymbol, (YYObj, Int, Int), Token?)? = None
+  let mut lookahead : (YYSymbol, (YYObj, Int32, Int32), Token?)? = None
   let mut last_shifted_state_stack = state_stack
   while true {
     let decision = match state(EOI) {
@@ -460,7 +461,7 @@ fn[T] yy_parse(
 fn error(
   stack : @list.List[YYState],
   token : Token?,
-  loc : (Int, Int),
+  loc : (Int32, Int32),
 ) -> Unit raise ParseError {
   let expected = []
   fn try_add(symbol : YYSymbol, kind : TokenKind) {
@@ -512,8 +513,8 @@ fn error(
 
 ///|
 pub fn parse_directive(
-  tokens : Array[(Token, Int, Int)],
-  initial_pos? : Int,
+  tokens : Array[(Token, Int32, Int32)],
+  initial_pos? : Int32,
 ) -> DirectiveParseNode raise ParseError {
   yy_parse(
     tokens,

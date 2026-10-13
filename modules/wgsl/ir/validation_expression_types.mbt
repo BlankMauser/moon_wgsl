@@ -398,7 +398,7 @@ fn WgslIrValidator::literal_type(
 fn WgslIrValidator::indexed_type(
   self : WgslIrValidator,
   ty : Handle,
-  index : Int?,
+  index : Int32?,
 ) -> Handle? {
   match self.shader_module.types.get(ty) {
     Some(type_) =>
@@ -448,8 +448,8 @@ fn WgslIrValidator::dynamic_indexed_type(
 ///|
 fn WgslIrValidator::constant_index_is_in_bounds(
   self : WgslIrValidator,
-  index : Int?,
-  count : Int,
+  index : Int32?,
+  count : Int32,
 ) -> Bool {
   ignore(self)
   match index {
@@ -461,7 +461,7 @@ fn WgslIrValidator::constant_index_is_in_bounds(
 ///|
 fn WgslIrValidator::array_index_is_in_bounds(
   self : WgslIrValidator,
-  index : Int?,
+  index : Int32?,
   size : ArraySize,
 ) -> Bool {
   ignore(self)
@@ -882,7 +882,7 @@ fn WgslIrValidator::as_result_type(
   self : WgslIrValidator,
   input : Handle?,
   kind : ScalarKind,
-  width : Int,
+  width : Int32,
 ) -> Handle? {
   guard input is Some(input_ty) else { return None }
   let scalar = Scalar::Scalar(kind, width)
@@ -1288,7 +1288,10 @@ fn WgslIrValidator::vector_size(
 }
 
 ///|
-fn WgslIrValidator::type_lane_count(self : WgslIrValidator, ty : Handle) -> Int {
+fn WgslIrValidator::type_lane_count(
+  self : WgslIrValidator,
+  ty : Handle,
+) -> Int32 {
   match self.shader_module.types.get(ty) {
     Some(type_) =>
       match type_.inner {

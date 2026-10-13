@@ -50,7 +50,7 @@ fn WgslFinalNameAllocator::WgslFinalNameAllocator(
 ///|
 fn WgslFinalNameAllocator::application_plan(
   self : WgslFinalNameAllocator,
-  start_index : Int,
+  start_index : Int32,
 ) -> WgslModuleFinalNameApplicationPlan {
   collect_wgsl_module_final_name_application_plan(
     self.session,

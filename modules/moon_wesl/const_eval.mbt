@@ -31,39 +31,39 @@ pub fn EvalResult::to_buffer(self : EvalResult) -> Bytes? {
 ///|
 pub(all) enum UserInputValue {
   Bool(Bool)
-  I32(Int)
-  U32(Int)
+  I32(Int32)
+  U32(Int32)
   F32(Double)
-  I32Vector(Array[Int])
-  U32Vector(Array[Int])
+  I32Vector(Array[Int32])
+  U32Vector(Array[Int32])
   F32Vector(Array[Double])
 } derive(Eq, Debug)
 
 ///|
 pub(all) struct UserInput {
-  location : Int
+  location : Int32
   value : UserInputValue
 } derive(Eq, Debug)
 
 ///|
 pub(all) struct Inputs {
-  vertex_index : Int?
-  instance_index : Int?
+  vertex_index : Int32?
+  instance_index : Int32?
   position : Array[Double]?
   front_facing : Bool?
-  sample_index : Int?
-  sample_mask : Int?
-  local_invocation_id : Array[Int]?
-  local_invocation_index : Int?
-  global_invocation_id : Array[Int]?
-  workgroup_id : Array[Int]?
-  num_workgroups : Array[Int]?
-  subgroup_invocation_id : Int?
-  subgroup_size : Int?
-  subgroup_id : Int?
-  num_subgroups : Int?
-  primitive_index : Int?
-  view_index : Int?
+  sample_index : Int32?
+  sample_mask : Int32?
+  local_invocation_id : Array[Int32]?
+  local_invocation_index : Int32?
+  global_invocation_id : Array[Int32]?
+  workgroup_id : Array[Int32]?
+  num_workgroups : Array[Int32]?
+  subgroup_invocation_id : Int32?
+  subgroup_size : Int32?
+  subgroup_id : Int32?
+  num_subgroups : Int32?
+  primitive_index : Int32?
+  view_index : Int32?
   user_defined : Array[UserInput]
 } derive(Eq, Debug)
 
@@ -93,8 +93,8 @@ pub fn Inputs::new_zero_initialized() -> Inputs {
 
 ///|
 pub(all) struct ResourceBinding {
-  group : Int
-  binding : Int
+  group : Int32
+  binding : Int32
   kind : String
   data : Bytes
 } derive(Eq, Debug)
@@ -125,8 +125,8 @@ pub fn ExecResult::to_buffer(self : ExecResult) -> Bytes? {
 ///|
 pub fn ExecResult::resource(
   self : ExecResult,
-  group : Int,
-  binding : Int,
+  group : Int32,
+  binding : Int32,
 ) -> ResourceBinding? {
   for resource in self.resources {
     if resource.group == group && resource.binding == binding {
@@ -265,7 +265,7 @@ fn const_eval_override_value(
 }
 
 ///|
-fn const_eval_attr_i32(attr : Attribute) -> Int? raise WeslCompileError {
+fn const_eval_attr_i32(attr : Attribute) -> Int32? raise WeslCompileError {
   match attr.arguments {
     Some(text) =>
       match const_eval_parse_expression_value(text, ConstEvalContext::new()) {
@@ -290,8 +290,8 @@ fn const_eval_attr_i32(attr : Attribute) -> Int? raise WeslCompileError {
 fn const_eval_named_attr_i32(
   attributes : Array[Attribute],
   name : String,
-) -> Int? raise WeslCompileError {
-  let mut value : Int? = None
+) -> Int32? raise WeslCompileError {
+  let mut value : Int32? = None
   for attribute in attributes {
     if attribute.name == name {
       value = const_eval_attr_i32(attribute)
@@ -303,9 +303,9 @@ fn const_eval_named_attr_i32(
 ///|
 fn const_eval_group_binding(
   attributes : Array[Attribute],
-) -> (Int, Int)? raise WeslCompileError {
-  let mut group : Int? = None
-  let mut binding : Int? = None
+) -> (Int32, Int32)? raise WeslCompileError {
+  let mut group : Int32? = None
+  let mut binding : Int32? = None
   for attr in attributes {
     if attr.name == "group" {
       group = const_eval_attr_i32(attr)
@@ -320,7 +320,7 @@ fn const_eval_group_binding(
 }
 
 ///|
-fn const_eval_round_up(align : Int, offset : Int) -> Int {
+fn const_eval_round_up(align : Int32, offset : Int32) -> Int32 {
   if align <= 1 {
     offset
   } else {
@@ -332,8 +332,8 @@ fn const_eval_round_up(align : Int, offset : Int) -> Int {
 fn const_eval_member_attr_or_layout(
   attributes : Array[Attribute],
   name : String,
-  fallback : Int,
-) -> Int? raise WeslCompileError {
+  fallback : Int32,
+) -> Int32? raise WeslCompileError {
   match const_eval_named_attr_i32(attributes, name) {
     Some(value) => Some(value)
     None => Some(fallback)
@@ -344,7 +344,7 @@ fn const_eval_member_attr_or_layout(
 fn const_eval_type_align(
   unit : TranslationUnit,
   type_ : ConstEvalType,
-) -> Int? raise WeslCompileError {
+) -> Int32? raise WeslCompileError {
   match type_ {
     Bool | I32 | U32 | F32 => Some(4)
     Vector(width, element) =>
@@ -385,7 +385,7 @@ fn const_eval_type_align(
 fn const_eval_type_size(
   unit : TranslationUnit,
   type_ : ConstEvalType,
-) -> Int? raise WeslCompileError {
+) -> Int32? raise WeslCompileError {
   match type_ {
     Bool | I32 | U32 | F32 => Some(4)
     Vector(width, element) =>
@@ -441,7 +441,7 @@ fn const_eval_type_size(
 fn const_eval_type_stride(
   unit : TranslationUnit,
   type_ : ConstEvalType,
-) -> Int? raise WeslCompileError {
+) -> Int32? raise WeslCompileError {
   let align = match const_eval_type_align(unit, type_) {
     Some(value) => value
     None => return None
@@ -457,7 +457,7 @@ fn const_eval_type_stride(
 fn const_eval_type_min_size(
   unit : TranslationUnit,
   type_ : ConstEvalType,
-) -> Int? raise WeslCompileError {
+) -> Int32? raise WeslCompileError {
   match type_ {
     Array(element, None) => const_eval_type_stride(unit, element)
     _ => const_eval_type_size(unit, type_)
@@ -468,7 +468,7 @@ fn const_eval_type_min_size(
 fn const_eval_member_align(
   unit : TranslationUnit,
   field_decl : StructMember,
-) -> Int? raise WeslCompileError {
+) -> Int32? raise WeslCompileError {
   let type_ = const_eval_type_source_with_unit(unit, field_decl.type_text)
   let fallback = match const_eval_type_align(unit, type_) {
     Some(value) => value
@@ -481,7 +481,7 @@ fn const_eval_member_align(
 fn const_eval_member_size(
   unit : TranslationUnit,
   field_decl : StructMember,
-) -> Int? raise WeslCompileError {
+) -> Int32? raise WeslCompileError {
   let type_ = const_eval_type_source_with_unit(unit, field_decl.type_text)
   let fallback = match const_eval_type_min_size(unit, type_) {
     Some(value) => value
@@ -507,8 +507,8 @@ fn const_eval_struct_field(
 ///|
 fn const_eval_resource_value(
   resources : Array[ResourceBinding],
-  group : Int,
-  binding : Int,
+  group : Int32,
+  binding : Int32,
 ) -> ResourceBinding? {
   let mut value : ResourceBinding? = None
   for resource in resources {
@@ -522,8 +522,8 @@ fn const_eval_resource_value(
 ///|
 fn const_eval_resource_declaration(
   unit : TranslationUnit,
-  group : Int,
-  binding : Int,
+  group : Int32,
+  binding : Int32,
 ) -> (String, String)? raise WeslCompileError {
   for declaration in unit.global_declarations {
     match declaration.header {
@@ -547,7 +547,7 @@ fn const_eval_resource_declaration(
 }
 
 ///|
-fn const_eval_le_u32_at(bytes : Bytes, offset : Int) -> Int64? {
+fn const_eval_le_u32_at(bytes : Bytes, offset : Int32) -> Int64? {
   if offset < 0 {
     return None
   }
@@ -568,7 +568,7 @@ fn const_eval_le_u32_at(bytes : Bytes, offset : Int) -> Int64? {
 fn const_eval_scalar_value_from_buffer_at(
   ty : ConstEvalType,
   data : Bytes,
-  offset : Int,
+  offset : Int32,
 ) -> ConstEvalValue? {
   match ty {
     I32 => {
@@ -606,7 +606,7 @@ fn const_eval_value_from_buffer_type(
   unit : TranslationUnit,
   type_ : ConstEvalType,
   data : Bytes,
-  offset : Int,
+  offset : Int32,
 ) -> ConstEvalValue? raise WeslCompileError {
   match type_ {
     Vector(width, element) => {
@@ -1073,13 +1073,13 @@ fn const_eval_parameter_builtin(parameter : FunctionParameter) -> String? {
 ///|
 fn const_eval_parameter_location(
   parameter : FunctionParameter,
-) -> Int? raise WeslCompileError {
+) -> Int32? raise WeslCompileError {
   const_eval_named_attr_i32(parameter.attributes, "location")
 }
 
 ///|
 fn const_eval_int_input_value(
-  number : Int,
+  number : Int32,
   type_ : ConstEvalType,
   context : String,
 ) -> ConstEvalValue raise WeslCompileError {
@@ -1120,7 +1120,7 @@ fn const_eval_double_input_value(
 
 ///|
 fn const_eval_int_vector_input_value(
-  values : Array[Int],
+  values : Array[Int32],
   type_ : ConstEvalType,
   context : String,
 ) -> ConstEvalValue raise WeslCompileError {
@@ -1204,7 +1204,7 @@ fn const_eval_user_input_value(
 ///|
 fn const_eval_user_defined_input(
   inputs : Inputs,
-  location : Int,
+  location : Int32,
 ) -> UserInputValue? {
   let mut value : UserInputValue? = None
   for input in inputs.user_defined {
@@ -1218,7 +1218,7 @@ fn const_eval_user_defined_input(
 ///|
 fn const_eval_location_input_value(
   inputs : Inputs,
-  location : Int,
+  location : Int32,
   type_ : ConstEvalType,
 ) -> ConstEvalValue raise WeslCompileError {
   let input = match const_eval_user_defined_input(inputs, location) {

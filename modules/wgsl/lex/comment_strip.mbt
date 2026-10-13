@@ -15,12 +15,12 @@
 ///|
 priv enum CommentState {
   None
-  Block(Int)
+  Block(Int32)
   Quote
 }
 
 ///|
-pub fn spaces(count : Int) -> String {
+pub fn spaces(count : Int32) -> String {
   if count <= 0 {
     return ""
   }
@@ -128,8 +128,8 @@ fn comment_spaces(text : String, preserve_byte_width : Bool) -> String {
 ///|
 fn find_first_comment_or_quote_marker(
   line : String,
-  start : Int,
-) -> (Int, String)? {
+  start : Int32,
+) -> (Int32, String)? {
   let mut i = start
   while i < line.length() {
     if i + 1 < line.length() &&
@@ -151,7 +151,7 @@ fn find_first_comment_or_quote_marker(
 }
 
 ///|
-fn find_first_block_marker(line : String, start : Int) -> (Int, String)? {
+fn find_first_block_marker(line : String, start : Int32) -> (Int32, String)? {
   let mut i = start
   while i + 1 < line.length() {
     if line.code_unit_at(i).to_int() == 47 && // '/'
@@ -168,7 +168,7 @@ fn find_first_block_marker(line : String, start : Int) -> (Int, String)? {
 }
 
 ///|
-fn find_first_quote_marker(line : String, start : Int) -> (Int, String)? {
+fn find_first_quote_marker(line : String, start : Int32) -> (Int32, String)? {
   let mut i = start
   while i < line.length() {
     if line.code_unit_at(i).to_int() == 34 { // '"'

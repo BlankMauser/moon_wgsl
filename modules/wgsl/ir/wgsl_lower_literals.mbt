@@ -312,13 +312,13 @@ fn wgsl_ir_literal_from_token(
 ///|
 fn wgsl_ir_i32_literal_from_numeric_literal(
   literal : @ast.WgslNumericLiteral,
-) -> Int raise WgslIrLowerError {
+) -> Int32 raise WgslIrLowerError {
   let value = wgsl_ir_int64_literal_from_text(literal.raw_text)
   wgsl_ir_int64_to_i32(value)
 }
 
 ///|
-fn wgsl_ir_int64_to_i32(value : Int64) -> Int raise WgslIrLowerError {
+fn wgsl_ir_int64_to_i32(value : Int64) -> Int32 raise WgslIrLowerError {
   let min = Int64::from_int(-2147483648)
   let max = Int64::from_int(2147483647)
   if value < min || value > max {
@@ -330,7 +330,7 @@ fn wgsl_ir_int64_to_i32(value : Int64) -> Int raise WgslIrLowerError {
 ///|
 fn wgsl_ir_u32_literal_from_numeric_literal(
   literal : @ast.WgslNumericLiteral,
-) -> UInt raise WgslIrLowerError {
+) -> UInt32 raise WgslIrLowerError {
   let value = wgsl_ir_int64_literal_from_text(literal.raw_text)
   wgsl_ir_int64_to_u32(value, literal.raw_text)
 }
@@ -339,7 +339,7 @@ fn wgsl_ir_u32_literal_from_numeric_literal(
 fn wgsl_ir_int64_to_u32(
   value : Int64,
   source : String,
-) -> UInt raise WgslIrLowerError {
+) -> UInt32 raise WgslIrLowerError {
   if value < Int64::from_int(0) {
     raise UnsupportedExpression(source)
   }
@@ -419,7 +419,7 @@ fn wgsl_ir_integer_literal_without_suffix(text : String) -> String {
 }
 
 ///|
-fn wgsl_ir_hex_digit_value(code : Int) -> Int? {
+fn wgsl_ir_hex_digit_value(code : Int32) -> Int32? {
   if code >= 48 && code <= 57 {
     return Some(code - 48)
   }
@@ -451,8 +451,8 @@ fn wgsl_ir_float_literal_text(text : String) -> String {
 }
 
 ///|
-pub fn wgsl_ir_uint_literal_to_small_int(value : UInt) -> Int? {
-  if value <= (2147483647 : Int).reinterpret_as_uint() {
+pub fn wgsl_ir_uint_literal_to_small_int(value : UInt32) -> Int32? {
+  if value <= (2147483647 : Int32).reinterpret_as_uint() {
     Some(value.reinterpret_as_int())
   } else {
     None
@@ -462,7 +462,7 @@ pub fn wgsl_ir_uint_literal_to_small_int(value : UInt) -> Int? {
 ///|
 fn wgsl_ir_numeric_literal_to_small_int(
   literal : @ast.WgslNumericLiteral,
-) -> Int? {
+) -> Int32? {
   match literal.category {
     AbstractIntLiteral | I32Literal | U32Literal => {
       let value = wgsl_ir_int64_literal_from_text(literal.raw_text) catch {
@@ -479,7 +479,7 @@ fn wgsl_ir_numeric_literal_to_small_int(
 }
 
 ///|
-fn wgsl_ir_int_literal_from_expr_ref(expr_ref : @ast.WgslExprRef) -> Int? {
+fn wgsl_ir_int_literal_from_expr_ref(expr_ref : @ast.WgslExprRef) -> Int32? {
   match expr_ref.root() {
     Some(node) => wgsl_ir_int_literal_from_expr_node(node)
     None => None
@@ -487,7 +487,7 @@ fn wgsl_ir_int_literal_from_expr_ref(expr_ref : @ast.WgslExprRef) -> Int? {
 }
 
 ///|
-fn wgsl_ir_int_literal_from_expr_node(node : @ast.WgslExprNode) -> Int? {
+fn wgsl_ir_int_literal_from_expr_node(node : @ast.WgslExprNode) -> Int32? {
   match node.kind() {
     Literal(token) =>
       match token.kind() {

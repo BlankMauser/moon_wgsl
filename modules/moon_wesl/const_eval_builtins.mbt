@@ -115,7 +115,7 @@ fn const_eval_select_join_type(
 fn const_eval_builtin_vector_width(
   name : String,
   args : Array[ConstEvalValue],
-) -> Int? raise WeslCompileError {
+) -> Int32? raise WeslCompileError {
   const_eval_vector_width_for_values(args, "`\{name}`")
 }
 
@@ -922,7 +922,7 @@ fn const_eval_apply_sign(
 }
 
 ///|
-fn const_eval_count_one_bits_width(value : Int64, width : Int) -> Int64 {
+fn const_eval_count_one_bits_width(value : Int64, width : Int32) -> Int64 {
   let mut bits = value
   let mut count = 0L
   for _ in 0..<width {
@@ -935,7 +935,7 @@ fn const_eval_count_one_bits_width(value : Int64, width : Int) -> Int64 {
 }
 
 ///|
-fn const_eval_count_leading_zeros_width(value : Int64, width : Int) -> Int64 {
+fn const_eval_count_leading_zeros_width(value : Int64, width : Int32) -> Int64 {
   let mut count = 0L
   let mut done = false
   for offset in 0..<width {
@@ -953,7 +953,7 @@ fn const_eval_count_leading_zeros_width(value : Int64, width : Int) -> Int64 {
 }
 
 ///|
-fn const_eval_count_trailing_zeros_width(value : Int64, width : Int) -> Int64 {
+fn const_eval_count_trailing_zeros_width(value : Int64, width : Int32) -> Int64 {
   let mut bits = value
   let mut count = 0L
   let mut done = false
@@ -972,7 +972,7 @@ fn const_eval_count_trailing_zeros_width(value : Int64, width : Int) -> Int64 {
 }
 
 ///|
-fn const_eval_vector_constructor_type(name : String) -> (Int, ConstEvalType)? {
+fn const_eval_vector_constructor_type(name : String) -> (Int32, ConstEvalType)? {
   match name {
     "vec2<bool>" => Some((2, Bool))
     "vec2<i32>" => Some((2, I32))
@@ -992,7 +992,7 @@ fn const_eval_vector_constructor_type(name : String) -> (Int, ConstEvalType)? {
 
 ///|
 fn const_eval_apply_vector_constructor(
-  width : Int,
+  width : Int32,
   element : ConstEvalType,
   args : Array[ConstEvalValue],
 ) -> ConstEvalValue raise WeslCompileError {
@@ -1048,7 +1048,7 @@ fn const_eval_require_one_bit_count_arg(
 fn const_eval_apply_integer_bit_count(
   name : String,
   args : Array[ConstEvalValue],
-  count : (Int64, Int) -> Int64,
+  count : (Int64, Int32) -> Int64,
 ) -> ConstEvalValue raise WeslCompileError {
   let arg = const_eval_require_one_bit_count_arg(name, args)
   match arg {
@@ -1209,7 +1209,7 @@ fn const_eval_dispatch_builtin(
 }
 
 ///|
-fn const_eval_builtin_arity_is_valid(name : String, arity : Int) -> Bool {
+fn const_eval_builtin_arity_is_valid(name : String, arity : Int32) -> Bool {
   match name {
     "firstLeadingBit"
     | "firstTrailingBit"

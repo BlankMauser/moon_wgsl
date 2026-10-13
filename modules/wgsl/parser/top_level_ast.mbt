@@ -13,7 +13,11 @@
 // limitations under the License.
 
 ///|
-fn top_level_span_has_text(source : String, start : Int, end_ : Int) -> Bool {
+fn top_level_span_has_text(
+  source : String,
+  start : Int32,
+  end_ : Int32,
+) -> Bool {
   start >= 0 &&
   end_ > start &&
   wgsl_regex_trim_whitespace(source[start:end_].to_owned()) != ""
@@ -22,8 +26,8 @@ fn top_level_span_has_text(source : String, start : Int, end_ : Int) -> Bool {
 ///|
 fn top_level_non_whitespace_index(
   tokens : Array[WgslToken],
-  start : Int,
-) -> Int {
+  start : Int32,
+) -> Int32 {
   let mut i = start
   while i < tokens.length() {
     if tokens[i].is_whitespace() {
@@ -38,7 +42,7 @@ fn top_level_non_whitespace_index(
 ///|
 fn top_level_index_starts_semicolon(
   tokens : Array[WgslToken],
-  start : Int,
+  start : Int32,
 ) -> Bool {
   let next = top_level_non_whitespace_index(tokens, start)
   next < tokens.length() && tokens[next].is_punctuation(59)
@@ -56,8 +60,8 @@ fn top_level_previous_token_is_hash(previous : WgslToken?) -> Bool {
 fn top_level_push_span_item(
   items : Array[WgslRawTopLevelItem],
   kind : WgslRawTopLevelKind,
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
 ) -> Unit {
   items.push({ kind, start, end: end_, })
 }
@@ -66,8 +70,8 @@ fn top_level_push_span_item(
 priv struct WgslTopLevelParser {
   source : String
   tokens : Array[WgslToken]
-  mut index : Int
-  mut pending_start : Int
+  mut index : Int32
+  mut pending_start : Int32
 }
 
 ///|
@@ -86,7 +90,7 @@ fn WgslTopLevelParser::WgslTopLevelParser(
 fn WgslTopLevelParser::flush_trivia_until(
   self : WgslTopLevelParser,
   items : Array[WgslRawTopLevelItem],
-  end_ : Int,
+  end_ : Int32,
 ) -> Unit {
   if top_level_span_has_text(self.source, self.pending_start, end_) {
     top_level_push_span_item(items, Trivia, self.pending_start, end_)

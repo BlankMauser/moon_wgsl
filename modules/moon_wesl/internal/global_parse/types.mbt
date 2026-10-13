@@ -36,7 +36,7 @@ pub(all) enum GlobalParseHeader {
 
 ///|
 pub(all) struct GlobalParseDiagnostic {
-  offset : Int
+  offset : Int32
   incomplete : Bool
 } derive(Eq, Debug)
 
@@ -48,12 +48,12 @@ pub(all) enum GlobalParseResult {
 
 ///|
 priv enum GlobalLexResult {
-  Lexed(Array[(Token, Int, Int)])
+  Lexed(Array[(Token, Int32, Int32)])
   LexFailed(GlobalParseDiagnostic)
 }
 
 ///|
-fn global_parse_is_identifier_start(code : Int) -> Bool {
+fn global_parse_is_identifier_start(code : Int32) -> Bool {
   (code >= 65 && code <= 90) ||
   (code >= 97 && code <= 122) ||
   code == 95 ||
@@ -61,12 +61,12 @@ fn global_parse_is_identifier_start(code : Int) -> Bool {
 }
 
 ///|
-fn global_parse_is_identifier_char(code : Int) -> Bool {
+fn global_parse_is_identifier_char(code : Int32) -> Bool {
   global_parse_is_identifier_start(code) || (code >= 48 && code <= 57)
 }
 
 ///|
-fn global_parse_skip_line_comment(source : String, index : Int) -> Int {
+fn global_parse_skip_line_comment(source : String, index : Int32) -> Int32 {
   let mut cursor = index
   while cursor < source.length() && source.code_unit_at(cursor).to_int() != 10 {
     cursor += 1
@@ -75,7 +75,10 @@ fn global_parse_skip_line_comment(source : String, index : Int) -> Int {
 }
 
 ///|
-fn global_parse_skip_block_comment(source : String, index : Int) -> (Int, Bool) {
+fn global_parse_skip_block_comment(
+  source : String,
+  index : Int32,
+) -> (Int32, Bool) {
   let mut cursor = index
   let mut depth = 1
   while cursor + 1 < source.length() {
@@ -102,10 +105,10 @@ fn global_parse_skip_block_comment(source : String, index : Int) -> (Int, Bool) 
 ///|
 fn global_parse_skip_balanced(
   source : String,
-  index : Int,
-  open_code : Int,
-  close_code : Int,
-) -> (Int, Bool) {
+  index : Int32,
+  open_code : Int32,
+  close_code : Int32,
+) -> (Int32, Bool) {
   let mut cursor = index
   let mut depth = 1
   while cursor < source.length() {
@@ -124,7 +127,10 @@ fn global_parse_skip_balanced(
 }
 
 ///|
-fn global_parse_template(source : String, index : Int) -> (String, Int, Bool) {
+fn global_parse_template(
+  source : String,
+  index : Int32,
+) -> (String, Int32, Bool) {
   let start = index
   let mut cursor = index
   let mut depth = 1
@@ -163,7 +169,7 @@ fn global_parse_keyword_token(name : String) -> Token {
 
 ///|
 fn global_parse_lex(source : String) -> GlobalLexResult {
-  let tokens : Array[(Token, Int, Int)] = []
+  let tokens : Array[(Token, Int32, Int32)] = []
   let mut index = 0
   let mut can_parse_var_template = false
   while index < source.length() {

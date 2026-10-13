@@ -6,8 +6,8 @@ pub(all) enum SwitchCaseLabelStyle {
 
 ///|
 pub(all) enum SwitchValue {
-  I32(Int, SwitchCaseLabelStyle)
-  U32(UInt, SwitchCaseLabelStyle)
+  I32(Int32, SwitchCaseLabelStyle)
+  U32(UInt32, SwitchCaseLabelStyle)
   Default
 } derive(Eq, Debug)
 
@@ -107,7 +107,7 @@ pub(all) struct NamedExpression {
 ///|
 pub(all) struct Function {
   name : String?
-  source_start : Int
+  source_start : Int32
   arguments : Array[FunctionArgument]
   result : FunctionResult?
   local_variables : LocalVariableArena
@@ -177,10 +177,10 @@ fn wgsl_ir_function_replace_named_expression(
 ///|
 pub(all) struct EntryPoint {
   name : String
-  source_start : Int
+  source_start : Int32
   stage : ShaderStage
   early_depth_test : EarlyDepthTest?
-  workgroup_size : Array[Int]
+  workgroup_size : Array[Int32]
   workgroup_size_overrides : Array[Handle?]?
   function : Function
   mesh_info : MeshStageInfo?
@@ -191,9 +191,9 @@ pub(all) struct EntryPoint {
 ///|
 pub(all) struct MeshStageInfo {
   topology : MeshOutputTopology
-  max_vertices : Int
+  max_vertices : Int32
   max_vertices_override : Handle?
-  max_primitives : Int
+  max_primitives : Int32
   max_primitives_override : Handle?
   vertex_output_type : Handle
   primitive_output_type : Handle

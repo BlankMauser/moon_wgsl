@@ -21,7 +21,7 @@ priv struct WgslVirtualOverrideOutput {
 ///|
 pub suberror WgslVirtualOverrideError {
   InvalidOverride(String)
-  UnparsedDeclaration(String, Int)
+  UnparsedDeclaration(String, Int32)
 }
 
 ///|

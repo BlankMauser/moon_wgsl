@@ -17,7 +17,7 @@ fn check_if_operator_scope(
   shader_defs : Map[String, ShaderDefValue],
   expression : String,
   scope : Scope?,
-  offset : Int,
+  offset : Int32,
   is_else : Bool,
 ) -> (Bool, String?) raise PreprocessError {
   guard parse_wgsl_shader_def_comparison(expression) is Some(comparison) else {
@@ -44,7 +44,7 @@ fn compare_bool_values(
   lhs : Bool,
   rhs : Bool,
   operator : WgslShaderDefOperator,
-  offset : Int,
+  offset : Int32,
 ) -> Bool raise PreprocessError {
   match operator {
     Equal => lhs == rhs
@@ -59,10 +59,10 @@ fn compare_bool_values(
 
 ///|
 fn compare_int_values(
-  lhs : Int,
-  rhs : Int,
+  lhs : Int32,
+  rhs : Int32,
   operator : WgslShaderDefOperator,
-  offset : Int,
+  offset : Int32,
 ) -> Bool raise PreprocessError {
   match operator {
     Equal => lhs == rhs
@@ -77,10 +77,10 @@ fn compare_int_values(
 
 ///|
 fn compare_uint_values(
-  lhs : UInt,
-  rhs : UInt,
+  lhs : UInt32,
+  rhs : UInt32,
   operator : WgslShaderDefOperator,
-  offset : Int,
+  offset : Int32,
 ) -> Bool raise PreprocessError {
   match operator {
     Equal => lhs == rhs
@@ -99,7 +99,7 @@ fn eval_if_condition(
   def : String,
   operator : WgslShaderDefOperator,
   value : String,
-  offset : Int,
+  offset : Int32,
 ) -> Bool raise PreprocessError {
   guard shader_defs.get(def) is Some(def_value) else {
     raise UnknownShaderDef(def, offset)

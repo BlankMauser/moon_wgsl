@@ -5,7 +5,7 @@ fn WgslIrEmitter::emit_block_statements(
   function : Function,
   function_plan : WgslIrFunctionWriterPlan,
   block : Block,
-  indent : Int,
+  indent : Int32,
 ) -> Unit raise WgslIrEmitError {
   let plan = function_plan.statement_plan(function, block)
   let mut index = 0
@@ -38,7 +38,7 @@ fn WgslIrEmitter::emit_statement_with_following_context(
   function_plan : WgslIrFunctionWriterPlan,
   statement : Statement,
   following : WgslIrStatementWriterPlanItem?,
-  indent : Int,
+  indent : Int32,
 ) -> Bool raise WgslIrEmitError {
   match (statement, following) {
     (
@@ -77,7 +77,7 @@ fn WgslIrEmitter::emit_statement(
   function : Function,
   function_plan : WgslIrFunctionWriterPlan,
   statement : Statement,
-  indent : Int,
+  indent : Int32,
 ) -> Unit raise WgslIrEmitError {
   let pad = wgsl_ir_indent(indent)
   match statement {
@@ -321,7 +321,7 @@ fn WgslIrEmitter::emit_if_statement(
   accept : Block,
   reject : Block,
   absorb_implicit_return : Bool,
-  indent : Int,
+  indent : Int32,
 ) -> Unit raise WgslIrEmitError {
   let pad = wgsl_ir_indent(indent)
   out.write_string(
@@ -427,7 +427,7 @@ fn WgslIrEmitter::emit_switch_statement(
   selector : Handle,
   cases : Array[SwitchCase],
   absorb_implicit_return : Bool,
-  indent : Int,
+  indent : Int32,
 ) -> Unit raise WgslIrEmitError {
   let pad = wgsl_ir_indent(indent)
   out.write_string(
@@ -503,7 +503,7 @@ fn WgslIrEmitter::emit_control_barrier_statement(
   self : WgslIrEmitter,
   out : StringBuilder,
   barrier : Barrier,
-  indent : Int,
+  indent : Int32,
 ) -> Unit raise WgslIrEmitError {
   let pad = wgsl_ir_indent(indent)
   if barrier == Barrier::work_group() {
@@ -521,7 +521,7 @@ fn WgslIrEmitter::emit_memory_barrier_statement(
   self : WgslIrEmitter,
   out : StringBuilder,
   barrier : Barrier,
-  indent : Int,
+  indent : Int32,
 ) -> Unit raise WgslIrEmitError {
   let pad = wgsl_ir_indent(indent)
   if barrier == Barrier::storage() {
@@ -541,7 +541,7 @@ fn WgslIrEmitter::emit_ray_query_statement(
   function : Function,
   query : Handle,
   query_function : RayQueryFunction,
-  indent : Int,
+  indent : Int32,
 ) -> Unit raise WgslIrEmitError {
   let pad = wgsl_ir_indent(indent)
   match query_function {

@@ -8,8 +8,8 @@ pub(all) struct WgslSourceFile {
 pub struct WgslSourceCatalogEntry {
   rel_path : String
   symbol_name : String
-  source_start : Int
-  source_end : Int
+  source_start : Int32
+  source_end : Int32
 } derive(Eq, Debug)
 
 ///|
@@ -26,8 +26,8 @@ pub(all) enum WgslSourceOriginKind {
 pub fn WgslSourceCatalogEntry::WgslSourceCatalogEntry(
   rel_path : String,
   symbol_name : String,
-  source_start : Int,
-  source_end : Int,
+  source_start : Int32,
+  source_end : Int32,
 ) -> WgslSourceCatalogEntry {
   { rel_path, symbol_name, source_start, source_end, }
 }
@@ -38,8 +38,8 @@ pub struct WgslSourceOriginEntry {
   rel_path : String
   source_symbol_name : String
   kind : WgslSourceOriginKind
-  source_start : Int
-  source_end : Int
+  source_start : Int32
+  source_end : Int32
 } derive(Eq, Debug)
 
 ///|
@@ -48,8 +48,8 @@ pub fn WgslSourceOriginEntry::WgslSourceOriginEntry(
   rel_path : String,
   source_symbol_name : String,
   kind : WgslSourceOriginKind,
-  source_start : Int,
-  source_end : Int,
+  source_start : Int32,
+  source_end : Int32,
 ) -> WgslSourceOriginEntry {
   {
     generated_symbol_name,

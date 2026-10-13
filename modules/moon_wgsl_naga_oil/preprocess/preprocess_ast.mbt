@@ -40,7 +40,7 @@ fn preprocess_check_scope_directive(
   shader_defs : Map[String, ShaderDefValue],
   directive : WgslPreprocessorDirective,
   scope : Scope?,
-  offset : Int,
+  offset : Int32,
 ) -> (Bool, String?) raise PreprocessError {
   let tail = wgsl_effective_directive_tail(directive)
   let has_required_separator = directive.has_required_tail_separator()
@@ -126,7 +126,7 @@ fn preprocess_check_scope_directive(
 }
 
 ///|
-fn preprocess_source_line_text_end(text : String, line_start : Int) -> Int {
+fn preprocess_source_line_text_end(text : String, line_start : Int32) -> Int32 {
   wgsl_line_text_end(text, line_start)
 }
 

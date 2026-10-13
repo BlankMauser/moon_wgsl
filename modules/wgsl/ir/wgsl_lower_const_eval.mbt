@@ -551,8 +551,8 @@ fn WgslIrLowerer::eval_global_integer_expression_inner(
 
 ///|
 priv enum WgslIrIntegerValue {
-  Signed(Int)
-  Unsigned(UInt)
+  Signed(Int32)
+  Unsigned(UInt32)
   Abstract(Int64)
 }
 
@@ -602,7 +602,7 @@ fn WgslIrIntegerValue::to_switch_value(
 ///|
 fn WgslIrIntegerValue::to_signed_int(
   self : WgslIrIntegerValue,
-) -> Int raise WgslIrLowerError {
+) -> Int32 raise WgslIrLowerError {
   match self {
     Signed(value) => value
     Abstract(value) => wgsl_ir_int64_to_i32(value)
@@ -620,7 +620,7 @@ fn WgslIrIntegerValue::to_signed_int(
 ///|
 fn WgslIrIntegerValue::to_unsigned(
   self : WgslIrIntegerValue,
-) -> UInt raise WgslIrLowerError {
+) -> UInt32 raise WgslIrLowerError {
   match self {
     Unsigned(value) => value
     Signed(value) => wgsl_ir_non_negative_int_to_uint(value)
@@ -641,7 +641,9 @@ fn WgslIrIntegerValue::to_unsigned(
 }
 
 ///|
-fn wgsl_ir_non_negative_int_to_uint(value : Int) -> UInt raise WgslIrLowerError {
+fn wgsl_ir_non_negative_int_to_uint(
+  value : Int32,
+) -> UInt32 raise WgslIrLowerError {
   if value < 0 {
     raise UnsupportedExpression(
       "unsigned integer expression contains a negative operand",
@@ -653,7 +655,7 @@ fn wgsl_ir_non_negative_int_to_uint(value : Int) -> UInt raise WgslIrLowerError 
 ///|
 fn WgslIrIntegerValue::to_non_negative_int(
   self : WgslIrIntegerValue,
-) -> Int raise WgslIrLowerError {
+) -> Int32 raise WgslIrLowerError {
   let value = self.to_signed_int()
   if value < 0 {
     raise UnsupportedExpression("integer expression must be non-negative")
@@ -664,7 +666,7 @@ fn WgslIrIntegerValue::to_non_negative_int(
 ///|
 fn WgslIrIntegerValue::to_signed_literal(
   self : WgslIrIntegerValue,
-  width : Int,
+  width : Int32,
 ) -> Literal raise WgslIrLowerError {
   let value = self.to_signed_int()
   match width {
@@ -676,7 +678,7 @@ fn WgslIrIntegerValue::to_signed_literal(
 ///|
 fn WgslIrIntegerValue::to_unsigned_literal(
   self : WgslIrIntegerValue,
-  width : Int,
+  width : Int32,
 ) -> Literal raise WgslIrLowerError {
   let value = self.to_unsigned()
   match width {
@@ -1502,7 +1504,7 @@ fn WgslIrIntegerValue::to_double(self : WgslIrIntegerValue) -> Double {
 ///|
 fn wgsl_ir_float_literal_for_scalar_width(
   value : Double,
-  width : Int,
+  width : Int32,
 ) -> Literal {
   match width {
     2 => F16(value)

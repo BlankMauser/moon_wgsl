@@ -33,7 +33,7 @@ priv struct WgslIrWriterPlanner {
 fn build_wgsl_ir_writer_module(
   shader_module : Module,
   root_items : Array[String]?,
-  compatibility? : WgslNagaCompatibilityView = WgslNagaCompatibilityView::empty(),
+  compatibility~ : WgslNagaCompatibilityView = WgslNagaCompatibilityView::empty(),
 ) -> WgslIrWriterModule {
   let filter = wgsl_ir_reachability_from_optional_roots(
     shader_module, root_items,
@@ -58,7 +58,7 @@ fn build_wgsl_ir_writer_module(
 fn build_wgsl_ir_runtime_writer_module(
   shader_module : Module,
   root_items : Array[String]?,
-  compatibility? : WgslNagaCompatibilityView = WgslNagaCompatibilityView::empty(),
+  compatibility~ : WgslNagaCompatibilityView = WgslNagaCompatibilityView::empty(),
 ) -> WgslIrWriterModule {
   let filter = wgsl_ir_reachability_from_optional_roots(
     shader_module, root_items,

@@ -4,10 +4,10 @@ pub(all) enum Literal {
   F32(Float)
   F32Exact(Float)
   F16(Double)
-  U16(Int)
-  I16(Int)
-  U32(UInt)
-  I32(Int)
+  U16(Int32)
+  I16(Int32)
+  U32(UInt32)
+  I32(Int32)
   U64(UInt64)
   I64(Int64)
   Bool(Bool)
@@ -18,7 +18,7 @@ pub(all) enum Literal {
 ///|
 pub(all) struct Override {
   name : String?
-  id : Int?
+  id : Int32?
   ty : Handle
   init : Handle?
 } derive(Eq, Debug)
@@ -26,15 +26,15 @@ pub(all) struct Override {
 ///|
 pub(all) struct Constant {
   name : String?
-  source_start : Int
+  source_start : Int32
   ty : Handle
   init : Handle
 } derive(Eq, Debug)
 
 ///|
 pub(all) struct ResourceBinding {
-  group : Int
-  binding : Int
+  group : Int32
+  binding : Int32
 } derive(Eq, Debug)
 
 ///|
@@ -346,11 +346,11 @@ pub(all) enum Expression {
   ZeroValue(Handle)
   Compose(Handle, Array[Handle])
   Access(Handle, Handle)
-  AccessIndex(Handle, Int)
+  AccessIndex(Handle, Int32)
   Component(Handle, SwizzleComponent)
   Splat(VectorSize, Handle)
   Swizzle(VectorSize, Handle, Array[SwizzleComponent])
-  FunctionArgument(Int)
+  FunctionArgument(Int32)
   GlobalVariable(Handle)
   LocalVariable(Handle)
   Load(Handle)
@@ -377,7 +377,7 @@ pub(all) enum Expression {
   Derivative(DerivativeAxis, DerivativeControl, Handle)
   Relational(RelationalFunction, Handle)
   Math(MathFunction, Handle, Handle?, Handle?, Handle?)
-  As(Handle, ScalarKind, Int?)
+  As(Handle, ScalarKind, Int32?)
   CallResult(Handle)
   AtomicResult(Handle, Bool)
   WorkGroupUniformLoadResult(Handle)

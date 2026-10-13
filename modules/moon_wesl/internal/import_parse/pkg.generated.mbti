@@ -15,7 +15,6 @@ pub suberror ParseError {
   UnexpectedToken(Token, (Int, Int), Array[TokenKind])
   UnexpectedEndOfInput(Int, Array[TokenKind])
 } derive(@debug.Debug)
-pub fn ParseError::to_repr(Self) -> @debug.Repr
 
 // Types and methods
 pub(all) struct ImportParseDiagnostic {
@@ -52,7 +51,6 @@ pub(all) enum Token {
   RIGHT_BRACE
 } derive(@debug.Debug)
 pub fn Token::kind(Self) -> TokenKind
-pub fn Token::to_repr(Self) -> @debug.Repr
 
 pub(all) enum TokenKind {
   TK_IDENT
@@ -62,9 +60,6 @@ pub(all) enum TokenKind {
   TK_LEFT_BRACE
   TK_RIGHT_BRACE
 }
-pub fn TokenKind::output(Self, &Logger) -> Unit
-pub fn TokenKind::to_repr(Self) -> @debug.Repr
-pub fn TokenKind::to_string(Self) -> String
 pub impl Show for TokenKind
 pub impl @debug.Debug for TokenKind
 

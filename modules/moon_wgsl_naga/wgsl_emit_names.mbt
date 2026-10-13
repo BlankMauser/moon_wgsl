@@ -106,7 +106,7 @@ fn WgslIrEmitter::function_name(
 fn WgslIrEmitter::function_argument_name(
   self : WgslIrEmitter,
   function : Function?,
-  index : Int,
+  index : Int32,
 ) -> String raise WgslIrEmitError {
   guard function is Some(func) else {
     raise Unsupported("function argument outside function")

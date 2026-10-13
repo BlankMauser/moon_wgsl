@@ -30,10 +30,10 @@ pub(all) struct WgslNagaGeneratedImportProvenance {
   local_spelling : Bool
   root_local_spelling : Bool
   local_spelling_visible_rel_paths : Array[String]
-  import_sequence : Int
-  source_start : Int
-  source_end : Int
-  composed_source_start : Int
+  import_sequence : Int32
+  source_start : Int32
+  source_end : Int32
+  composed_source_start : Int32
 } derive(Eq, Debug)
 
 ///|
@@ -43,13 +43,13 @@ pub fn WgslNagaGeneratedImportProvenance::WgslNagaGeneratedImportProvenance(
   source_symbol_name : String,
   kind : WgslNagaGeneratedImportProvenanceKind,
   inline_value : Bool,
-  local_spelling? : Bool = false,
-  root_local_spelling? : Bool = false,
-  local_spelling_visible_rel_paths? : Array[String] = [],
-  import_sequence? : Int = -1,
-  source_start? : Int = -1,
-  source_end? : Int = -1,
-  composed_source_start? : Int = -1,
+  local_spelling~ : Bool = false,
+  root_local_spelling~ : Bool = false,
+  local_spelling_visible_rel_paths~ : Array[String] = [],
+  import_sequence~ : Int32 = -1,
+  source_start~ : Int32 = -1,
+  source_end~ : Int32 = -1,
+  composed_source_start~ : Int32 = -1,
 ) -> WgslNagaGeneratedImportProvenance {
   {
     generated_symbol_name,
@@ -79,8 +79,8 @@ pub struct WgslNagaImportArenaSymbol {
   priv kind : WgslNagaDeclarationKind
   priv source_symbol_name : String
   priv generated_symbol_name : String
-  priv source_decl_rank : Int
-  priv source_order_rank : Int
+  priv source_decl_rank : Int32
+  priv source_order_rank : Int32
 } derive(Eq, Debug)
 
 ///|
@@ -88,8 +88,8 @@ pub fn WgslNagaImportArenaSymbol::WgslNagaImportArenaSymbol(
   kind : WgslNagaDeclarationKind,
   source_symbol_name : String,
   generated_symbol_name : String,
-  source_decl_rank? : Int = -1,
-  source_order_rank? : Int = -1,
+  source_decl_rank~ : Int32 = -1,
+  source_order_rank~ : Int32 = -1,
 ) -> WgslNagaImportArenaSymbol {
   {
     kind,
@@ -124,20 +124,20 @@ pub fn WgslNagaImportArenaSymbol::generated_symbol_name(
 ///|
 pub fn WgslNagaImportArenaSymbol::source_decl_rank(
   self : WgslNagaImportArenaSymbol,
-) -> Int {
+) -> Int32 {
   self.source_decl_rank
 }
 
 ///|
 pub fn WgslNagaImportArenaSymbol::source_order_rank(
   self : WgslNagaImportArenaSymbol,
-) -> Int {
+) -> Int32 {
   self.source_order_rank
 }
 
 ///|
 pub struct WgslNagaImportArenaEvent {
-  priv sequence : Int
+  priv sequence : Int32
   priv importer_rel_path : String
   priv target_rel_path : String
   priv module_path : String
@@ -149,7 +149,7 @@ pub struct WgslNagaImportArenaEvent {
 
 ///|
 pub fn WgslNagaImportArenaEvent::WgslNagaImportArenaEvent(
-  sequence : Int,
+  sequence : Int32,
   importer_rel_path : String,
   target_rel_path : String,
   module_path : String,
@@ -173,7 +173,7 @@ pub fn WgslNagaImportArenaEvent::WgslNagaImportArenaEvent(
 ///|
 pub fn WgslNagaImportArenaEvent::sequence(
   self : WgslNagaImportArenaEvent,
-) -> Int {
+) -> Int32 {
   self.sequence
 }
 

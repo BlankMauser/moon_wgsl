@@ -14,20 +14,20 @@
 
 ///|
 pub(all) suberror ParseImportsError {
-  Parse(String, Int)
+  Parse(String, Int32)
 }
 
 ///|
-fn wgsl_generated_import_token_end(token : WgslToken) -> Int {
+fn wgsl_generated_import_token_end(token : WgslToken) -> Int32 {
   token.end()
 }
 
 ///|
 fn push_generated_import_token(
-  tokens : Array[(Token, Int, Int)],
+  tokens : Array[(Token, Int32, Int32)],
   generated : Token,
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
 ) -> Unit {
   tokens.push((generated, start, end_))
 }
@@ -35,8 +35,8 @@ fn push_generated_import_token(
 ///|
 fn tokenize_wgsl_import_targets(
   input : String,
-) -> Array[(Token, Int, Int)] raise ParseImportsError {
-  let out : Array[(Token, Int, Int)] = []
+) -> Array[(Token, Int32, Int32)] raise ParseImportsError {
+  let out : Array[(Token, Int32, Int32)] = []
   let raw_tokens = tokenize(input, false)
   let mut previous_can_start_alias = false
   let mut previous_identifier : String? = None

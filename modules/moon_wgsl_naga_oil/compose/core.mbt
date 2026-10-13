@@ -35,7 +35,7 @@ pub(all) suberror ComposerError {
   FailedToResolveImport(String)
   ImportCycle(String)
   InvalidStructMemberIdentifier(String)
-  InvalidWgslSyntax(String, Int)
+  InvalidWgslSyntax(String, Int32)
   InvalidOverride(String)
   MissingRegisteredSource(String)
   MissingPreparedSourceDefs(String)

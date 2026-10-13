@@ -15,8 +15,8 @@
 ///|
 priv struct WgslGraphBlock {
   tokens : Array[WgslToken]
-  start : Int
-  end : Int
+  start : Int32
+  end : Int32
   data : WgslGlobalDeclData
   raw_dialect_text : String?
 }
@@ -31,16 +31,16 @@ priv struct WgslDeclarationGraph {
 pub struct WgslEmittedDeclaration {
   priv name : String
   priv is_type_declaration : Bool
-  priv generated_start : Int
-  priv generated_end : Int
+  priv generated_start : Int32
+  priv generated_end : Int32
 }
 
 ///|
 pub struct WgslModuleItemOrigin {
   priv name : String
   priv kind : WgslSourceOriginKind
-  priv source_start : Int
-  priv source_end : Int
+  priv source_start : Int32
+  priv source_end : Int32
 }
 
 ///|
@@ -71,14 +71,14 @@ pub fn WgslEmittedDeclaration::is_type_declaration(
 ///|
 pub fn WgslEmittedDeclaration::generated_start(
   self : WgslEmittedDeclaration,
-) -> Int {
+) -> Int32 {
   self.generated_start
 }
 
 ///|
 pub fn WgslEmittedDeclaration::generated_end(
   self : WgslEmittedDeclaration,
-) -> Int {
+) -> Int32 {
   self.generated_end
 }
 
@@ -95,12 +95,12 @@ pub fn WgslModuleItemOrigin::kind(
 }
 
 ///|
-pub fn WgslModuleItemOrigin::source_start(self : WgslModuleItemOrigin) -> Int {
+pub fn WgslModuleItemOrigin::source_start(self : WgslModuleItemOrigin) -> Int32 {
   self.source_start
 }
 
 ///|
-pub fn WgslModuleItemOrigin::source_end(self : WgslModuleItemOrigin) -> Int {
+pub fn WgslModuleItemOrigin::source_end(self : WgslModuleItemOrigin) -> Int32 {
   self.source_end
 }
 
@@ -173,10 +173,10 @@ pub fn WgslModuleItemExtractor::naga_dependency_pulled_item_origins(
 ///|
 fn wgsl_declaration_graph_block_tokens(
   source_tokens : Array[WgslToken],
-  token_start : Int,
-  start : Int,
-  end_ : Int,
-) -> (Array[WgslToken], Int) {
+  token_start : Int32,
+  start : Int32,
+  end_ : Int32,
+) -> (Array[WgslToken], Int32) {
   let tokens : Array[WgslToken] = []
   let mut first_candidate = token_start
   while first_candidate < source_tokens.length() &&
@@ -843,8 +843,8 @@ fn wgsl_declaration_graph_mark_dependency_pull(
   declaration_blocks : Array[WgslGraphBlock],
   declaration_names : @set.Set[String],
   name : String,
-  pull_start : Int,
-  pull_end : Int,
+  pull_start : Int32,
+  pull_end : Int32,
   visiting : @set.Set[String],
   pulled : Map[String, WgslModuleItemOrigin],
 ) -> Unit {

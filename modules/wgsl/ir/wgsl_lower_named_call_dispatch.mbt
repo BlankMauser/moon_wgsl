@@ -295,7 +295,7 @@ fn WgslIrLowerer::finish_function_constructor_call(
   function : Function,
   scope : WgslIrFunctionScope,
   expected_ty : Handle?,
-  expression_mark : Int,
+  expression_mark : Int32,
 ) -> Handle raise WgslIrLowerError {
   let ty = match self.expected_constructor_type(name, expected_ty) {
     Some(ty) => ty

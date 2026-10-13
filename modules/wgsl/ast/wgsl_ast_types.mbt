@@ -8,16 +8,16 @@ pub(all) enum WgslDirectiveKind {
 ///|
 pub struct WgslDirectiveTail {
   priv text : String
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
   priv has_required_separator : Bool
 } derive(Debug)
 
 ///|
 pub fn WgslDirectiveTail::WgslDirectiveTail(
   text : String,
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
   has_required_separator : Bool,
 ) -> WgslDirectiveTail {
   { text, start, end, has_required_separator, }
@@ -39,12 +39,12 @@ fn WgslDirectiveTail::has_required_separator(self : WgslDirectiveTail) -> Bool {
 }
 
 ///|
-fn WgslDirectiveTail::start(self : WgslDirectiveTail) -> Int {
+fn WgslDirectiveTail::start(self : WgslDirectiveTail) -> Int32 {
   self.start
 }
 
 ///|
-fn WgslDirectiveTail::end(self : WgslDirectiveTail) -> Int {
+fn WgslDirectiveTail::end(self : WgslDirectiveTail) -> Int32 {
   self.end
 }
 
@@ -53,8 +53,8 @@ pub struct WgslDirective {
   priv kind : WgslDirectiveKind
   priv name : WgslIdent
   priv tail : WgslDirectiveTail
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
 } derive(Debug)
 
 ///|
@@ -62,8 +62,8 @@ pub fn WgslDirective::WgslDirective(
   kind : WgslDirectiveKind,
   name : WgslIdent,
   tail : WgslDirectiveTail,
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
 ) -> WgslDirective {
   { kind, name, tail, start, end, }
 }
@@ -94,22 +94,22 @@ pub fn WgslDirective::has_required_tail_separator(self : WgslDirective) -> Bool 
 }
 
 ///|
-pub fn WgslDirective::start(self : WgslDirective) -> Int {
+pub fn WgslDirective::start(self : WgslDirective) -> Int32 {
   self.start
 }
 
 ///|
-pub fn WgslDirective::end(self : WgslDirective) -> Int {
+pub fn WgslDirective::end(self : WgslDirective) -> Int32 {
   self.end
 }
 
 ///|
-pub fn WgslDirective::tail_start(self : WgslDirective) -> Int {
+pub fn WgslDirective::tail_start(self : WgslDirective) -> Int32 {
   self.tail.start()
 }
 
 ///|
-pub fn WgslDirective::tail_end(self : WgslDirective) -> Int {
+pub fn WgslDirective::tail_end(self : WgslDirective) -> Int32 {
   self.tail.end()
 }
 
@@ -130,12 +130,16 @@ pub(all) enum WgslGlobalDeclKind {
 ///|
 pub struct WgslIdent {
   priv name : String
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
 } derive(Debug)
 
 ///|
-pub fn WgslIdent::WgslIdent(name : String, start : Int, end : Int) -> WgslIdent {
+pub fn WgslIdent::WgslIdent(
+  name : String,
+  start : Int32,
+  end : Int32,
+) -> WgslIdent {
   { name, start, end, }
 }
 
@@ -145,12 +149,12 @@ pub fn WgslIdent::name(self : WgslIdent) -> String {
 }
 
 ///|
-pub fn WgslIdent::start(self : WgslIdent) -> Int {
+pub fn WgslIdent::start(self : WgslIdent) -> Int32 {
   self.start
 }
 
 ///|
-pub fn WgslIdent::end(self : WgslIdent) -> Int {
+pub fn WgslIdent::end(self : WgslIdent) -> Int32 {
   self.end
 }
 
@@ -234,7 +238,7 @@ pub fn WgslExprOperator::text(self : WgslExprOperator) -> String {
 }
 
 ///|
-pub fn WgslExprOperator::binary_precedence(self : WgslExprOperator) -> Int {
+pub fn WgslExprOperator::binary_precedence(self : WgslExprOperator) -> Int32 {
   match self {
     LogicalOr => 1
     LogicalAnd => 2
@@ -256,7 +260,7 @@ pub(all) enum WgslExprTokenKind {
   BoolLiteral(Bool)
   NumericLiteral(WgslNumericLiteral)
   Operator(WgslExprOperator)
-  Punctuation(Int)
+  Punctuation(Int32)
   Unknown
 } derive(Debug)
 
@@ -298,16 +302,16 @@ pub(all) struct WgslNumericLiteral {
 pub struct WgslExprToken {
   priv kind : WgslExprTokenKind
   priv text : String
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
 } derive(Debug)
 
 ///|
 pub fn WgslExprToken::WgslExprToken(
   kind : WgslExprTokenKind,
   text : String,
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
 ) -> WgslExprToken {
   { kind, text, start, end, }
 }
@@ -323,12 +327,12 @@ pub fn WgslExprToken::text(self : WgslExprToken) -> String {
 }
 
 ///|
-pub fn WgslExprToken::start(self : WgslExprToken) -> Int {
+pub fn WgslExprToken::start(self : WgslExprToken) -> Int32 {
   self.start
 }
 
 ///|
-pub fn WgslExprToken::end(self : WgslExprToken) -> Int {
+pub fn WgslExprToken::end(self : WgslExprToken) -> Int32 {
   self.end
 }
 
@@ -363,15 +367,15 @@ pub(all) enum WgslExprNodeKind {
 ///|
 pub struct WgslExprNode {
   priv kind : WgslExprNodeKind
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
 } derive(Debug)
 
 ///|
 pub fn WgslExprNode::WgslExprNode(
   kind : WgslExprNodeKind,
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
 ) -> WgslExprNode {
   { kind, start, end, }
 }
@@ -382,12 +386,12 @@ pub fn WgslExprNode::kind(self : WgslExprNode) -> WgslExprNodeKind {
 }
 
 ///|
-pub fn WgslExprNode::start(self : WgslExprNode) -> Int {
+pub fn WgslExprNode::start(self : WgslExprNode) -> Int32 {
   self.start
 }
 
 ///|
-pub fn WgslExprNode::end(self : WgslExprNode) -> Int {
+pub fn WgslExprNode::end(self : WgslExprNode) -> Int32 {
   self.end
 }
 
@@ -396,8 +400,8 @@ pub struct WgslExprRef {
   priv tokens : Array[WgslExprToken]
   priv identifiers : Array[WgslIdent]
   priv root : WgslExprNode?
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
 } derive(Debug)
 
 ///|
@@ -405,8 +409,8 @@ pub fn WgslExprRef::WgslExprRef(
   tokens : Array[WgslExprToken],
   identifiers : Array[WgslIdent],
   root : WgslExprNode?,
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
 ) -> WgslExprRef {
   { tokens, identifiers, root, start, end, }
 }
@@ -427,28 +431,28 @@ pub fn WgslExprRef::root(self : WgslExprRef) -> WgslExprNode? {
 }
 
 ///|
-pub fn WgslExprRef::start(self : WgslExprRef) -> Int {
+pub fn WgslExprRef::start(self : WgslExprRef) -> Int32 {
   self.start
 }
 
 ///|
-pub fn WgslExprRef::end(self : WgslExprRef) -> Int {
+pub fn WgslExprRef::end(self : WgslExprRef) -> Int32 {
   self.end
 }
 
 ///|
 pub struct WgslAttribute {
   priv name : WgslIdent
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
   priv arguments_ref : WgslExprRef?
 } derive(Debug)
 
 ///|
 pub fn WgslAttribute::WgslAttribute(
   name : WgslIdent,
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
   arguments_ref : WgslExprRef?,
 ) -> WgslAttribute {
   { name, start, end, arguments_ref, }
@@ -460,12 +464,12 @@ pub fn WgslAttribute::name(self : WgslAttribute) -> WgslIdent {
 }
 
 ///|
-pub fn WgslAttribute::start(self : WgslAttribute) -> Int {
+pub fn WgslAttribute::start(self : WgslAttribute) -> Int32 {
   self.start
 }
 
 ///|
-pub fn WgslAttribute::end(self : WgslAttribute) -> Int {
+pub fn WgslAttribute::end(self : WgslAttribute) -> Int32 {
   self.end
 }
 
@@ -485,8 +489,8 @@ pub(all) enum WgslTypeAtomKind {
 pub struct WgslTypeAtom {
   priv kind : WgslTypeAtomKind
   priv text : String
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
 } derive(Debug)
 
 ///|
@@ -499,8 +503,8 @@ pub(all) enum WgslTypeArgument {
 pub fn WgslTypeAtom::WgslTypeAtom(
   kind : WgslTypeAtomKind,
   text : String,
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
 ) -> WgslTypeAtom {
   { kind, text, start, end, }
 }
@@ -516,12 +520,12 @@ fn WgslTypeAtom::text(self : WgslTypeAtom) -> String {
 }
 
 ///|
-pub fn WgslTypeAtom::start(self : WgslTypeAtom) -> Int {
+pub fn WgslTypeAtom::start(self : WgslTypeAtom) -> Int32 {
   self.start
 }
 
 ///|
-pub fn WgslTypeAtom::end(self : WgslTypeAtom) -> Int {
+pub fn WgslTypeAtom::end(self : WgslTypeAtom) -> Int32 {
   self.end
 }
 
@@ -538,16 +542,16 @@ pub struct WgslTypeRef {
   priv atom : WgslTypeAtom
   priv arguments : Array[WgslTypeRef]
   priv template_arguments : Array[WgslTypeArgument]
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
 } derive(Debug)
 
 ///|
 pub fn WgslTypeRef::WgslTypeRef(
   atom : WgslTypeAtom,
   arguments : Array[WgslTypeRef],
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
 ) -> WgslTypeRef {
   let template_arguments : Array[WgslTypeArgument] = []
   for argument in arguments {
@@ -560,8 +564,8 @@ pub fn WgslTypeRef::WgslTypeRef(
 pub fn WgslTypeRef::new_with_template_arguments(
   atom : WgslTypeAtom,
   template_arguments : Array[WgslTypeArgument],
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
 ) -> WgslTypeRef {
   let arguments : Array[WgslTypeRef] = []
   for argument in template_arguments {
@@ -623,12 +627,12 @@ pub fn WgslTypeRef::canonical_text(self : WgslTypeRef) -> String {
 }
 
 ///|
-pub fn WgslTypeRef::start(self : WgslTypeRef) -> Int {
+pub fn WgslTypeRef::start(self : WgslTypeRef) -> Int32 {
   self.start
 }
 
 ///|
-pub fn WgslTypeRef::end(self : WgslTypeRef) -> Int {
+pub fn WgslTypeRef::end(self : WgslTypeRef) -> Int32 {
   self.end
 }
 
@@ -636,8 +640,8 @@ pub fn WgslTypeRef::end(self : WgslTypeRef) -> Int {
 pub struct WgslFunctionArgument {
   priv attributes : Array[WgslAttribute]
   priv name : WgslIdent
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
   priv ty_ref : WgslTypeRef?
 } derive(Debug)
 
@@ -645,8 +649,8 @@ pub struct WgslFunctionArgument {
 pub fn WgslFunctionArgument::WgslFunctionArgument(
   attributes : Array[WgslAttribute],
   name : WgslIdent,
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
   ty_ref : WgslTypeRef?,
 ) -> WgslFunctionArgument {
   { attributes, name, start, end, ty_ref, }
@@ -665,12 +669,12 @@ pub fn WgslFunctionArgument::name(self : WgslFunctionArgument) -> WgslIdent {
 }
 
 ///|
-pub fn WgslFunctionArgument::start(self : WgslFunctionArgument) -> Int {
+pub fn WgslFunctionArgument::start(self : WgslFunctionArgument) -> Int32 {
   self.start
 }
 
 ///|
-pub fn WgslFunctionArgument::end(self : WgslFunctionArgument) -> Int {
+pub fn WgslFunctionArgument::end(self : WgslFunctionArgument) -> Int32 {
   self.end
 }
 
@@ -684,16 +688,16 @@ pub fn WgslFunctionArgument::ty_ref(
 ///|
 pub struct WgslFunctionResult {
   priv attributes : Array[WgslAttribute]
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
   priv ty_ref : WgslTypeRef?
 } derive(Debug)
 
 ///|
 pub fn WgslFunctionResult::WgslFunctionResult(
   attributes : Array[WgslAttribute],
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
   ty_ref : WgslTypeRef?,
 ) -> WgslFunctionResult {
   { attributes, start, end, ty_ref, }
@@ -707,12 +711,12 @@ pub fn WgslFunctionResult::attributes(
 }
 
 ///|
-pub fn WgslFunctionResult::start(self : WgslFunctionResult) -> Int {
+pub fn WgslFunctionResult::start(self : WgslFunctionResult) -> Int32 {
   self.start
 }
 
 ///|
-pub fn WgslFunctionResult::end(self : WgslFunctionResult) -> Int {
+pub fn WgslFunctionResult::end(self : WgslFunctionResult) -> Int32 {
   self.end
 }
 
@@ -984,27 +988,27 @@ pub fn WgslStatement::has_invalid_expression(self : WgslStatement) -> Bool {
 
 ///|
 pub struct WgslBlock {
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
   priv statements : Array[WgslStatement]
 } derive(Debug)
 
 ///|
 pub fn WgslBlock::WgslBlock(
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
   statements : Array[WgslStatement],
 ) -> WgslBlock {
   { start, end, statements, }
 }
 
 ///|
-pub fn WgslBlock::start(self : WgslBlock) -> Int {
+pub fn WgslBlock::start(self : WgslBlock) -> Int32 {
   self.start
 }
 
 ///|
-pub fn WgslBlock::end(self : WgslBlock) -> Int {
+pub fn WgslBlock::end(self : WgslBlock) -> Int32 {
   self.end
 }
 
@@ -1023,10 +1027,10 @@ pub(all) enum WgslFunctionQualifier {
 pub struct WgslFunction {
   priv attributes : Array[WgslAttribute]
   priv qualifier : WgslFunctionQualifier?
-  priv qualifier_start : Int?
-  priv qualifier_end : Int?
-  priv fn_start : Int
-  priv fn_end : Int
+  priv qualifier_start : Int32?
+  priv qualifier_end : Int32?
+  priv fn_start : Int32
+  priv fn_end : Int32
   priv name : WgslIdent
   priv arguments : Array[WgslFunctionArgument]
   priv result : WgslFunctionResult?
@@ -1038,10 +1042,10 @@ pub struct WgslFunction {
 pub fn WgslFunction::WgslFunction(
   attributes : Array[WgslAttribute],
   qualifier : WgslFunctionQualifier?,
-  qualifier_start : Int?,
-  qualifier_end : Int?,
-  fn_start : Int,
-  fn_end : Int,
+  qualifier_start : Int32?,
+  qualifier_end : Int32?,
+  fn_start : Int32,
+  fn_end : Int32,
   name : WgslIdent,
   arguments : Array[WgslFunctionArgument],
   result : WgslFunctionResult?,
@@ -1074,22 +1078,22 @@ pub fn WgslFunction::qualifier(self : WgslFunction) -> WgslFunctionQualifier? {
 }
 
 ///|
-pub fn WgslFunction::qualifier_start(self : WgslFunction) -> Int? {
+pub fn WgslFunction::qualifier_start(self : WgslFunction) -> Int32? {
   self.qualifier_start
 }
 
 ///|
-pub fn WgslFunction::qualifier_end(self : WgslFunction) -> Int? {
+pub fn WgslFunction::qualifier_end(self : WgslFunction) -> Int32? {
   self.qualifier_end
 }
 
 ///|
-pub fn WgslFunction::fn_start(self : WgslFunction) -> Int {
+pub fn WgslFunction::fn_start(self : WgslFunction) -> Int32 {
   self.fn_start
 }
 
 ///|
-pub fn WgslFunction::fn_end(self : WgslFunction) -> Int {
+pub fn WgslFunction::fn_end(self : WgslFunction) -> Int32 {
   self.fn_end
 }
 
@@ -1126,8 +1130,8 @@ pub fn WgslFunction::body(self : WgslFunction) -> WgslBlock {
 pub struct WgslStructMember {
   priv attributes : Array[WgslAttribute]
   priv name : WgslIdent
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
   priv ty_ref : WgslTypeRef?
 } derive(Debug)
 
@@ -1135,8 +1139,8 @@ pub struct WgslStructMember {
 pub fn WgslStructMember::WgslStructMember(
   attributes : Array[WgslAttribute],
   name : WgslIdent,
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
   ty_ref : WgslTypeRef?,
 ) -> WgslStructMember {
   { attributes, name, start, end, ty_ref, }
@@ -1155,12 +1159,12 @@ pub fn WgslStructMember::name(self : WgslStructMember) -> WgslIdent {
 }
 
 ///|
-pub fn WgslStructMember::start(self : WgslStructMember) -> Int {
+pub fn WgslStructMember::start(self : WgslStructMember) -> Int32 {
   self.start
 }
 
 ///|
-pub fn WgslStructMember::end(self : WgslStructMember) -> Int {
+pub fn WgslStructMember::end(self : WgslStructMember) -> Int32 {
   self.end
 }
 
@@ -1361,16 +1365,16 @@ pub(all) enum WgslGlobalDeclData {
 pub struct WgslGlobalDecl {
   priv kind : WgslGlobalDeclKind
   priv data : WgslGlobalDeclData
-  priv start : Int
-  priv end : Int
+  priv start : Int32
+  priv end : Int32
 } derive(Debug)
 
 ///|
 pub fn WgslGlobalDecl::WgslGlobalDecl(
   kind : WgslGlobalDeclKind,
   data : WgslGlobalDeclData,
-  start : Int,
-  end : Int,
+  start : Int32,
+  end : Int32,
 ) -> WgslGlobalDecl {
   { kind, data, start, end, }
 }
@@ -1404,12 +1408,12 @@ pub fn WgslGlobalDecl::name(self : WgslGlobalDecl) -> String {
 }
 
 ///|
-pub fn WgslGlobalDecl::start(self : WgslGlobalDecl) -> Int {
+pub fn WgslGlobalDecl::start(self : WgslGlobalDecl) -> Int32 {
   self.start
 }
 
 ///|
-pub fn WgslGlobalDecl::end(self : WgslGlobalDecl) -> Int {
+pub fn WgslGlobalDecl::end(self : WgslGlobalDecl) -> Int32 {
   self.end
 }
 

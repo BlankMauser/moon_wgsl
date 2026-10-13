@@ -15,7 +15,6 @@ pub suberror ParseError {
   UnexpectedToken(Token, (Int, Int), Array[TokenKind])
   UnexpectedEndOfInput(Int, Array[TokenKind])
 } derive(@debug.Debug)
-pub fn ParseError::to_repr(Self) -> @debug.Repr
 
 // Types and methods
 pub(all) struct ModulePathParseDiagnostic {
@@ -69,7 +68,6 @@ pub(all) enum Token {
   DOUBLE_COLON
 } derive(@debug.Debug)
 pub fn Token::kind(Self) -> TokenKind
-pub fn Token::to_repr(Self) -> @debug.Repr
 
 pub(all) enum TokenKind {
   TK_SEGMENT
@@ -78,9 +76,6 @@ pub(all) enum TokenKind {
   TK_SUPER
   TK_DOUBLE_COLON
 }
-pub fn TokenKind::output(Self, &Logger) -> Unit
-pub fn TokenKind::to_repr(Self) -> @debug.Repr
-pub fn TokenKind::to_string(Self) -> String
 pub impl Show for TokenKind
 pub impl @debug.Debug for TokenKind
 

@@ -54,7 +54,7 @@ fn wgsl_ir_function_expression_is_emit_leaf(
 ///|
 fn wgsl_ir_return_expression_should_emit_before_return(
   function : Function,
-  expression_mark : Int,
+  expression_mark : Int32,
   value : Handle,
 ) -> Bool {
   if wgsl_ir_function_expression_has_arena_name(function, value) {
@@ -201,7 +201,7 @@ fn wgsl_ir_lazy_local_constant_expression(
 ///|
 fn wgsl_ir_rewind_function_expressions(
   function : Function,
-  length : Int,
+  length : Int32,
 ) -> Unit {
   function.expressions.truncate(length)
 }
@@ -209,7 +209,7 @@ fn wgsl_ir_rewind_function_expressions(
 ///|
 fn wgsl_ir_rewind_function_expressions_and_local_constant_values(
   function : Function,
-  length : Int,
+  length : Int32,
   scope : WgslIrFunctionScope,
   local_constant_snapshot : Map[String, WgslIrLocalValue],
 ) -> Unit {

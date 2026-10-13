@@ -156,7 +156,7 @@ priv struct WgslComposeSession {
   additional_imports : Array[ImportDefinition]
   immediate_specializations : Array[WgslImmediateSpecialization]
   global_alias_bindings : WgslComposeBindingSet
-  redirect_match_counts : Map[String, Int]
+  redirect_match_counts : Map[String, Int32]
   visited : @set.Set[String]
   graph_planned_requests : @set.Set[String]
   graph_planning_rel_paths : Array[String]
@@ -169,10 +169,10 @@ priv struct WgslComposeSession {
   importless_sources : Map[String, String]
   directive_import_targets : Map[String, Array[WgslImportTarget]]
   directive_single_import_targets : Map[String, Array[WgslImportTarget]]
-  semantic_reference_first_starts : Map[String, Map[String, Int]]
+  semantic_reference_first_starts : Map[String, Map[String, Int32]]
   source_local_shader_defs : Map[String, Map[String, ShaderDefValue]]
-  source_cache_ids : Map[String, Int]
-  mut next_source_cache_id : Int
+  source_cache_ids : Map[String, Int32]
+  mut next_source_cache_id : Int32
   processed_modules : Map[String, WgslProcessedComposeModule]
   selected_import_candidate_rel_paths : Map[String, String]
   import_request_plans : Map[String, Array[WgslImportRequest]]
@@ -184,7 +184,7 @@ priv struct WgslComposeSession {
 fn WgslComposeSession::source_cache_id(
   self : WgslComposeSession,
   source : String,
-) -> Int {
+) -> Int32 {
   match self.source_cache_ids.get(source) {
     Some(id) => id
     None => {
@@ -207,8 +207,8 @@ priv struct WgslProcessedComposeModule {
   mut declaration_names : Array[String]?
   mut item_extractor : WgslModuleItemExtractor?
   item_extractions : Map[String, WgslModuleItemExtraction]
-  mut naga_pull_ranks : Map[String, Int]?
-  mut source_decl_ranks : Map[String, Int]?
+  mut naga_pull_ranks : Map[String, Int32]?
+  mut source_decl_ranks : Map[String, Int32]?
   mut virtual_override_targets : Array[String]?
   mut has_override_function : Bool?
   mut has_virtual_function : Bool?

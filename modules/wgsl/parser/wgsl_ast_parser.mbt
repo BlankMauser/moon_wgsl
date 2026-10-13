@@ -1,7 +1,7 @@
 ///|
 fn parse_wgsl_declaration_data_at(
   text : String,
-  source_start : Int,
+  source_start : Int32,
 ) -> WgslGlobalDeclData raise WgslParseError {
   WgslDeclParser::new_at(text, source_start).parse_decl_data_checked() catch {
     _ => raise UnparsedDeclaration(text, source_start)
@@ -10,7 +10,7 @@ fn parse_wgsl_declaration_data_at(
 
 ///|
 pub suberror WgslParseError {
-  UnparsedDeclaration(String, Int)
+  UnparsedDeclaration(String, Int32)
 }
 
 ///|

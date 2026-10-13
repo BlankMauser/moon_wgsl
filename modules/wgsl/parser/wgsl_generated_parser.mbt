@@ -2,7 +2,7 @@
 pub(all) enum Token {
   STMT(@ast.WgslStatement)
   TYPE_ATOM(@ast.WgslTypeAtom)
-  TYPE_ARGS((Array[@ast.WgslTypeArgument], Int))
+  TYPE_ARGS((Array[@ast.WgslTypeArgument], Int32))
   ARG_NAME(@ast.WgslIdent)
   ARG_TYPE(@ast.WgslTypeRef)
   MEMBER_NAME(@ast.WgslIdent)
@@ -10,27 +10,32 @@ pub(all) enum Token {
   DECL_TYPE(@ast.WgslTypeRef)
   INIT_EXPR(@ast.WgslExprRef)
   EXPR_REF(@ast.WgslExprRef)
-  AT(Int)
+  AT(Int32)
   ATTR_NAME(@ast.WgslIdent)
-  ATTR_ARGS((@ast.WgslExprRef?, Int))
+  ATTR_ARGS((@ast.WgslExprRef?, Int32))
   KW_ENABLE(@ast.WgslIdent)
   KW_REQUIRES(@ast.WgslIdent)
   KW_DIAGNOSTIC(@ast.WgslIdent)
-  DIRECTIVE_TAIL((String, Int, Int))
+  DIRECTIVE_TAIL((String, Int32, Int32))
   SOURCE_TEXT(String)
-  ARROW(Int)
+  ARROW(Int32)
   LPAREN
   RPAREN
-  LBRACE(Int)
-  RBRACE(Int)
+  LBRACE(Int32)
+  RBRACE(Int32)
   COLON
   EQUAL
-  TYPE_LT(Int)
-  TYPE_GT(Int)
+  TYPE_LT(Int32)
+  TYPE_GT(Int32)
   COMMA
   SEMI
   EOF
 } derive(Debug)
+
+///|
+#deprecated("Use Debug::to_repr instead")
+#doc(hidden)
+pub extend Token with Debug::{to_repr}
 
 ///|
 pub fn Token::kind(self : Token) -> TokenKind {
@@ -103,8 +108,14 @@ pub(all) enum TokenKind {
 }
 
 ///|
+#deprecated("Use Show::to_string or Show::output instead")
+#doc(hidden)
+pub extend TokenKind with Show::{output, to_string}
+
+///|
 pub impl Show for TokenKind with fn output(self, logger) {
-  logger.write_string(
+  Logger::write_string(
+    logger,
     match self {
       TK_STMT => "STMT"
       TK_TYPE_ATOM => "TYPE_ATOM"
@@ -139,6 +150,11 @@ pub impl Show for TokenKind with fn output(self, logger) {
     },
   )
 }
+
+///|
+#deprecated("Use Debug::to_repr instead")
+#doc(hidden)
+pub extend TokenKind with Debug::{to_repr}
 
 ///|
 pub impl Debug for TokenKind with fn to_repr(self) {
@@ -178,9 +194,14 @@ pub impl Debug for TokenKind with fn to_repr(self) {
 
 ///|
 pub suberror ParseError {
-  UnexpectedToken(Token, (Int, Int), Array[TokenKind])
-  UnexpectedEndOfInput(Int, Array[TokenKind])
+  UnexpectedToken(Token, (Int32, Int32), Array[TokenKind])
+  UnexpectedEndOfInput(Int32, Array[TokenKind])
 } derive(Debug)
+
+///|
+#deprecated("Use Debug::to_repr instead")
+#doc(hidden)
+pub extend ParseError with Debug::{to_repr}
 
 ///|
 type YYObj = Error
@@ -190,7 +211,7 @@ priv suberror YYObj_Void
 
 ///|
 priv suberror YYObj_Int {
-  YYObj_Int(Int)
+  YYObj_Int(Int32)
 }
 
 ///|
@@ -290,17 +311,19 @@ priv suberror YYObj__ast_WgslFunctionResult_ {
 
 ///|
 priv suberror YYObj__Array__ast_WgslTypeArgument___Int_ {
-  YYObj__Array__ast_WgslTypeArgument___Int_((Array[@ast.WgslTypeArgument], Int))
+  YYObj__Array__ast_WgslTypeArgument___Int_(
+    (Array[@ast.WgslTypeArgument], Int32)
+  )
 }
 
 ///|
 priv suberror YYObj___ast_WgslExprRef___Int_ {
-  YYObj___ast_WgslExprRef___Int_((@ast.WgslExprRef?, Int))
+  YYObj___ast_WgslExprRef___Int_((@ast.WgslExprRef?, Int32))
 }
 
 ///|
 priv suberror YYObj___ast_WgslExprRef___Int__ {
-  YYObj___ast_WgslExprRef___Int__((@ast.WgslExprRef?, Int?))
+  YYObj___ast_WgslExprRef___Int__((@ast.WgslExprRef?, Int32?))
 }
 
 ///|
@@ -312,21 +335,21 @@ priv suberror YYObj___ast_WgslTypeRef____ast_WgslExprRef__ {
 
 ///|
 priv suberror YYObj__String__Int__Int_ {
-  YYObj__String__Int__Int_((String, Int, Int))
+  YYObj__String__Int__Int_((String, Int32, Int32))
 }
 
 ///|
 type YYState = (YYSymbol) -> YYDecision
 
 ///|
-type YYAction = (Int, ArrayView[(YYObj, Int, Int)]) -> YYObj
+type YYAction = (Int32, ArrayView[(YYObj, Int32, Int32)]) -> YYObj
 
 ///|
 priv enum YYDecision {
   Accept
   Shift(YYState)
-  Reduce(Int, YYSymbol, YYAction)
-  ReduceNoLookahead(Int, YYSymbol, YYAction)
+  Reduce(Int32, YYSymbol, YYAction)
+  ReduceNoLookahead(Int32, YYSymbol, YYAction)
   Error
 }
 
@@ -392,9 +415,8 @@ priv enum YYSymbol {
   EOI
 }
 
-// Workaround for EOI unused warning
-
 ///|
+// Workaround for EOI unused warning
 fn init {
   match (EOI : YYSymbol) {
     EOI => ()
@@ -402,11 +424,13 @@ fn init {
   }
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 102|    value=type_expr EOF { value }
-
-///|
-fn yy_action_0(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_0(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj__ast_WgslTypeRef(value)
   YYObj__ast_WgslTypeRef(
     {
@@ -416,11 +440,13 @@ fn yy_action_0(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 273|    TYPE_LT args=template_args TYPE_GT EOF { args }
-
-///|
-fn yy_action_1(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_1(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj_Array__ast_WgslTypeRef_(args)
   YYObj_Array__ast_WgslTypeRef_(
     {
@@ -430,14 +456,16 @@ fn yy_action_1(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 280|    args=template_args "," value=type_expr {
 // 281|      args.push(value)
 // 282|      args
 // 283|    }
-
-///|
-fn yy_action_2(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_2(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Array__ast_WgslTypeRef_(args)
   guard! _args[2].0 is YYObj__ast_WgslTypeRef(value)
   YYObj_Array__ast_WgslTypeRef_(
@@ -449,13 +477,15 @@ fn yy_action_2(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 277|    value=type_expr {
 // 278|      [value]
 // 279|    }
-
-///|
-fn yy_action_3(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_3(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj__ast_WgslTypeRef(value)
   YYObj_Array__ast_WgslTypeRef_(
     {
@@ -465,13 +495,15 @@ fn yy_action_3(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 290|    atom=TYPE_ATOM args=TYPE_ARGS {
 // 291|      wgsl_type_ref_from_template_arguments(atom, args)
 // 292|    }
-
-///|
-fn yy_action_4(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_4(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj__ast_WgslTypeAtom(atom)
   guard! _args[1].0 is YYObj__Array__ast_WgslTypeArgument___Int_(args)
   YYObj__ast_WgslTypeRef(
@@ -482,13 +514,15 @@ fn yy_action_4(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 293|    atom=TYPE_ATOM TYPE_LT args=type_ref_args gt=TYPE_GT {
 // 294|      wgsl_type_ref_from_atom(atom, args, gt)
 // 295|    }
-
-///|
-fn yy_action_5(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_5(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj__ast_WgslTypeAtom(atom)
   guard! _args[2].0 is YYObj_Array__ast_WgslTypeRef_(args)
   guard! _args[3].0 is YYObj_Int(gt)
@@ -500,14 +534,16 @@ fn yy_action_5(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 302|    args=type_ref_args "," value=type_expr {
 // 303|      args.push(value)
 // 304|      args
 // 305|    }
-
-///|
-fn yy_action_6(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_6(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Array__ast_WgslTypeRef_(args)
   guard! _args[2].0 is YYObj__ast_WgslTypeRef(value)
   YYObj_Array__ast_WgslTypeRef_(
@@ -519,13 +555,15 @@ fn yy_action_6(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 299|    value=type_expr {
 // 300|      [value]
 // 301|    }
-
-///|
-fn yy_action_7(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_7(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj__ast_WgslTypeRef(value)
   YYObj_Array__ast_WgslTypeRef_(
     {
@@ -535,13 +573,15 @@ fn yy_action_7(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 287|    atom=TYPE_ATOM {
 // 288|      wgsl_type_ref_from_atom(atom, [], atom.end())
 // 289|    }
-
-///|
-fn yy_action_8(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_8(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj__ast_WgslTypeAtom(atom)
   YYObj__ast_WgslTypeRef(
     {
@@ -551,11 +591,13 @@ fn yy_action_8(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 106|    "(" ")" EOF { [] }
-
-///|
-fn yy_action_9(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_9(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Array__ast_WgslFunctionArgument_(
     {
       ()
@@ -564,11 +606,13 @@ fn yy_action_9(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 107|    "(" args=function_arg_list optional_comma ")" EOF { args }
-
-///|
-fn yy_action_10(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_10(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj_Array__ast_WgslFunctionArgument_(args)
   YYObj_Array__ast_WgslFunctionArgument_(
     {
@@ -578,6 +622,7 @@ fn yy_action_10(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 255|    attrs=attributes name=ARG_NAME ":" ty=ARG_TYPE {
 // 256|      let start = if attrs.length() > 0 { attrs[0].start() } else { name.start() }
@@ -589,9 +634,10 @@ fn yy_action_10(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
 // 262|        Some(ty),
 // 263|      )
 // 264|    }
-
-///|
-fn yy_action_11(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_11(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Array__ast_WgslAttribute_(attrs)
   guard! _args[1].0 is YYObj__ast_WgslIdent(name)
   guard! _args[3].0 is YYObj__ast_WgslTypeRef(ty)
@@ -608,14 +654,16 @@ fn yy_action_11(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 248|    args=function_arg_list "," value=function_arg {
 // 249|      args.push(value)
 // 250|      args
 // 251|    }
-
-///|
-fn yy_action_12(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_12(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Array__ast_WgslFunctionArgument_(args)
   guard! _args[2].0 is YYObj__ast_WgslFunctionArgument(value)
   YYObj_Array__ast_WgslFunctionArgument_(
@@ -627,11 +675,13 @@ fn yy_action_12(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 269|    "," { () }
-
-///|
-fn yy_action_13(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_13(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -640,11 +690,13 @@ fn yy_action_13(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 268|    { () }
-
-///|
-fn yy_action_14(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_14(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -653,13 +705,15 @@ fn yy_action_14(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 245|    value=function_arg {
 // 246|      [value]
 // 247|    }
-
-///|
-fn yy_action_15(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_15(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj__ast_WgslFunctionArgument(value)
   YYObj_Array__ast_WgslFunctionArgument_(
     {
@@ -669,13 +723,15 @@ fn yy_action_15(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 111|    arrow=ARROW attrs=attributes ty=ARG_TYPE EOF {
 // 112|      Some(WgslFunctionResult(attrs, arrow, ty.end(), Some(ty)))
 // 113|    }
-
-///|
-fn yy_action_16(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_16(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Int(arrow)
   guard! _args[1].0 is YYObj_Array__ast_WgslAttribute_(attrs)
   guard! _args[2].0 is YYObj__ast_WgslTypeRef(ty)
@@ -687,11 +743,13 @@ fn yy_action_16(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 117|    "{" "}" EOF { [] }
-
-///|
-fn yy_action_17(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_17(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Array__ast_WgslStructMember_(
     {
       ()
@@ -700,13 +758,15 @@ fn yy_action_17(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 118|    "{" members=struct_member_list optional_member_separator "}" EOF {
 // 119|      members
 // 120|    }
-
-///|
-fn yy_action_18(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_18(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj_Array__ast_WgslStructMember_(members)
   YYObj_Array__ast_WgslStructMember_(
     {
@@ -716,15 +776,17 @@ fn yy_action_18(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 65|    attributes attribute {
 // 66|      let attributes = $1
 // 67|      attributes.push($2)
 // 68|      attributes
 // 69|    }
-
-///|
-fn yy_action_19(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_19(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Array__ast_WgslAttribute_(_dollar1)
   guard! _args[1].0 is YYObj__ast_WgslAttribute(_dollar2)
   YYObj_Array__ast_WgslAttribute_(
@@ -737,6 +799,7 @@ fn yy_action_19(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 73|    at=AT name=ATTR_NAME args=attribute_args {
 // 74|      let (arguments_ref, args_end) = args
@@ -751,9 +814,10 @@ fn yy_action_19(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
 // 83|        arguments_ref,
 // 84|      )
 // 85|    }
-
-///|
-fn yy_action_20(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_20(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Int(at)
   guard! _args[1].0 is YYObj__ast_WgslIdent(name)
   guard! _args[2].0 is YYObj___ast_WgslExprRef___Int__(args)
@@ -770,14 +834,16 @@ fn yy_action_20(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 90|    ATTR_ARGS {
 // 91|      let (arguments_ref, end) = $1
 // 92|      (arguments_ref, Some(end))
 // 93|    }
-
-///|
-fn yy_action_21(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_21(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj___ast_WgslExprRef___Int_(_dollar1)
   YYObj___ast_WgslExprRef___Int__(
     {
@@ -788,11 +854,13 @@ fn yy_action_21(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 89|    { (None, None) }
-
-///|
-fn yy_action_22(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_22(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj___ast_WgslExprRef___Int__(
     {
       ()
@@ -801,6 +869,7 @@ fn yy_action_22(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 134|    attrs=attributes name=MEMBER_NAME ":" ty=MEMBER_TYPE {
 // 135|      let start = if attrs.length() > 0 { attrs[0].start() } else { name.start() }
@@ -812,9 +881,10 @@ fn yy_action_22(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
 // 141|        Some(ty),
 // 142|      )
 // 143|    }
-
-///|
-fn yy_action_23(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_23(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Array__ast_WgslAttribute_(attrs)
   guard! _args[1].0 is YYObj__ast_WgslIdent(name)
   guard! _args[3].0 is YYObj__ast_WgslTypeRef(ty)
@@ -831,14 +901,16 @@ fn yy_action_23(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 127|    members=struct_member_list member_separator value=struct_member {
 // 128|      members.push(value)
 // 129|      members
 // 130|    }
-
-///|
-fn yy_action_24(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_24(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Array__ast_WgslStructMember_(members)
   guard! _args[2].0 is YYObj__ast_WgslStructMember(value)
   YYObj_Array__ast_WgslStructMember_(
@@ -850,11 +922,13 @@ fn yy_action_24(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 241|    member_separator { () }
-
-///|
-fn yy_action_25(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_25(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -863,11 +937,13 @@ fn yy_action_25(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 235|    "," { () }
-
-///|
-fn yy_action_26(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_26(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -876,11 +952,13 @@ fn yy_action_26(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 236|    ";" { () }
-
-///|
-fn yy_action_27(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_27(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -889,11 +967,13 @@ fn yy_action_27(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 240|    { () }
-
-///|
-fn yy_action_28(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_28(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Unit(
     {
       ()
@@ -902,13 +982,15 @@ fn yy_action_28(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 124|    value=struct_member {
 // 125|      [value]
 // 126|    }
-
-///|
-fn yy_action_29(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_29(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj__ast_WgslStructMember(value)
   YYObj_Array__ast_WgslStructMember_(
     {
@@ -918,11 +1000,13 @@ fn yy_action_29(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 64|    { [] }
-
-///|
-fn yy_action_30(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_30(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Array__ast_WgslAttribute_(
     {
       ()
@@ -931,11 +1015,13 @@ fn yy_action_30(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 147|    EOF { (None, None) }
-
-///|
-fn yy_action_31(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_31(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj___ast_WgslTypeRef____ast_WgslExprRef__(
     {
       ()
@@ -944,13 +1030,15 @@ fn yy_action_31(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 148|    ":" ty=DECL_TYPE init=initializer_opt EOF {
 // 149|      (Some(ty), init)
 // 150|    }
-
-///|
-fn yy_action_32(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_32(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj__ast_WgslTypeRef(ty)
   guard! _args[2].0 is YYObj__ast_WgslExprRef_(init)
   YYObj___ast_WgslTypeRef____ast_WgslExprRef__(
@@ -961,11 +1049,13 @@ fn yy_action_32(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 225|    initializer { $1 }
-
-///|
-fn yy_action_33(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_33(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj__ast_WgslExprRef_(_dollar1)
   YYObj__ast_WgslExprRef_(
     {
@@ -975,11 +1065,13 @@ fn yy_action_33(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 224|    { None }
-
-///|
-fn yy_action_34(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_34(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj__ast_WgslExprRef_(
     {
       ()
@@ -988,13 +1080,15 @@ fn yy_action_34(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 151|    init=initializer EOF {
 // 152|      (None, init)
 // 153|    }
-
-///|
-fn yy_action_35(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_35(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj__ast_WgslExprRef_(init)
   YYObj___ast_WgslTypeRef____ast_WgslExprRef__(
     {
@@ -1004,13 +1098,15 @@ fn yy_action_35(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 229|    "=" expr=INIT_EXPR {
 // 230|      Some(expr)
 // 231|    }
-
-///|
-fn yy_action_36(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_36(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj__ast_WgslExprRef(expr)
   YYObj__ast_WgslExprRef_(
     {
@@ -1020,13 +1116,15 @@ fn yy_action_36(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 157|    "=" ty=DECL_TYPE EOF {
 // 158|      ty
 // 159|    }
-
-///|
-fn yy_action_37(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_37(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[1].0 is YYObj__ast_WgslTypeRef(ty)
   YYObj__ast_WgslTypeRef(
     {
@@ -1036,6 +1134,7 @@ fn yy_action_37(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 163|    text=SOURCE_TEXT keyword=KW_ENABLE tail=directive_tail EOF {
 // 164|      let (tail, raw_tail_start, raw_tail_end) = tail
@@ -1055,9 +1154,10 @@ fn yy_action_37(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
 // 178|        text.length(),
 // 179|      )
 // 180|    }
-
-///|
-fn yy_action_38(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_38(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_String(text)
   guard! _args[1].0 is YYObj__ast_WgslIdent(keyword)
   guard! _args[2].0 is YYObj__String__Int__Int_(tail)
@@ -1079,6 +1179,7 @@ fn yy_action_38(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 181|    text=SOURCE_TEXT keyword=KW_REQUIRES tail=directive_tail EOF {
 // 182|      let (tail, raw_tail_start, raw_tail_end) = tail
@@ -1098,9 +1199,10 @@ fn yy_action_38(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
 // 196|        text.length(),
 // 197|      )
 // 198|    }
-
-///|
-fn yy_action_39(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_39(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_String(text)
   guard! _args[1].0 is YYObj__ast_WgslIdent(keyword)
   guard! _args[2].0 is YYObj__String__Int__Int_(tail)
@@ -1122,11 +1224,13 @@ fn yy_action_39(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 98|    DIRECTIVE_TAIL { $1 }
-
-///|
-fn yy_action_40(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_40(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj__String__Int__Int_(_dollar1)
   YYObj__String__Int__Int_(
     {
@@ -1136,6 +1240,7 @@ fn yy_action_40(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 199|    text=SOURCE_TEXT keyword=KW_DIAGNOSTIC tail=directive_tail EOF {
 // 200|      let (tail, raw_tail_start, raw_tail_end) = tail
@@ -1155,9 +1260,10 @@ fn yy_action_40(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
 // 214|        text.length(),
 // 215|      )
 // 216|    }
-
-///|
-fn yy_action_41(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_41(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_String(text)
   guard! _args[1].0 is YYObj__ast_WgslIdent(keyword)
   guard! _args[2].0 is YYObj__String__Int__Int_(tail)
@@ -1179,11 +1285,13 @@ fn yy_action_41(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 97|    { ("", 0, 0) }
-
-///|
-fn yy_action_42(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_42(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj__String__Int__Int_(
     {
       ()
@@ -1192,11 +1300,13 @@ fn yy_action_42(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 220|    EXPR_REF EOF { $1 }
-
-///|
-fn yy_action_43(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_43(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj__ast_WgslExprRef(_dollar1)
   YYObj__ast_WgslExprRef(
     {
@@ -1206,13 +1316,15 @@ fn yy_action_43(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 49|    open=LBRACE statements close=RBRACE EOF {
 // 50|      WgslBlock(open, close + 1, $2)
 // 51|    }
-
-///|
-fn yy_action_44(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_44(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Int(open)
   guard! _args[2].0 is YYObj_Int(close)
   guard! _args[1].0 is YYObj_Array__ast_WgslStatement_(_dollar2)
@@ -1224,15 +1336,17 @@ fn yy_action_44(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 56|    statements STMT {
 // 57|      let statements = $1
 // 58|      statements.push($2)
 // 59|      statements
 // 60|    }
-
-///|
-fn yy_action_45(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_45(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   guard! _args[0].0 is YYObj_Array__ast_WgslStatement_(_dollar1)
   guard! _args[1].0 is YYObj__ast_WgslStatement(_dollar2)
   YYObj_Array__ast_WgslStatement_(
@@ -1245,11 +1359,13 @@ fn yy_action_45(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
   )
 }
 
+///|
 // file:///./wgsl_parser.mbty
 // 55|    { [] }
-
-///|
-fn yy_action_46(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj {
+fn yy_action_46(
+  _last_pos : Int32,
+  _args : ArrayView[(YYObj, Int32, Int32)],
+) -> YYObj {
   YYObj_Array__ast_WgslStatement_(
     {
       ()
@@ -1261,8 +1377,8 @@ fn yy_action_46(_last_pos : Int, _args : ArrayView[(YYObj, Int, Int)]) -> YYObj 
 ///|
 fn yy_input(
   token : Token,
-  _start_pos : Int,
-  _end_pos : Int,
+  _start_pos : Int32,
+  _end_pos : Int32,
 ) -> (YYSymbol, YYObj) {
   match token {
     STMT(data) => (T_STMT, YYObj__ast_WgslStatement(data))
@@ -1299,10 +1415,9 @@ fn yy_input(
   }
 }
 
+///|
 // [0, block → • LBRACE statements RBRACE EOF, $]
 // [56, block_prime → • block, $]
-
-///|
 fn yy_state_0(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_block => Shift(yy_state_1)
@@ -1311,18 +1426,16 @@ fn yy_state_0(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [56, block_prime → block •, $]
-
 ///|
+// [56, block_prime → block •, $]
 fn yy_state_1(_lookahead : YYSymbol) -> YYDecision {
   Accept
 }
 
+///|
 // [0, block → LBRACE • statements RBRACE EOF, $]
 // [1, statements → •, STMT / RBRACE]
 // [2, statements → • statements STMT, STMT / RBRACE]
-
-///|
 fn yy_state_2(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_statements => Shift(yy_state_3)
@@ -1331,10 +1444,9 @@ fn yy_state_2(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [0, block → LBRACE statements • RBRACE EOF, $]
 // [2, statements → statements • STMT, STMT / RBRACE]
-
-///|
 fn yy_state_3(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_STMT => Shift(yy_state_4)
@@ -1343,16 +1455,14 @@ fn yy_state_3(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [2, statements → statements STMT •, STMT / RBRACE]
-
 ///|
+// [2, statements → statements STMT •, STMT / RBRACE]
 fn yy_state_4(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_statements, yy_action_45)
 }
 
-// [0, block → LBRACE statements RBRACE • EOF, $]
-
 ///|
+// [0, block → LBRACE statements RBRACE • EOF, $]
 fn yy_state_5(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EOF => Shift(yy_state_6)
@@ -1360,17 +1470,15 @@ fn yy_state_5(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [0, block → LBRACE statements RBRACE EOF •, $]
-
 ///|
+// [0, block → LBRACE statements RBRACE EOF •, $]
 fn yy_state_6(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(4, NT_block, yy_action_44)
 }
 
+///|
 // [26, const_assert_expr → • EXPR_REF EOF, $]
 // [55, const_assert_expr_prime → • const_assert_expr, $]
-
-///|
 fn yy_state_7(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_const_assert_expr => Shift(yy_state_8)
@@ -1379,16 +1487,14 @@ fn yy_state_7(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [55, const_assert_expr_prime → const_assert_expr •, $]
-
 ///|
+// [55, const_assert_expr_prime → const_assert_expr •, $]
 fn yy_state_8(_lookahead : YYSymbol) -> YYDecision {
   Accept
 }
 
-// [26, const_assert_expr → EXPR_REF • EOF, $]
-
 ///|
+// [26, const_assert_expr → EXPR_REF • EOF, $]
 fn yy_state_9(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EOF => Shift(yy_state_10)
@@ -1396,19 +1502,17 @@ fn yy_state_9(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [26, const_assert_expr → EXPR_REF EOF •, $]
-
 ///|
+// [26, const_assert_expr → EXPR_REF EOF •, $]
 fn yy_state_10(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_const_assert_expr, yy_action_43)
 }
 
+///|
 // [23, source_directive → • SOURCE_TEXT KW_ENABLE directive_tail EOF, $]
 // [24, source_directive → • SOURCE_TEXT KW_REQUIRES directive_tail EOF, $]
 // [25, source_directive → • SOURCE_TEXT KW_DIAGNOSTIC directive_tail EOF, $]
 // [54, source_directive_prime → • source_directive, $]
-
-///|
 fn yy_state_11(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_source_directive => Shift(yy_state_12)
@@ -1417,18 +1521,16 @@ fn yy_state_11(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [54, source_directive_prime → source_directive •, $]
-
 ///|
+// [54, source_directive_prime → source_directive •, $]
 fn yy_state_12(_lookahead : YYSymbol) -> YYDecision {
   Accept
 }
 
+///|
 // [23, source_directive → SOURCE_TEXT • KW_ENABLE directive_tail EOF, $]
 // [24, source_directive → SOURCE_TEXT • KW_REQUIRES directive_tail EOF, $]
 // [25, source_directive → SOURCE_TEXT • KW_DIAGNOSTIC directive_tail EOF, $]
-
-///|
 fn yy_state_13(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_KW_DIAGNOSTIC => Shift(yy_state_14)
@@ -1438,11 +1540,10 @@ fn yy_state_13(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [8, directive_tail → •, EOF]
 // [9, directive_tail → • DIRECTIVE_TAIL, EOF]
 // [25, source_directive → SOURCE_TEXT KW_DIAGNOSTIC • directive_tail EOF, $]
-
-///|
 fn yy_state_14(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_directive_tail => Shift(yy_state_15)
@@ -1452,9 +1553,8 @@ fn yy_state_14(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [25, source_directive → SOURCE_TEXT KW_DIAGNOSTIC directive_tail • EOF, $]
-
 ///|
+// [25, source_directive → SOURCE_TEXT KW_DIAGNOSTIC directive_tail • EOF, $]
 fn yy_state_15(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EOF => Shift(yy_state_16)
@@ -1462,25 +1562,22 @@ fn yy_state_15(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [25, source_directive → SOURCE_TEXT KW_DIAGNOSTIC directive_tail EOF •, $]
-
 ///|
+// [25, source_directive → SOURCE_TEXT KW_DIAGNOSTIC directive_tail EOF •, $]
 fn yy_state_16(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(4, NT_source_directive, yy_action_41)
 }
 
-// [9, directive_tail → DIRECTIVE_TAIL •, EOF]
-
 ///|
+// [9, directive_tail → DIRECTIVE_TAIL •, EOF]
 fn yy_state_17(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_directive_tail, yy_action_40)
 }
 
+///|
 // [8, directive_tail → •, EOF]
 // [9, directive_tail → • DIRECTIVE_TAIL, EOF]
 // [24, source_directive → SOURCE_TEXT KW_REQUIRES • directive_tail EOF, $]
-
-///|
 fn yy_state_18(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_DIRECTIVE_TAIL => Shift(yy_state_17)
@@ -1490,9 +1587,8 @@ fn yy_state_18(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [24, source_directive → SOURCE_TEXT KW_REQUIRES directive_tail • EOF, $]
-
 ///|
+// [24, source_directive → SOURCE_TEXT KW_REQUIRES directive_tail • EOF, $]
 fn yy_state_19(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EOF => Shift(yy_state_20)
@@ -1500,18 +1596,16 @@ fn yy_state_19(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [24, source_directive → SOURCE_TEXT KW_REQUIRES directive_tail EOF •, $]
-
 ///|
+// [24, source_directive → SOURCE_TEXT KW_REQUIRES directive_tail EOF •, $]
 fn yy_state_20(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(4, NT_source_directive, yy_action_39)
 }
 
+///|
 // [8, directive_tail → •, EOF]
 // [9, directive_tail → • DIRECTIVE_TAIL, EOF]
 // [23, source_directive → SOURCE_TEXT KW_ENABLE • directive_tail EOF, $]
-
-///|
 fn yy_state_21(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_DIRECTIVE_TAIL => Shift(yy_state_17)
@@ -1521,9 +1615,8 @@ fn yy_state_21(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [23, source_directive → SOURCE_TEXT KW_ENABLE directive_tail • EOF, $]
-
 ///|
+// [23, source_directive → SOURCE_TEXT KW_ENABLE directive_tail • EOF, $]
 fn yy_state_22(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EOF => Shift(yy_state_23)
@@ -1531,17 +1624,15 @@ fn yy_state_22(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [23, source_directive → SOURCE_TEXT KW_ENABLE directive_tail EOF •, $]
-
 ///|
+// [23, source_directive → SOURCE_TEXT KW_ENABLE directive_tail EOF •, $]
 fn yy_state_23(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(4, NT_source_directive, yy_action_38)
 }
 
+///|
 // [22, type_alias_tail → • EQUAL DECL_TYPE EOF, $]
 // [53, type_alias_tail_prime → • type_alias_tail, $]
-
-///|
 fn yy_state_24(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_type_alias_tail => Shift(yy_state_25)
@@ -1550,16 +1641,14 @@ fn yy_state_24(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [53, type_alias_tail_prime → type_alias_tail •, $]
-
 ///|
+// [53, type_alias_tail_prime → type_alias_tail •, $]
 fn yy_state_25(_lookahead : YYSymbol) -> YYDecision {
   Accept
 }
 
-// [22, type_alias_tail → EQUAL • DECL_TYPE EOF, $]
-
 ///|
+// [22, type_alias_tail → EQUAL • DECL_TYPE EOF, $]
 fn yy_state_26(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_DECL_TYPE => Shift(yy_state_27)
@@ -1567,9 +1656,8 @@ fn yy_state_26(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [22, type_alias_tail → EQUAL DECL_TYPE • EOF, $]
-
 ///|
+// [22, type_alias_tail → EQUAL DECL_TYPE • EOF, $]
 fn yy_state_27(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EOF => Shift(yy_state_28)
@@ -1577,20 +1665,18 @@ fn yy_state_27(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [22, type_alias_tail → EQUAL DECL_TYPE EOF •, $]
-
 ///|
+// [22, type_alias_tail → EQUAL DECL_TYPE EOF •, $]
 fn yy_state_28(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_type_alias_tail, yy_action_37)
 }
 
+///|
 // [19, typed_initializer_tail → • EOF, $]
 // [20, typed_initializer_tail → • COLON DECL_TYPE initializer_opt EOF, $]
 // [21, typed_initializer_tail → • initializer EOF, $]
 // [29, initializer → • EQUAL INIT_EXPR, EOF]
 // [52, typed_initializer_tail_prime → • typed_initializer_tail, $]
-
-///|
 fn yy_state_29(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_typed_initializer_tail => Shift(yy_state_30)
@@ -1602,16 +1688,14 @@ fn yy_state_29(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [52, typed_initializer_tail_prime → typed_initializer_tail •, $]
-
 ///|
+// [52, typed_initializer_tail_prime → typed_initializer_tail •, $]
 fn yy_state_30(_lookahead : YYSymbol) -> YYDecision {
   Accept
 }
 
-// [29, initializer → EQUAL • INIT_EXPR, EOF]
-
 ///|
+// [29, initializer → EQUAL • INIT_EXPR, EOF]
 fn yy_state_31(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_INIT_EXPR => Shift(yy_state_32)
@@ -1619,16 +1703,14 @@ fn yy_state_31(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [29, initializer → EQUAL INIT_EXPR •, EOF]
-
 ///|
+// [29, initializer → EQUAL INIT_EXPR •, EOF]
 fn yy_state_32(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_initializer, yy_action_36)
 }
 
-// [21, typed_initializer_tail → initializer • EOF, $]
-
 ///|
+// [21, typed_initializer_tail → initializer • EOF, $]
 fn yy_state_33(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EOF => Shift(yy_state_34)
@@ -1636,16 +1718,14 @@ fn yy_state_33(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [21, typed_initializer_tail → initializer EOF •, $]
-
 ///|
+// [21, typed_initializer_tail → initializer EOF •, $]
 fn yy_state_34(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_typed_initializer_tail, yy_action_35)
 }
 
-// [20, typed_initializer_tail → COLON • DECL_TYPE initializer_opt EOF, $]
-
 ///|
+// [20, typed_initializer_tail → COLON • DECL_TYPE initializer_opt EOF, $]
 fn yy_state_35(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_DECL_TYPE => Shift(yy_state_36)
@@ -1653,12 +1733,11 @@ fn yy_state_35(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [20, typed_initializer_tail → COLON DECL_TYPE • initializer_opt EOF, $]
 // [27, initializer_opt → •, EOF]
 // [28, initializer_opt → • initializer, EOF]
 // [29, initializer → • EQUAL INIT_EXPR, EOF]
-
-///|
 fn yy_state_36(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EQUAL => Shift(yy_state_31)
@@ -1669,16 +1748,14 @@ fn yy_state_36(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [28, initializer_opt → initializer •, EOF]
-
 ///|
+// [28, initializer_opt → initializer •, EOF]
 fn yy_state_37(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_initializer_opt, yy_action_33)
 }
 
-// [20, typed_initializer_tail → COLON DECL_TYPE initializer_opt • EOF, $]
-
 ///|
+// [20, typed_initializer_tail → COLON DECL_TYPE initializer_opt • EOF, $]
 fn yy_state_38(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EOF => Shift(yy_state_39)
@@ -1686,25 +1763,22 @@ fn yy_state_38(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [20, typed_initializer_tail → COLON DECL_TYPE initializer_opt EOF •, $]
-
 ///|
+// [20, typed_initializer_tail → COLON DECL_TYPE initializer_opt EOF •, $]
 fn yy_state_39(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(4, NT_typed_initializer_tail, yy_action_32)
 }
 
-// [19, typed_initializer_tail → EOF •, $]
-
 ///|
+// [19, typed_initializer_tail → EOF •, $]
 fn yy_state_40(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_typed_initializer_tail, yy_action_31)
 }
 
+///|
 // [14, struct_members → • LBRACE RBRACE EOF, $]
 // [15, struct_members → • LBRACE struct_member_list optional_member_separator RBRACE EOF, $]
 // [51, struct_members_prime → • struct_members, $]
-
-///|
 fn yy_state_41(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_struct_members => Shift(yy_state_42)
@@ -1713,13 +1787,13 @@ fn yy_state_41(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [51, struct_members_prime → struct_members •, $]
-
 ///|
+// [51, struct_members_prime → struct_members •, $]
 fn yy_state_42(_lookahead : YYSymbol) -> YYDecision {
   Accept
 }
 
+///|
 // [3, attributes → •, MEMBER_NAME / AT]
 // [4, attributes → • attributes attribute, MEMBER_NAME / AT]
 // [14, struct_members → LBRACE • RBRACE EOF, $]
@@ -1727,8 +1801,6 @@ fn yy_state_42(_lookahead : YYSymbol) -> YYDecision {
 // [16, struct_member_list → • struct_member, RBRACE / COMMA / SEMI]
 // [17, struct_member_list → • struct_member_list member_separator struct_member, RBRACE / COMMA / SEMI]
 // [18, struct_member → • attributes MEMBER_NAME COLON MEMBER_TYPE, RBRACE / COMMA / SEMI]
-
-///|
 fn yy_state_43(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_struct_member => Shift(yy_state_44)
@@ -1740,21 +1812,19 @@ fn yy_state_43(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [16, struct_member_list → struct_member •, RBRACE / COMMA / SEMI]
-
 ///|
+// [16, struct_member_list → struct_member •, RBRACE / COMMA / SEMI]
 fn yy_state_44(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_struct_member_list, yy_action_29)
 }
 
+///|
 // [15, struct_members → LBRACE struct_member_list • optional_member_separator RBRACE EOF, $]
 // [17, struct_member_list → struct_member_list • member_separator struct_member, RBRACE / COMMA / SEMI]
 // [30, member_separator → • COMMA, MEMBER_NAME / AT / RBRACE]
 // [31, member_separator → • SEMI, MEMBER_NAME / AT / RBRACE]
 // [32, optional_member_separator → •, RBRACE]
 // [33, optional_member_separator → • member_separator, RBRACE]
-
-///|
 fn yy_state_45(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_SEMI => Shift(yy_state_46)
@@ -1766,27 +1836,24 @@ fn yy_state_45(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [31, member_separator → SEMI •, MEMBER_NAME / AT / RBRACE]
-
 ///|
+// [31, member_separator → SEMI •, MEMBER_NAME / AT / RBRACE]
 fn yy_state_46(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_member_separator, yy_action_27)
 }
 
-// [30, member_separator → COMMA •, MEMBER_NAME / AT / RBRACE]
-
 ///|
+// [30, member_separator → COMMA •, MEMBER_NAME / AT / RBRACE]
 fn yy_state_47(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_member_separator, yy_action_26)
 }
 
+///|
 // [3, attributes → •, MEMBER_NAME / AT]
 // [4, attributes → • attributes attribute, MEMBER_NAME / AT]
 // [17, struct_member_list → struct_member_list member_separator • struct_member, RBRACE / COMMA / SEMI]
 // [18, struct_member → • attributes MEMBER_NAME COLON MEMBER_TYPE, RBRACE / COMMA / SEMI]
 // [33, optional_member_separator → member_separator •, RBRACE]
-
-///|
 fn yy_state_48(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_struct_member => Shift(yy_state_49)
@@ -1797,18 +1864,16 @@ fn yy_state_48(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [17, struct_member_list → struct_member_list member_separator struct_member •, RBRACE / COMMA / SEMI]
-
 ///|
+// [17, struct_member_list → struct_member_list member_separator struct_member •, RBRACE / COMMA / SEMI]
 fn yy_state_49(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_struct_member_list, yy_action_24)
 }
 
+///|
 // [4, attributes → attributes • attribute, MEMBER_NAME / AT]
 // [5, attribute → • AT ATTR_NAME attribute_args, MEMBER_NAME / AT]
 // [18, struct_member → attributes • MEMBER_NAME COLON MEMBER_TYPE, RBRACE / COMMA / SEMI]
-
-///|
 fn yy_state_50(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_MEMBER_NAME => Shift(yy_state_51)
@@ -1818,9 +1883,8 @@ fn yy_state_50(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [18, struct_member → attributes MEMBER_NAME • COLON MEMBER_TYPE, RBRACE / COMMA / SEMI]
-
 ///|
+// [18, struct_member → attributes MEMBER_NAME • COLON MEMBER_TYPE, RBRACE / COMMA / SEMI]
 fn yy_state_51(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_COLON => Shift(yy_state_52)
@@ -1828,9 +1892,8 @@ fn yy_state_51(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [18, struct_member → attributes MEMBER_NAME COLON • MEMBER_TYPE, RBRACE / COMMA / SEMI]
-
 ///|
+// [18, struct_member → attributes MEMBER_NAME COLON • MEMBER_TYPE, RBRACE / COMMA / SEMI]
 fn yy_state_52(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_MEMBER_TYPE => Shift(yy_state_53)
@@ -1838,16 +1901,14 @@ fn yy_state_52(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [18, struct_member → attributes MEMBER_NAME COLON MEMBER_TYPE •, RBRACE / COMMA / SEMI]
-
 ///|
+// [18, struct_member → attributes MEMBER_NAME COLON MEMBER_TYPE •, RBRACE / COMMA / SEMI]
 fn yy_state_53(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(4, NT_struct_member, yy_action_23)
 }
 
-// [5, attribute → AT • ATTR_NAME attribute_args, ARG_NAME / ARG_TYPE / MEMBER_NAME / AT]
-
 ///|
+// [5, attribute → AT • ATTR_NAME attribute_args, ARG_NAME / ARG_TYPE / MEMBER_NAME / AT]
 fn yy_state_54(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_ATTR_NAME => Shift(yy_state_55)
@@ -1855,11 +1916,10 @@ fn yy_state_54(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [5, attribute → AT ATTR_NAME • attribute_args, ARG_NAME / ARG_TYPE / MEMBER_NAME / AT]
 // [6, attribute_args → •, ARG_NAME / ARG_TYPE / MEMBER_NAME / AT]
 // [7, attribute_args → • ATTR_ARGS, ARG_NAME / ARG_TYPE / MEMBER_NAME / AT]
-
-///|
 fn yy_state_55(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_ATTR_ARGS => Shift(yy_state_56)
@@ -1870,30 +1930,26 @@ fn yy_state_55(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [7, attribute_args → ATTR_ARGS •, ARG_NAME / ARG_TYPE / MEMBER_NAME / AT]
-
 ///|
+// [7, attribute_args → ATTR_ARGS •, ARG_NAME / ARG_TYPE / MEMBER_NAME / AT]
 fn yy_state_56(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_attribute_args, yy_action_21)
 }
 
-// [5, attribute → AT ATTR_NAME attribute_args •, ARG_NAME / ARG_TYPE / MEMBER_NAME / AT]
-
 ///|
+// [5, attribute → AT ATTR_NAME attribute_args •, ARG_NAME / ARG_TYPE / MEMBER_NAME / AT]
 fn yy_state_57(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_attribute, yy_action_20)
 }
 
-// [4, attributes → attributes attribute •, ARG_NAME / ARG_TYPE / MEMBER_NAME / AT]
-
 ///|
+// [4, attributes → attributes attribute •, ARG_NAME / ARG_TYPE / MEMBER_NAME / AT]
 fn yy_state_58(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_attributes, yy_action_19)
 }
 
-// [15, struct_members → LBRACE struct_member_list optional_member_separator • RBRACE EOF, $]
-
 ///|
+// [15, struct_members → LBRACE struct_member_list optional_member_separator • RBRACE EOF, $]
 fn yy_state_59(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_RBRACE => Shift(yy_state_60)
@@ -1901,9 +1957,8 @@ fn yy_state_59(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [15, struct_members → LBRACE struct_member_list optional_member_separator RBRACE • EOF, $]
-
 ///|
+// [15, struct_members → LBRACE struct_member_list optional_member_separator RBRACE • EOF, $]
 fn yy_state_60(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EOF => Shift(yy_state_61)
@@ -1911,16 +1966,14 @@ fn yy_state_60(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [15, struct_members → LBRACE struct_member_list optional_member_separator RBRACE EOF •, $]
-
 ///|
+// [15, struct_members → LBRACE struct_member_list optional_member_separator RBRACE EOF •, $]
 fn yy_state_61(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(5, NT_struct_members, yy_action_18)
 }
 
-// [14, struct_members → LBRACE RBRACE • EOF, $]
-
 ///|
+// [14, struct_members → LBRACE RBRACE • EOF, $]
 fn yy_state_62(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EOF => Shift(yy_state_63)
@@ -1928,17 +1981,15 @@ fn yy_state_62(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [14, struct_members → LBRACE RBRACE EOF •, $]
-
 ///|
+// [14, struct_members → LBRACE RBRACE EOF •, $]
 fn yy_state_63(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_struct_members, yy_action_17)
 }
 
+///|
 // [13, function_result → • ARROW attributes ARG_TYPE EOF, $]
 // [50, function_result_prime → • function_result, $]
-
-///|
 fn yy_state_64(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_function_result => Shift(yy_state_65)
@@ -1947,18 +1998,16 @@ fn yy_state_64(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [50, function_result_prime → function_result •, $]
-
 ///|
+// [50, function_result_prime → function_result •, $]
 fn yy_state_65(_lookahead : YYSymbol) -> YYDecision {
   Accept
 }
 
+///|
 // [3, attributes → •, ARG_TYPE / AT]
 // [4, attributes → • attributes attribute, ARG_TYPE / AT]
 // [13, function_result → ARROW • attributes ARG_TYPE EOF, $]
-
-///|
 fn yy_state_66(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_attributes => Shift(yy_state_67)
@@ -1967,11 +2016,10 @@ fn yy_state_66(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [4, attributes → attributes • attribute, ARG_TYPE / AT]
 // [5, attribute → • AT ATTR_NAME attribute_args, ARG_TYPE / AT]
 // [13, function_result → ARROW attributes • ARG_TYPE EOF, $]
-
-///|
 fn yy_state_67(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_AT => Shift(yy_state_54)
@@ -1981,9 +2029,8 @@ fn yy_state_67(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [13, function_result → ARROW attributes ARG_TYPE • EOF, $]
-
 ///|
+// [13, function_result → ARROW attributes ARG_TYPE • EOF, $]
 fn yy_state_68(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EOF => Shift(yy_state_69)
@@ -1991,18 +2038,16 @@ fn yy_state_68(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [13, function_result → ARROW attributes ARG_TYPE EOF •, $]
-
 ///|
+// [13, function_result → ARROW attributes ARG_TYPE EOF •, $]
 fn yy_state_69(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(4, NT_function_result, yy_action_16)
 }
 
+///|
 // [11, function_args → • LPAREN RPAREN EOF, $]
 // [12, function_args → • LPAREN function_arg_list optional_comma RPAREN EOF, $]
 // [49, function_args_prime → • function_args, $]
-
-///|
 fn yy_state_70(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_function_args => Shift(yy_state_71)
@@ -2011,13 +2056,13 @@ fn yy_state_70(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [49, function_args_prime → function_args •, $]
-
 ///|
+// [49, function_args_prime → function_args •, $]
 fn yy_state_71(_lookahead : YYSymbol) -> YYDecision {
   Accept
 }
 
+///|
 // [3, attributes → •, ARG_NAME / AT]
 // [4, attributes → • attributes attribute, ARG_NAME / AT]
 // [11, function_args → LPAREN • RPAREN EOF, $]
@@ -2025,8 +2070,6 @@ fn yy_state_71(_lookahead : YYSymbol) -> YYDecision {
 // [34, function_arg_list → • function_arg, RPAREN / COMMA]
 // [35, function_arg_list → • function_arg_list COMMA function_arg, RPAREN / COMMA]
 // [36, function_arg → • attributes ARG_NAME COLON ARG_TYPE, RPAREN / COMMA]
-
-///|
 fn yy_state_72(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_function_arg => Shift(yy_state_73)
@@ -2038,19 +2081,17 @@ fn yy_state_72(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [34, function_arg_list → function_arg •, RPAREN / COMMA]
-
 ///|
+// [34, function_arg_list → function_arg •, RPAREN / COMMA]
 fn yy_state_73(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_function_arg_list, yy_action_15)
 }
 
+///|
 // [12, function_args → LPAREN function_arg_list • optional_comma RPAREN EOF, $]
 // [35, function_arg_list → function_arg_list • COMMA function_arg, RPAREN / COMMA]
 // [37, optional_comma → •, RPAREN]
 // [38, optional_comma → • COMMA, RPAREN]
-
-///|
 fn yy_state_74(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_COMMA => Shift(yy_state_75)
@@ -2060,13 +2101,12 @@ fn yy_state_74(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [3, attributes → •, ARG_NAME / AT]
 // [4, attributes → • attributes attribute, ARG_NAME / AT]
 // [35, function_arg_list → function_arg_list COMMA • function_arg, RPAREN / COMMA]
 // [36, function_arg → • attributes ARG_NAME COLON ARG_TYPE, RPAREN / COMMA]
 // [38, optional_comma → COMMA •, RPAREN]
-
-///|
 fn yy_state_75(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_function_arg => Shift(yy_state_76)
@@ -2077,18 +2117,16 @@ fn yy_state_75(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [35, function_arg_list → function_arg_list COMMA function_arg •, RPAREN / COMMA]
-
 ///|
+// [35, function_arg_list → function_arg_list COMMA function_arg •, RPAREN / COMMA]
 fn yy_state_76(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_function_arg_list, yy_action_12)
 }
 
+///|
 // [4, attributes → attributes • attribute, ARG_NAME / AT]
 // [5, attribute → • AT ATTR_NAME attribute_args, ARG_NAME / AT]
 // [36, function_arg → attributes • ARG_NAME COLON ARG_TYPE, RPAREN / COMMA]
-
-///|
 fn yy_state_77(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_AT => Shift(yy_state_54)
@@ -2098,9 +2136,8 @@ fn yy_state_77(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [36, function_arg → attributes ARG_NAME • COLON ARG_TYPE, RPAREN / COMMA]
-
 ///|
+// [36, function_arg → attributes ARG_NAME • COLON ARG_TYPE, RPAREN / COMMA]
 fn yy_state_78(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_COLON => Shift(yy_state_79)
@@ -2108,9 +2145,8 @@ fn yy_state_78(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [36, function_arg → attributes ARG_NAME COLON • ARG_TYPE, RPAREN / COMMA]
-
 ///|
+// [36, function_arg → attributes ARG_NAME COLON • ARG_TYPE, RPAREN / COMMA]
 fn yy_state_79(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_ARG_TYPE => Shift(yy_state_80)
@@ -2118,16 +2154,14 @@ fn yy_state_79(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [36, function_arg → attributes ARG_NAME COLON ARG_TYPE •, RPAREN / COMMA]
-
 ///|
+// [36, function_arg → attributes ARG_NAME COLON ARG_TYPE •, RPAREN / COMMA]
 fn yy_state_80(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(4, NT_function_arg, yy_action_11)
 }
 
-// [12, function_args → LPAREN function_arg_list optional_comma • RPAREN EOF, $]
-
 ///|
+// [12, function_args → LPAREN function_arg_list optional_comma • RPAREN EOF, $]
 fn yy_state_81(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_RPAREN => Shift(yy_state_82)
@@ -2135,9 +2169,8 @@ fn yy_state_81(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [12, function_args → LPAREN function_arg_list optional_comma RPAREN • EOF, $]
-
 ///|
+// [12, function_args → LPAREN function_arg_list optional_comma RPAREN • EOF, $]
 fn yy_state_82(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EOF => Shift(yy_state_83)
@@ -2145,16 +2178,14 @@ fn yy_state_82(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [12, function_args → LPAREN function_arg_list optional_comma RPAREN EOF •, $]
-
 ///|
+// [12, function_args → LPAREN function_arg_list optional_comma RPAREN EOF •, $]
 fn yy_state_83(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(5, NT_function_args, yy_action_10)
 }
 
-// [11, function_args → LPAREN RPAREN • EOF, $]
-
 ///|
+// [11, function_args → LPAREN RPAREN • EOF, $]
 fn yy_state_84(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EOF => Shift(yy_state_85)
@@ -2162,17 +2193,15 @@ fn yy_state_84(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [11, function_args → LPAREN RPAREN EOF •, $]
-
 ///|
+// [11, function_args → LPAREN RPAREN EOF •, $]
 fn yy_state_85(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_function_args, yy_action_9)
 }
 
+///|
 // [39, template_list → • TYPE_LT template_args TYPE_GT EOF, $]
 // [48, template_list_prime → • template_list, $]
-
-///|
 fn yy_state_86(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_template_list => Shift(yy_state_87)
@@ -2181,21 +2210,19 @@ fn yy_state_86(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [48, template_list_prime → template_list •, $]
-
 ///|
+// [48, template_list_prime → template_list •, $]
 fn yy_state_87(_lookahead : YYSymbol) -> YYDecision {
   Accept
 }
 
+///|
 // [39, template_list → TYPE_LT • template_args TYPE_GT EOF, $]
 // [40, template_args → • type_expr, TYPE_GT / COMMA]
 // [41, template_args → • template_args COMMA type_expr, TYPE_GT / COMMA]
 // [42, type_expr → • TYPE_ATOM, TYPE_GT / COMMA]
 // [43, type_expr → • TYPE_ATOM TYPE_ARGS, TYPE_GT / COMMA]
 // [44, type_expr → • TYPE_ATOM TYPE_LT type_ref_args TYPE_GT, TYPE_GT / COMMA]
-
-///|
 fn yy_state_88(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_TYPE_ATOM => Shift(yy_state_89)
@@ -2205,11 +2232,10 @@ fn yy_state_88(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [42, type_expr → TYPE_ATOM •, TYPE_GT / COMMA / EOF]
 // [43, type_expr → TYPE_ATOM • TYPE_ARGS, TYPE_GT / COMMA / EOF]
 // [44, type_expr → TYPE_ATOM • TYPE_LT type_ref_args TYPE_GT, TYPE_GT / COMMA / EOF]
-
-///|
 fn yy_state_89(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_TYPE_LT => Shift(yy_state_90)
@@ -2219,14 +2245,13 @@ fn yy_state_89(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [42, type_expr → • TYPE_ATOM, TYPE_GT / COMMA]
 // [43, type_expr → • TYPE_ATOM TYPE_ARGS, TYPE_GT / COMMA]
 // [44, type_expr → • TYPE_ATOM TYPE_LT type_ref_args TYPE_GT, TYPE_GT / COMMA]
 // [44, type_expr → TYPE_ATOM TYPE_LT • type_ref_args TYPE_GT, TYPE_GT / COMMA / EOF]
 // [45, type_ref_args → • type_expr, TYPE_GT / COMMA]
 // [46, type_ref_args → • type_ref_args COMMA type_expr, TYPE_GT / COMMA]
-
-///|
 fn yy_state_90(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_TYPE_ATOM => Shift(yy_state_89)
@@ -2236,17 +2261,15 @@ fn yy_state_90(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [45, type_ref_args → type_expr •, TYPE_GT / COMMA]
-
 ///|
+// [45, type_ref_args → type_expr •, TYPE_GT / COMMA]
 fn yy_state_91(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_type_ref_args, yy_action_7)
 }
 
+///|
 // [44, type_expr → TYPE_ATOM TYPE_LT type_ref_args • TYPE_GT, TYPE_GT / COMMA / EOF]
 // [46, type_ref_args → type_ref_args • COMMA type_expr, TYPE_GT / COMMA]
-
-///|
 fn yy_state_92(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_COMMA => Shift(yy_state_93)
@@ -2255,12 +2278,11 @@ fn yy_state_92(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [42, type_expr → • TYPE_ATOM, TYPE_GT / COMMA]
 // [43, type_expr → • TYPE_ATOM TYPE_ARGS, TYPE_GT / COMMA]
 // [44, type_expr → • TYPE_ATOM TYPE_LT type_ref_args TYPE_GT, TYPE_GT / COMMA]
 // [46, type_ref_args → type_ref_args COMMA • type_expr, TYPE_GT / COMMA]
-
-///|
 fn yy_state_93(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_TYPE_ATOM => Shift(yy_state_89)
@@ -2269,38 +2291,33 @@ fn yy_state_93(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [46, type_ref_args → type_ref_args COMMA type_expr •, TYPE_GT / COMMA]
-
 ///|
+// [46, type_ref_args → type_ref_args COMMA type_expr •, TYPE_GT / COMMA]
 fn yy_state_94(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_type_ref_args, yy_action_6)
 }
 
-// [44, type_expr → TYPE_ATOM TYPE_LT type_ref_args TYPE_GT •, TYPE_GT / COMMA / EOF]
-
 ///|
+// [44, type_expr → TYPE_ATOM TYPE_LT type_ref_args TYPE_GT •, TYPE_GT / COMMA / EOF]
 fn yy_state_95(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(4, NT_type_expr, yy_action_5)
 }
 
-// [43, type_expr → TYPE_ATOM TYPE_ARGS •, TYPE_GT / COMMA / EOF]
-
 ///|
+// [43, type_expr → TYPE_ATOM TYPE_ARGS •, TYPE_GT / COMMA / EOF]
 fn yy_state_96(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_type_expr, yy_action_4)
 }
 
-// [40, template_args → type_expr •, TYPE_GT / COMMA]
-
 ///|
+// [40, template_args → type_expr •, TYPE_GT / COMMA]
 fn yy_state_97(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_template_args, yy_action_3)
 }
 
+///|
 // [39, template_list → TYPE_LT template_args • TYPE_GT EOF, $]
 // [41, template_args → template_args • COMMA type_expr, TYPE_GT / COMMA]
-
-///|
 fn yy_state_98(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_COMMA => Shift(yy_state_99)
@@ -2309,12 +2326,11 @@ fn yy_state_98(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 // [41, template_args → template_args COMMA • type_expr, TYPE_GT / COMMA]
 // [42, type_expr → • TYPE_ATOM, TYPE_GT / COMMA]
 // [43, type_expr → • TYPE_ATOM TYPE_ARGS, TYPE_GT / COMMA]
 // [44, type_expr → • TYPE_ATOM TYPE_LT type_ref_args TYPE_GT, TYPE_GT / COMMA]
-
-///|
 fn yy_state_99(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_TYPE_ATOM => Shift(yy_state_89)
@@ -2323,16 +2339,14 @@ fn yy_state_99(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [41, template_args → template_args COMMA type_expr •, TYPE_GT / COMMA]
-
 ///|
+// [41, template_args → template_args COMMA type_expr •, TYPE_GT / COMMA]
 fn yy_state_100(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(3, NT_template_args, yy_action_2)
 }
 
-// [39, template_list → TYPE_LT template_args TYPE_GT • EOF, $]
-
 ///|
+// [39, template_list → TYPE_LT template_args TYPE_GT • EOF, $]
 fn yy_state_101(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EOF => Shift(yy_state_102)
@@ -2340,20 +2354,18 @@ fn yy_state_101(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [39, template_list → TYPE_LT template_args TYPE_GT EOF •, $]
-
 ///|
+// [39, template_list → TYPE_LT template_args TYPE_GT EOF •, $]
 fn yy_state_102(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(4, NT_template_list, yy_action_1)
 }
 
+///|
 // [10, type_ref → • type_expr EOF, $]
 // [42, type_expr → • TYPE_ATOM, EOF]
 // [43, type_expr → • TYPE_ATOM TYPE_ARGS, EOF]
 // [44, type_expr → • TYPE_ATOM TYPE_LT type_ref_args TYPE_GT, EOF]
 // [47, type_ref_prime → • type_ref, $]
-
-///|
 fn yy_state_103(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_TYPE_ATOM => Shift(yy_state_89)
@@ -2363,16 +2375,14 @@ fn yy_state_103(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [47, type_ref_prime → type_ref •, $]
-
 ///|
+// [47, type_ref_prime → type_ref •, $]
 fn yy_state_104(_lookahead : YYSymbol) -> YYDecision {
   Accept
 }
 
-// [10, type_ref → type_expr • EOF, $]
-
 ///|
+// [10, type_ref → type_expr • EOF, $]
 fn yy_state_105(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     T_EOF => Shift(yy_state_106)
@@ -2380,26 +2390,25 @@ fn yy_state_105(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
-// [10, type_ref → type_expr EOF •, $]
-
 ///|
+// [10, type_ref → type_expr EOF •, $]
 fn yy_state_106(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(2, NT_type_ref, yy_action_0)
 }
 
 ///|
 fn[T] yy_parse(
-  tokens : Array[(Token, Int, Int)],
+  tokens : Array[(Token, Int32, Int32)],
   start : YYState,
   return_ : (YYObj) -> T,
-  initial_pos? : Int,
+  initial_pos? : Int32,
 ) -> T raise ParseError {
   let mut cursor = 0
-  let mut state_stack : @list.List[YYState] = @list.cons(start, @list.empty())
-  let data_stack : Array[(YYObj, Int, Int)] = []
-  let mut last_pos = initial_pos.unwrap_or(tokens[0].1)
+  let mut state_stack : @list.List[YYState] = @list.cons(start, List([]))
+  let data_stack : Array[(YYObj, Int32, Int32)] = []
+  let mut last_pos = initial_pos.unwrap_or_else(fn() { tokens[0].1 })
   let mut state = start
-  let mut lookahead : (YYSymbol, (YYObj, Int, Int), Token?)? = None
+  let mut lookahead : (YYSymbol, (YYObj, Int32, Int32), Token?)? = None
   let mut last_shifted_state_stack = state_stack
   while true {
     let decision = match state(EOI) {
@@ -2475,7 +2484,7 @@ fn[T] yy_parse(
 fn error(
   stack : @list.List[YYState],
   token : Token?,
-  loc : (Int, Int),
+  loc : (Int32, Int32),
 ) -> Unit raise ParseError {
   let expected = []
   fn try_add(symbol : YYSymbol, kind : TokenKind) {
@@ -2549,8 +2558,8 @@ fn error(
 
 ///|
 pub fn type_ref(
-  tokens : Array[(Token, Int, Int)],
-  initial_pos? : Int,
+  tokens : Array[(Token, Int32, Int32)],
+  initial_pos? : Int32,
 ) -> @ast.WgslTypeRef raise ParseError {
   yy_parse(
     tokens,
@@ -2565,8 +2574,8 @@ pub fn type_ref(
 
 ///|
 pub fn template_list(
-  tokens : Array[(Token, Int, Int)],
-  initial_pos? : Int,
+  tokens : Array[(Token, Int32, Int32)],
+  initial_pos? : Int32,
 ) -> Array[@ast.WgslTypeRef] raise ParseError {
   yy_parse(
     tokens,
@@ -2581,8 +2590,8 @@ pub fn template_list(
 
 ///|
 pub fn function_args(
-  tokens : Array[(Token, Int, Int)],
-  initial_pos? : Int,
+  tokens : Array[(Token, Int32, Int32)],
+  initial_pos? : Int32,
 ) -> Array[@ast.WgslFunctionArgument] raise ParseError {
   yy_parse(
     tokens,
@@ -2597,8 +2606,8 @@ pub fn function_args(
 
 ///|
 pub fn function_result(
-  tokens : Array[(Token, Int, Int)],
-  initial_pos? : Int,
+  tokens : Array[(Token, Int32, Int32)],
+  initial_pos? : Int32,
 ) -> @ast.WgslFunctionResult? raise ParseError {
   yy_parse(
     tokens,
@@ -2613,8 +2622,8 @@ pub fn function_result(
 
 ///|
 pub fn struct_members(
-  tokens : Array[(Token, Int, Int)],
-  initial_pos? : Int,
+  tokens : Array[(Token, Int32, Int32)],
+  initial_pos? : Int32,
 ) -> Array[@ast.WgslStructMember] raise ParseError {
   yy_parse(
     tokens,
@@ -2629,8 +2638,8 @@ pub fn struct_members(
 
 ///|
 pub fn typed_initializer_tail(
-  tokens : Array[(Token, Int, Int)],
-  initial_pos? : Int,
+  tokens : Array[(Token, Int32, Int32)],
+  initial_pos? : Int32,
 ) -> (@ast.WgslTypeRef?, @ast.WgslExprRef?) raise ParseError {
   yy_parse(
     tokens,
@@ -2645,8 +2654,8 @@ pub fn typed_initializer_tail(
 
 ///|
 pub fn type_alias_tail(
-  tokens : Array[(Token, Int, Int)],
-  initial_pos? : Int,
+  tokens : Array[(Token, Int32, Int32)],
+  initial_pos? : Int32,
 ) -> @ast.WgslTypeRef raise ParseError {
   yy_parse(
     tokens,
@@ -2661,8 +2670,8 @@ pub fn type_alias_tail(
 
 ///|
 pub fn source_directive(
-  tokens : Array[(Token, Int, Int)],
-  initial_pos? : Int,
+  tokens : Array[(Token, Int32, Int32)],
+  initial_pos? : Int32,
 ) -> @ast.WgslDirective raise ParseError {
   yy_parse(
     tokens,
@@ -2677,8 +2686,8 @@ pub fn source_directive(
 
 ///|
 pub fn const_assert_expr(
-  tokens : Array[(Token, Int, Int)],
-  initial_pos? : Int,
+  tokens : Array[(Token, Int32, Int32)],
+  initial_pos? : Int32,
 ) -> @ast.WgslExprRef raise ParseError {
   yy_parse(
     tokens,
@@ -2693,8 +2702,8 @@ pub fn const_assert_expr(
 
 ///|
 pub fn block(
-  tokens : Array[(Token, Int, Int)],
-  initial_pos? : Int,
+  tokens : Array[(Token, Int32, Int32)],
+  initial_pos? : Int32,
 ) -> @ast.WgslBlock raise ParseError {
   yy_parse(
     tokens,
@@ -2711,7 +2720,7 @@ pub fn block(
 fn wgsl_type_ref_from_atom(
   atom : @ast.WgslTypeAtom,
   arguments : Array[@ast.WgslTypeRef],
-  end_ : Int,
+  end_ : Int32,
 ) -> @ast.WgslTypeRef {
   WgslTypeRef(atom, arguments, atom.start(), end_.max(atom.end()))
 }
@@ -2719,7 +2728,7 @@ fn wgsl_type_ref_from_atom(
 ///|
 fn wgsl_type_ref_from_template_arguments(
   atom : @ast.WgslTypeAtom,
-  args : (Array[@ast.WgslTypeArgument], Int),
+  args : (Array[@ast.WgslTypeArgument], Int32),
 ) -> @ast.WgslTypeRef {
   let (arguments, end_) = args
   @ast.WgslTypeRef::new_with_template_arguments(

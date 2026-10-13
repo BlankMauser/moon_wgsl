@@ -92,7 +92,7 @@ fn collect_wgsl_cached_import_bindings(
   source_alias_name : String,
   final_alias_scope : String,
   bindings : WgslComposeBindingSet,
-) -> Int {
+) -> Int32 {
   let mut count = 0
   if source_alias_name == "" {
     for

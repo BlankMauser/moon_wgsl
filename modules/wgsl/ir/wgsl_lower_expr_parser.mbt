@@ -1,9 +1,9 @@
 ///|
 priv struct WgslIrExprTokenDepth {
-  mut paren : Int
-  mut angle : Int
-  mut bracket : Int
-  mut brace : Int
+  mut paren : Int32
+  mut angle : Int32
+  mut bracket : Int32
+  mut brace : Int32
 }
 
 ///|
@@ -72,8 +72,8 @@ fn wgsl_ir_expr_tokens_assignment(
 ///|
 fn wgsl_ir_expr_assignment_at(
   tokens : Array[@ast.WgslExprToken],
-  index : Int,
-) -> (String, Int)? {
+  index : Int32,
+) -> (String, Int32)? {
   guard index >= 0 && index < tokens.length() else { return None }
   match tokens[index].kind() {
     Operator(Unknown(op)) if wgsl_ir_is_compound_assignment_operator(op) =>
@@ -121,8 +121,8 @@ fn wgsl_ir_expr_tokens_update_operator(
 ///|
 fn wgsl_ir_expr_token_slice(
   tokens : Array[@ast.WgslExprToken],
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
 ) -> Array[@ast.WgslExprToken] {
   let out : Array[@ast.WgslExprToken] = []
   for i in start..<end_ {
@@ -134,7 +134,7 @@ fn wgsl_ir_expr_token_slice(
 ///|
 fn wgsl_ir_expr_token_is_punctuation(
   token : @ast.WgslExprToken,
-  code : Int,
+  code : Int32,
 ) -> Bool {
   match token.kind() {
     Punctuation(value) => value == code
@@ -176,7 +176,7 @@ fn WgslIrExprTokenParser::peek(
 ///|
 fn WgslIrExprTokenParser::consume_punctuation(
   self : WgslIrExprTokenParser,
-  code : Int,
+  code : Int32,
 ) -> Bool {
   match self.peek() {
     Some(token) if wgsl_ir_expr_token_is_punctuation(token, code) => {
@@ -190,8 +190,8 @@ fn WgslIrExprTokenParser::consume_punctuation(
 ///|
 fn wgsl_ir_expr_make_node(
   kind : @ast.WgslExprNodeKind,
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
 ) -> @ast.WgslExprNode {
   WgslExprNode(kind, start, end_)
 }
@@ -199,7 +199,7 @@ fn wgsl_ir_expr_make_node(
 ///|
 fn WgslIrExprTokenParser::parse_expression(
   self : WgslIrExprTokenParser,
-  min_precedence : Int,
+  min_precedence : Int32,
 ) -> @ast.WgslExprNode? {
   let prefix = match self.parse_prefix() {
     Some(value) => value
@@ -372,7 +372,7 @@ fn WgslIrExprTokenParser::parse_postfix(
 ///|
 fn WgslIrExprTokenParser::parse_sequence_until_any(
   self : WgslIrExprTokenParser,
-  stop_codes : Array[Int],
+  stop_codes : Array[Int32],
 ) -> @ast.WgslExprNode {
   let nodes : Array[@ast.WgslExprNode] = []
   while !self.at_end() {
@@ -412,7 +412,7 @@ fn WgslIrExprTokenParser::parse_sequence_until_any(
 ///|
 fn WgslIrExprTokenParser::binary_operator_at(
   self : WgslIrExprTokenParser,
-) -> (@ast.WgslExprOperator, Int)? {
+) -> (@ast.WgslExprOperator, Int32)? {
   guard self.index < self.tokens.length() else { return None }
   match self.tokens[self.index].kind() {
     Operator(op) => Some((op, 1))

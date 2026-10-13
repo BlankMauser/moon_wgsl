@@ -1,6 +1,6 @@
 ///|
 test "wesl io: file resolver reads wesl and falls back to wgsl" {
-  let resolver = FileResolver::new(
+  let resolver = @wesl_io.FileResolver::new(
     "../modules/moon_wesl/testdata/upstream/bevy",
   )
   let wesl_source = resolver.resolve_source(
@@ -15,7 +15,7 @@ test "wesl io: file resolver reads wesl and falls back to wgsl" {
 
 ///|
 test "wesl io: file resolver compiles local imports" {
-  let resolver = FileResolver::new(
+  let resolver = @wesl_io.FileResolver::new(
     "../modules/moon_wesl/testdata/upstream/bevy",
   )
   let compiled = @moon_wesl.compile(
@@ -52,9 +52,12 @@ test "wesl io: scans packages and writes generated artifacts" {
     root + "/util.wesl",
     "fn make_value() -> f32 { return 2.0; }\n",
   )
-  let pkg = scan_package(@moon_wesl.PkgBuilder::new("demo-crate"), root).validate()
+  let pkg = @wesl_io.scan_package(
+    @moon_wesl.PkgBuilder::new("demo-crate"),
+    root,
+  ).validate()
   let artifact_path = base + "/demo_artifact.mbt.txt"
-  write_package_artifact(pkg, artifact_path)
+  @wesl_io.write_package_artifact(pkg, artifact_path)
   let artifact = try! @fs.read_file_to_string(artifact_path)
   inspect(artifact.contains("demo_crate"), content="true")
   let resolver = @moon_wesl.PkgResolver::new()

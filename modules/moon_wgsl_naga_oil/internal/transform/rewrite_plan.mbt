@@ -29,8 +29,8 @@ priv struct WgslReferenceRewriteBinding {
 
 ///|
 priv struct WgslBoundReferenceRewriteEntry {
-  start : Int
-  end : Int
+  start : Int32
+  end : Int32
   reference_text : String
   identity : WgslComposeSymbolIdentity
   final_name : String

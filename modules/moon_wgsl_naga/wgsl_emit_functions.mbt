@@ -4,7 +4,7 @@ fn WgslIrEmitter::emit_entry_point(
   out : StringBuilder,
   entry_point : EntryPoint,
   function_plan : WgslIrFunctionWriterPlan,
-  index : Int,
+  index : Int32,
 ) -> Unit raise WgslIrEmitError {
   let multiline_attributes = entry_point.stage == Task ||
     entry_point.stage == Mesh ||
@@ -63,7 +63,7 @@ fn wgsl_ir_stage_has_workgroup_size(stage : ShaderStage) -> Bool {
 fn WgslIrEmitter::workgroup_size_component(
   self : WgslIrEmitter,
   entry_point : EntryPoint,
-  index : Int,
+  index : Int32,
 ) -> String raise WgslIrEmitError {
   match entry_point.workgroup_size_overrides {
     Some(overrides) =>
@@ -125,7 +125,7 @@ fn WgslIrEmitter::emit_function_argument(
   self : WgslIrEmitter,
   out : StringBuilder,
   function : Function,
-  index : Int,
+  index : Int32,
 ) -> Unit raise WgslIrEmitError {
   guard function.arguments.get(index) is Some(argument) else {
     raise MissingHandle("function argument \{index}")
@@ -141,7 +141,7 @@ fn WgslIrEmitter::emit_local_declaration(
   out : StringBuilder,
   function : Function,
   handle : Handle,
-  indent : Int,
+  indent : Int32,
 ) -> Unit raise WgslIrEmitError {
   let local_var = match function.local_variables.items.get(handle.index()) {
     Some(value) => value
@@ -198,7 +198,7 @@ fn WgslIrEmitter::emit_function_local_var_declarations(
   out : StringBuilder,
   function : Function,
   function_plan : WgslIrFunctionWriterPlan,
-  indent : Int,
+  indent : Int32,
 ) -> Unit raise WgslIrEmitError {
   for index in function_plan.local_declaration_order() {
     self.emit_local_declaration(out, function, Handle(index), indent)

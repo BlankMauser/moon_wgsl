@@ -49,7 +49,7 @@ test "naga-oil directive masking preserves byte offsets and line endings" {
   let masked = mask_naga_oil_directives_for_wgsl(source)
   inspect(
     utf8_byte_length(masked),
-    content=source |> utf8_byte_length |> Int::to_string,
+    content=source |> utf8_byte_length |> Int32::to_string,
   )
   debug_inspect(masked.contains("#"), content="false")
   debug_inspect(masked.contains("let 名 = 1;"), content="true")
@@ -73,6 +73,6 @@ test "naga-oil masking consumes complete multiline grouped imports" {
   debug_inspect(masked.contains("fn ambient_light() {}"), content="true")
   debug_inspect(
     utf8_byte_length(masked),
-    content=source |> utf8_byte_length |> Int::to_string,
+    content=source |> utf8_byte_length |> Int32::to_string,
   )
 }

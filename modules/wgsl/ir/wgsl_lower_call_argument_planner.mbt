@@ -92,7 +92,7 @@ fn CallArgumentPlanner::prelower_dependencies(
 ///|
 fn CallArgumentPlanner::lower_later_source_let_arithmetic_before_direct(
   self : CallArgumentPlanner,
-  direct_index : Int,
+  direct_index : Int32,
 ) -> Unit raise WgslIrLowerError {
   guard self.has_later_pointer_argument(direct_index) else { return }
   let mut lookahead = direct_index + 1
@@ -133,7 +133,7 @@ fn CallArgumentPlanner::lower_later_source_let_arithmetic_before_direct(
 ///|
 fn CallArgumentPlanner::has_later_pointer_argument(
   self : CallArgumentPlanner,
-  direct_index : Int,
+  direct_index : Int32,
 ) -> Bool {
   let mut index = direct_index + 1
   while index < self.arguments.length() {
@@ -148,7 +148,7 @@ fn CallArgumentPlanner::has_later_pointer_argument(
 ///|
 fn CallArgumentPlanner::argument_is_pure_binary_value_expression(
   self : CallArgumentPlanner,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   if self.argument_uses_reference_predeclare(index) {
     return false
@@ -180,7 +180,7 @@ fn CallArgumentPlanner::argument_is_deferred_const_like(
 ///|
 fn CallArgumentPlanner::argument_uses_reference_predeclare(
   self : CallArgumentPlanner,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   if self.lowerer.callee_parameter_is_pointer(self.callee_function, index) {
     return false
@@ -191,7 +191,7 @@ fn CallArgumentPlanner::argument_uses_reference_predeclare(
 ///|
 fn CallArgumentPlanner::value_argument_lowers_before_prior_direct(
   self : CallArgumentPlanner,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   guard wgsl_ir_expr_node_is_call_value(self.arguments[index]) else {
     return false
@@ -234,7 +234,7 @@ fn CallArgumentPlanner::value_argument_lowers_before_prior_direct(
 ///|
 fn CallArgumentPlanner::lower_later_reference_before_direct(
   self : CallArgumentPlanner,
-  direct_index : Int,
+  direct_index : Int32,
 ) -> Unit raise WgslIrLowerError {
   let mut lookahead = direct_index + 1
   while lookahead < self.arguments.length() {
@@ -282,7 +282,7 @@ fn CallArgumentPlanner::lower_later_reference_before_direct(
 ///|
 fn CallArgumentPlanner::argument_is_pending_store_pointer_deref(
   self : CallArgumentPlanner,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   if self.lowerer.callee_parameter_is_pointer(self.callee_function, index) {
     return false
@@ -300,8 +300,8 @@ fn CallArgumentPlanner::argument_is_pending_store_pointer_deref(
 ///|
 fn CallArgumentPlanner::lower_next_reference_run(
   self : CallArgumentPlanner,
-  start : Int,
-) -> Int raise WgslIrLowerError {
+  start : Int32,
+) -> Int32 raise WgslIrLowerError {
   let mut run_start = start
   while run_start < self.arguments.length() &&
         self.prelowered[run_start] == None &&
@@ -320,8 +320,8 @@ fn CallArgumentPlanner::lower_next_reference_run(
 ///|
 fn CallArgumentPlanner::lower_reference_run(
   self : CallArgumentPlanner,
-  start : Int,
-) -> Int raise WgslIrLowerError {
+  start : Int32,
+) -> Int32 raise WgslIrLowerError {
   let mut index = start
   while index < self.arguments.length() &&
         self.prelowered[index] == None &&
@@ -380,7 +380,7 @@ fn CallArgumentPlanner::argument_is_existing_alias(
 ///|
 fn CallArgumentPlanner::argument_is_mutable_local_value(
   self : CallArgumentPlanner,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   if self.lowerer.callee_parameter_is_pointer(self.callee_function, index) {
     return false
@@ -488,7 +488,7 @@ fn CallArgumentPlanner::argument_access_root_is_reference(
 ///|
 fn CallArgumentPlanner::lower_argument_at(
   self : CallArgumentPlanner,
-  index : Int,
+  index : Int32,
 ) -> Handle raise WgslIrLowerError {
   self.lowerer.lower_user_function_call_argument_at(
     self.arguments[index],

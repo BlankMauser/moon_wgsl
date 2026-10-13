@@ -27,7 +27,7 @@ fn wgsl_ir_attribute_named(
 }
 
 ///|
-fn wgsl_ir_attribute_int_value(attribute : @ast.WgslAttribute) -> Int? {
+fn wgsl_ir_attribute_int_value(attribute : @ast.WgslAttribute) -> Int32? {
   match attribute.arguments_ref() {
     Some(expr_ref) => wgsl_ir_int_literal_from_expr_ref(expr_ref)
     None => None
@@ -96,7 +96,7 @@ fn wgsl_ir_per_primitive_from_attributes(
 ///|
 fn wgsl_ir_blend_src_from_attributes(
   attributes : Array[@ast.WgslAttribute],
-) -> Int? {
+) -> Int32? {
   match wgsl_ir_attribute_named(attributes, "blend_src") {
     Some(attribute) => wgsl_ir_attribute_int_value(attribute)
     None => None
@@ -312,7 +312,7 @@ fn wgsl_ir_memory_decorations_from_attributes(
 }
 
 ///|
-fn wgsl_ir_id_from_attributes(attributes : Array[@ast.WgslAttribute]) -> Int? {
+fn wgsl_ir_id_from_attributes(attributes : Array[@ast.WgslAttribute]) -> Int32? {
   match wgsl_ir_attribute_named(attributes, "id") {
     Some(attribute) => wgsl_ir_attribute_int_value(attribute)
     None => None
@@ -359,7 +359,7 @@ fn wgsl_ir_early_depth_test_from_attributes(
 fn WgslIrLowerer::workgroup_size_from_attributes(
   self : WgslIrLowerer,
   attributes : Array[@ast.WgslAttribute],
-) -> (Array[Int], Array[Handle?]?) raise WgslIrLowerError {
+) -> (Array[Int32], Array[Handle?]?) raise WgslIrLowerError {
   match wgsl_ir_attribute_named(attributes, "workgroup_size") {
     Some(attribute) =>
       match attribute.arguments_ref() {
@@ -368,7 +368,7 @@ fn WgslIrLowerer::workgroup_size_from_attributes(
             Some(root) => wgsl_ir_flatten_workgroup_size_arguments(root)
             None => []
           }
-          let values : Array[Int] = [1, 1, 1]
+          let values : Array[Int32] = [1, 1, 1]
           let overrides : Array[Handle?] = [None, None, None]
           for i in 0..<3 {
             match nodes.get(i) {
@@ -408,7 +408,7 @@ fn wgsl_ir_flatten_workgroup_size_arguments(
 fn WgslIrLowerer::workgroup_size_dimension_from_node(
   self : WgslIrLowerer,
   node : @ast.WgslExprNode,
-) -> (Int, Handle?) raise WgslIrLowerError {
+) -> (Int32, Handle?) raise WgslIrLowerError {
   let handle = self.lower_global_expression_node(node)
   let evaluated = Some(self.eval_global_integer_expression(handle)) catch {
     _ => None

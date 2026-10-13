@@ -52,7 +52,7 @@ pub(all) struct FunctionBodyParseNode {
 
 ///|
 pub(all) struct StatementParseDiagnostic {
-  offset : Int
+  offset : Int32
   incomplete : Bool
 } derive(Eq, Debug)
 
@@ -64,12 +64,12 @@ pub(all) enum StatementParseResult {
 
 ///|
 priv enum StatementLexResult {
-  Lexed(Array[(Token, Int, Int)])
+  Lexed(Array[(Token, Int32, Int32)])
   LexFailed(StatementParseDiagnostic)
 }
 
 ///|
-fn statement_parse_is_identifier_start(code : Int) -> Bool {
+fn statement_parse_is_identifier_start(code : Int32) -> Bool {
   (code >= 65 && code <= 90) ||
   (code >= 97 && code <= 122) ||
   code == 95 ||
@@ -77,12 +77,12 @@ fn statement_parse_is_identifier_start(code : Int) -> Bool {
 }
 
 ///|
-fn statement_parse_is_identifier_char(code : Int) -> Bool {
+fn statement_parse_is_identifier_char(code : Int32) -> Bool {
   statement_parse_is_identifier_start(code) || (code >= 48 && code <= 57)
 }
 
 ///|
-fn statement_parse_skip_line_comment(source : String, index : Int) -> Int {
+fn statement_parse_skip_line_comment(source : String, index : Int32) -> Int32 {
   let mut cursor = index
   while cursor < source.length() && source.code_unit_at(cursor).to_int() != 10 {
     cursor += 1
@@ -93,8 +93,8 @@ fn statement_parse_skip_line_comment(source : String, index : Int) -> Int {
 ///|
 fn statement_parse_skip_block_comment(
   source : String,
-  index : Int,
-) -> (Int, Bool) {
+  index : Int32,
+) -> (Int32, Bool) {
   let mut cursor = index
   let mut depth = 1
   while cursor + 1 < source.length() {
@@ -119,7 +119,7 @@ fn statement_parse_skip_block_comment(
 }
 
 ///|
-fn statement_parse_skip_layout(source : String, index : Int) -> (Int, Bool) {
+fn statement_parse_skip_layout(source : String, index : Int32) -> (Int32, Bool) {
   let mut cursor = index
   while cursor < source.length() {
     let code = source.code_unit_at(cursor).to_int()
@@ -151,7 +151,10 @@ fn statement_parse_skip_layout(source : String, index : Int) -> (Int, Bool) {
 }
 
 ///|
-fn statement_parse_read_ident(source : String, index : Int) -> (String, Int)? {
+fn statement_parse_read_ident(
+  source : String,
+  index : Int32,
+) -> (String, Int32)? {
   if index >= source.length() ||
     !statement_parse_is_identifier_start(source.code_unit_at(index).to_int()) {
     return None
@@ -168,10 +171,10 @@ fn statement_parse_read_ident(source : String, index : Int) -> (String, Int)? {
 ///|
 fn statement_parse_skip_balanced(
   source : String,
-  index : Int,
-  open_code : Int,
-  close_code : Int,
-) -> (Int, Bool) {
+  index : Int32,
+  open_code : Int32,
+  close_code : Int32,
+) -> (Int32, Bool) {
   let mut cursor = index
   let mut depth = 1
   while cursor < source.length() {
@@ -208,7 +211,10 @@ fn statement_parse_skip_balanced(
 }
 
 ///|
-fn statement_parse_skip_attributes(source : String, index : Int) -> (Int, Bool) {
+fn statement_parse_skip_attributes(
+  source : String,
+  index : Int32,
+) -> (Int32, Bool) {
   let mut cursor = index
   while cursor < source.length() && source.code_unit_at(cursor).to_int() == 64 {
     cursor += 1
@@ -233,7 +239,7 @@ fn statement_parse_skip_attributes(source : String, index : Int) -> (Int, Bool) 
 }
 
 ///|
-fn statement_parse_keyword_at(source : String, index : Int) -> String? {
+fn statement_parse_keyword_at(source : String, index : Int32) -> String? {
   let (after_attrs, ok) = statement_parse_skip_attributes(source, index)
   if !ok {
     return None
@@ -299,8 +305,8 @@ fn statement_parse_contains_compound_assignment(source : String) -> Bool {
 ///|
 fn statement_parse_kind(
   source : String,
-  start : Int,
-  end_ : Int,
+  start : Int32,
+  end_ : Int32,
 ) -> StatementParseKind {
   let text = source[start:end_].trim().to_owned()
   if text == ";" {
@@ -341,7 +347,10 @@ fn statement_parse_kind(
 }
 
 ///|
-fn statement_parse_statement_end(source : String, index : Int) -> (Int, Bool) {
+fn statement_parse_statement_end(
+  source : String,
+  index : Int32,
+) -> (Int32, Bool) {
   let mut cursor = index
   let mut paren_depth = 0
   let mut bracket_depth = 0
@@ -397,7 +406,7 @@ fn statement_parse_statement_end(source : String, index : Int) -> (Int, Bool) {
 
 ///|
 fn statement_parse_lex(source : String) -> StatementLexResult {
-  let tokens : Array[(Token, Int, Int)] = []
+  let tokens : Array[(Token, Int32, Int32)] = []
   let mut index = 0
   while index < source.length() {
     let (start, ok) = statement_parse_skip_layout(source, index)

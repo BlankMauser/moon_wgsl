@@ -139,7 +139,7 @@ fn WgslIrLowerer::lower_cooperative_data(
   self : WgslIrLowerer,
   name : String,
   arguments : Array[@ast.WgslExprNode],
-  pointer_index : Int,
+  pointer_index : Int32,
   function : Function,
   scope : WgslIrFunctionScope,
   columns : CooperativeSize,

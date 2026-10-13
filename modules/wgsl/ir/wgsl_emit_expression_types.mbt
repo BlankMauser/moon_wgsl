@@ -189,7 +189,7 @@ pub fn WgslIrTypeInference::as_expression_result_type(
   self : WgslIrTypeInference,
   input : Handle?,
   kind : ScalarKind,
-  width : Int,
+  width : Int32,
 ) -> Handle? {
   guard input is Some(input_ty) else { return None }
   let scalar = Scalar::Scalar(kind, width)
@@ -434,7 +434,7 @@ fn WgslIrTypeInference::indexed_expression_type(
   self : WgslIrTypeInference,
   function : Function?,
   base : Handle,
-  index : Int?,
+  index : Int32?,
 ) -> Handle? {
   guard self.expression_type(function, base) is Some(base_ty) else {
     return None
@@ -446,7 +446,7 @@ fn WgslIrTypeInference::indexed_expression_type(
 fn WgslIrTypeInference::indexed_type_from_type_handle(
   self : WgslIrTypeInference,
   ty_handle : Handle,
-  index : Int?,
+  index : Int32?,
 ) -> Handle? {
   match self.shader_module.types.items.get(ty_handle.index()) {
     Some(ty) =>

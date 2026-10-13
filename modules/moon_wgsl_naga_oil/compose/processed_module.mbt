@@ -92,8 +92,8 @@ fn WgslActiveComposeDefs::compute_cache_text(
 ///|
 fn collect_wgsl_naga_pull_ranks(
   origins : Array[WgslModuleItemOrigin],
-) -> Map[String, Int] {
-  let ranks : Map[String, Int] = Map([])
+) -> Map[String, Int32] {
+  let ranks : Map[String, Int32] = Map([])
   for origin in origins {
     if origin.name() != "" && !ranks.contains(origin.name()) {
       ranks.set(origin.name(), origin.source_start())
@@ -105,8 +105,8 @@ fn collect_wgsl_naga_pull_ranks(
 ///|
 fn collect_wgsl_source_decl_ranks(
   extraction : WgslModuleItemExtraction,
-) -> Map[String, Int] {
-  let ranks : Map[String, Int] = Map([])
+) -> Map[String, Int32] {
+  let ranks : Map[String, Int32] = Map([])
   let origins = extraction.origins()
   for i in 0..<origins.length() {
     let origin = origins[i]
@@ -164,7 +164,7 @@ fn WgslProcessedComposeModule::declaration_map(
 ///|
 fn wgsl_processed_name_after_keyword(
   tokens : Array[WgslToken],
-  start : Int,
+  start : Int32,
 ) -> String? {
   let mut index = start
   let mut angle_depth = 0
@@ -637,7 +637,7 @@ fn WgslComposeSession::record_processed_semantic_facts(
 ///|
 fn WgslProcessedComposeModule::naga_dependency_pull_ranks(
   self : WgslProcessedComposeModule,
-) -> Map[String, Int] raise ComposerError {
+) -> Map[String, Int32] raise ComposerError {
   match self.naga_pull_ranks {
     Some(ranks) => ranks
     None => {
@@ -653,7 +653,7 @@ fn WgslProcessedComposeModule::naga_dependency_pull_ranks(
 ///|
 fn WgslProcessedComposeModule::declaration_source_ranks(
   self : WgslProcessedComposeModule,
-) -> Map[String, Int] raise ComposerError {
+) -> Map[String, Int32] raise ComposerError {
   match self.source_decl_ranks {
     Some(ranks) => ranks
     None => {

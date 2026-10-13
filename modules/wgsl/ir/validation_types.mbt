@@ -163,7 +163,7 @@ fn WgslIrValidator::validate_matrix_scalar(
 fn WgslIrValidator::validate_array_stride(
   self : WgslIrValidator,
   base : Handle,
-  stride : Int,
+  stride : Int32,
 ) -> Unit raise WgslIrValidationError {
   if stride <= 0 {
     raise InvalidType("array stride must be positive")
@@ -193,7 +193,7 @@ fn WgslIrValidator::validate_array_stride(
 fn WgslIrValidator::validate_struct_layout(
   self : WgslIrValidator,
   members : Array[StructMember],
-  span : Int,
+  span : Int32,
 ) -> Unit raise WgslIrValidationError {
   if span <= 0 {
     raise InvalidType("struct span must be positive")

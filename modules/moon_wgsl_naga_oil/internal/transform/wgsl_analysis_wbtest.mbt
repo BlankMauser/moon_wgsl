@@ -52,7 +52,7 @@ test "dialect masking removes directives and preserves declarations" {
   debug_inspect(stripped.contains("const VALUE: u32 = 1u;"), content="true")
   debug_inspect(
     utf8_byte_length(stripped),
-    content=source |> utf8_byte_length |> Int::to_string,
+    content=source |> utf8_byte_length |> Int32::to_string,
   )
 }
 

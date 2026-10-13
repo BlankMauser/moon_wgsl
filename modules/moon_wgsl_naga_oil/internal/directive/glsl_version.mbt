@@ -29,7 +29,7 @@ pub fn parse_glsl_version_directive(line : String) -> String? {
 ///|
 fn glsl_version_has_ascii_keyword_at(
   text : String,
-  offset : Int,
+  offset : Int32,
   keyword : String,
 ) -> Bool {
   if offset < 0 || offset + keyword.length() > text.length() {

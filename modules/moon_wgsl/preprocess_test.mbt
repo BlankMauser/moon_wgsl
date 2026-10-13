@@ -30,7 +30,7 @@ fn bool_shader_def(
 ///|
 fn int_shader_def(
   name : String,
-  value : Int,
+  value : Int32,
 ) -> Map[String, @contract.ShaderDefValue] {
   let shader_defs = empty_shader_defs()
   shader_defs.set(name, Int(value))

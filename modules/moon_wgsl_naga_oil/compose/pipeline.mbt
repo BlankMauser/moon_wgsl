@@ -402,7 +402,7 @@ fn WgslComposeSymbolTable::generated_import_provenance(
   root_rel_path : String,
   composed_source : String,
 ) -> Array[@moon_wgsl_naga.WgslNagaGeneratedImportProvenance] raise ComposerError {
-  let composed_source_starts : Map[String, Int] = Map([])
+  let composed_source_starts : Map[String, Int32] = Map([])
   let composed_origins = extract_wgsl_module_item_origins_strict(
     composed_source,
     [],
@@ -431,7 +431,7 @@ fn WgslComposeSymbolTable::generated_import_provenance(
       )
     }
   }
-  let generated_symbol_import_sequences : Map[String, Int] = Map([])
+  let generated_symbol_import_sequences : Map[String, Int32] = Map([])
   for event in self.import_arena_events {
     for generated_symbol_name in event.generated_symbol_names() {
       if !generated_symbol_import_sequences.contains(generated_symbol_name) {

@@ -63,7 +63,7 @@ fn WgslIrLowerer::append_foldable_function_binary_expression(
   function : Function,
   scope : WgslIrFunctionScope,
   local_constant_snapshot : Map[String, WgslIrLocalValue],
-  expression_mark : Int,
+  expression_mark : Int32,
   op : BinaryOperator,
   left : Handle,
   right : Handle,
@@ -84,7 +84,7 @@ fn WgslIrLowerer::fold_function_binary_expression_at_mark(
   function : Function,
   scope : WgslIrFunctionScope,
   local_constant_snapshot : Map[String, WgslIrLocalValue],
-  expression_mark : Int,
+  expression_mark : Int32,
   handle : Handle,
 ) -> Handle raise WgslIrLowerError {
   if self.function_binary_expression_should_retain_named_constant(
@@ -110,7 +110,7 @@ fn WgslIrLowerer::fold_function_binary_expression_at_mark(
 fn WgslIrLowerer::function_argument_is_pointer(
   self : WgslIrLowerer,
   function : Function,
-  index : Int,
+  index : Int32,
 ) -> Bool {
   match function.arguments.get(index) {
     Some(argument) =>
