@@ -1,10 +1,10 @@
 name = "Milky2018/moon_wgsl_naga_oil"
 
-version = "0.17.2"
+version = "0.17.3"
 
 import {
-  "Milky2018/wgsl@0.17.2",
-  "Milky2018/moon_wgsl_naga@0.17.2",
+  "Milky2018/wgsl@0.17.3",
+  "Milky2018/moon_wgsl_naga@0.17.3",
 }
 
 readme = "README.mbt.md"
