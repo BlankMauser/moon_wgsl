@@ -1,0 +1,16 @@
+modules/moon_wesl/internal/statement_parse/types.mbt
+  h_03360edcd9e88f 296-313,315,406-410,426-439
+modules/moon_wesl/wesl_test.mbt
+  h_03360edcd9e88f 3769-3784
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5c7bd9b30c161c1039acc65a83c4fa6f9d89a2fa",
+  "prompts": {},
+  "humans": {
+    "h_03360edcd9e88f": {
+      "author": "BlankMauser <thomasluvan@gmail.com>"
+    }
+  }
+}
