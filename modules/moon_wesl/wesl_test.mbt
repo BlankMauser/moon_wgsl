@@ -3766,3 +3766,19 @@ test "wesl: router can mount package resolver" {
     content="\"fn util() {}\\n\"",
   )
 }
+
+///|
+test "if/else keeps its else branch: compound assignment and conditions inside else" {
+  let resolver = @moon_wesl.VirtualResolver::new()
+  let root = @moon_wesl.ModulePath::from_path("/shaders/root.wesl")
+  resolver.add_module(
+    root, "fn f() -> f32 {\n  var a = 0.0;\n  if (true) {\n    a += 1.0;\n  } else if (false) {\n    a -= 3.0;\n  } else {\n    @if(X) a += 2.0;\n    @if(!X) a = 5.0;\n  }\n  return a;\n}\n",
+  )
+  let features = @moon_wesl.Features::default()
+  features.set_feature("X", Enable)
+  let options = { ..@moon_wesl.CompileOptions::default(), features, keep_root: true }
+  let out = try! @moon_wesl.compile(root, resolver, @moon_wesl.EscapeMangler::default(), options).to_string()
+  inspect(out.contains("a += 2.0;"), content="true")
+  inspect(out.contains("a = 5.0;"), content="false")
+  inspect(out.contains("a -= 3.0;"), content="true")
+}

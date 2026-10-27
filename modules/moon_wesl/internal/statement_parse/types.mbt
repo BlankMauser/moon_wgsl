@@ -293,11 +293,26 @@ fn statement_parse_contains_top_level_assignment(source : String) -> Bool {
 
 ///|
 fn statement_parse_contains_compound_assignment(source : String) -> Bool {
-  let operators = ["+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>="]
-  for op in operators {
-    if source.contains(op) {
-      return true
+  // Only at the top level: `else { a += 1.0; }` or `f(a += b)`-like text
+  // nested in braces, brackets or parentheses is not this statement's
+  // operator.
+  let operators = ["<<=", ">>=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^="]
+  let mut depth = 0
+  let mut cursor = 0
+  while cursor < source.length() {
+    let code = source.code_unit_at(cursor).to_int()
+    if code == 40 || code == 91 || code == 123 {
+      depth += 1
+    } else if code == 41 || code == 93 || code == 125 {
+      depth -= 1
+    } else if depth == 0 {
+      for op in operators {
+        if source[cursor:].has_prefix(op) {
+          return true
+        }
+      }
     }
+    cursor += 1
   }
   false
 }
@@ -388,7 +403,11 @@ fn statement_parse_statement_end(
     } else if code == 125 {
       brace_depth -= 1
       if brace_depth == 0 && paren_depth == 0 && bracket_depth == 0 {
-        return (cursor + 1, true)
+        // `if (...) { ... } else ...` is one statement: keep going when the
+        // next word is `else`.
+        if !statement_parse_followed_by_else(source, cursor + 1) {
+          return (cursor + 1, true)
+        }
       }
     } else if code == 59 &&
       paren_depth == 0 &&
@@ -402,6 +421,20 @@ fn statement_parse_statement_end(
     cursor += 1
   }
   (cursor, false)
+}
+
+///|
+/// Whether the next word after `index` (skipping layout and comments) is the
+/// keyword `else`.
+fn statement_parse_followed_by_else(source : String, index : Int32) -> Bool {
+  let (start, ok) = statement_parse_skip_layout(source, index)
+  if !ok {
+    return false
+  }
+  match statement_parse_read_ident(source, start) {
+    Some((name, _)) => name == "else"
+    None => false
+  }
 }
 
 ///|
